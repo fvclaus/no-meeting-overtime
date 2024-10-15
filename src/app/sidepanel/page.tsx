@@ -37,6 +37,7 @@ export default function Page() {
     // });
     var searchParams = new URLSearchParams(window.location.search);
     searchParams.set("endTime", endTime);
+    console.log(searchParams, searchParams.toString());
     window.location.search = searchParams.toString();
     window.location.replace(ACTIVITY_SIDE_PANEL_URL + window.location.search);
   }
