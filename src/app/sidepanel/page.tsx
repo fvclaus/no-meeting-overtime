@@ -26,17 +26,21 @@ export default function Page() {
       throw new Error('Side Panel is not yet initialized!');
     }
 
-    const startingColor = (
+    const endTime = (
       document.getElementById('starting-color')! as HTMLInputElement
     ).value;
-    await sidePanelClient.startActivity({
-      mainStageUrl: MAIN_STAGE_URL,
-      sidePanelUrl: ACTIVITY_SIDE_PANEL_URL,
-      // Pass the selected color to customize the initial display.
-      additionalData: `{\"startingColor\": \"${startingColor}\"}`,
-    });
+    // await sidePanelClient.startActivity({
+    //   mainStageUrl: MAIN_STAGE_URL,
+    //   sidePanelUrl: ACTIVITY_SIDE_PANEL_URL,
+    //   // Pass the selected color to customize the initial display.
+    //   additionalData: `{\"endTime\": \"${endTime}\"}`,
+    // });
+    var searchParams = new URLSearchParams(window.location.search);
+    searchParams.set("endTime", endTime);
+    window.location.search = searchParams.toString();
     window.location.replace(ACTIVITY_SIDE_PANEL_URL + window.location.search);
   }
+
 
   useEffect(() => {
     /**
@@ -60,21 +64,20 @@ export default function Page() {
         look at an animation involving your favorite color.
       </div>
       <label htmlFor="starting-color">
-        Pick a color you like. Everyone will see this:
+        Pick when this meeting should end
       </label>
       <input
         aria-label="Color picker for animation in main stage"
-        type="color"
+        type="time"
         id="starting-color"
         name="starting-color"
-        defaultValue="#00ff00"
       />
       <br />
       <button
         aria-label="Launch activity for all participants"
         onClick={startCollaboration}
       >
-        Start activity
+        Start timer
       </button>
     </>
   );

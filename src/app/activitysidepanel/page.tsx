@@ -13,6 +13,8 @@ import { CLOUD_PROJECT_NUMBER } from '../../shared/constants';
  */
 export default function Page() {
   const [sidePanelClient, setSidePanelClient] = useState<MeetSidePanelClient>();
+  var searchParams = new URLSearchParams(window.location.search);
+  const endTime = searchParams.get("endTime");
 
   /**
    * Sends a newly chosen color to the main stage, using frame-to-frame
@@ -26,6 +28,27 @@ export default function Page() {
 
     await sidePanelClient.notifyMainStage(newColor);
   }
+
+  const [timeRemaining, setTimeRemaining] = useState<number|undefined>(undefined);
+
+
+  // useEffect(() => {
+  //   const timerInterval = setInterval(() => {
+  //     setTimeRemaining((prevTime) => {
+  //       if (prevTime === 0) {
+  //         clearInterval(timerInterval);
+  //         // Perform actions when the timer reaches zero
+  //         console.log('Countdown complete!');
+  //         return 0;
+  //       } else {
+  //         return prevTime - 1;
+  //       }
+  //     });
+  //   }, 1000);
+
+  //   // Cleanup the interval when the component unmounts
+  //   return () => clearInterval(timerInterval);
+  // }, []);
 
   useEffect(() => {
     /**
@@ -44,17 +67,7 @@ export default function Page() {
 
   return (
     <>
-      <label htmlFor="pretty-color">
-        Change the color. Only you will see this:
-      </label>
-      <input
-        aria-label="Color picker for animation in main stage"
-        type="color"
-        id="pretty-color"
-        name="pretty-color"
-        defaultValue="#00ff00"
-        onChange={(e) => updateColor(e.target.value)}
-      />
+      <span> Meeting will end at { endTime } </span>
     </>
   );
 }
