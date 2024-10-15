@@ -13,8 +13,8 @@ import { CLOUD_PROJECT_NUMBER } from '../../shared/constants';
  */
 export default function Page() {
   const [sidePanelClient, setSidePanelClient] = useState<MeetSidePanelClient>();
-  var searchParams = new URLSearchParams(window.location.search);
-  const endTime = searchParams.get("endTime");
+  const [endTime, setEndTime] = useState<string | undefined>(undefined);
+  
 
   /**
    * Sends a newly chosen color to the main stage, using frame-to-frame
@@ -50,11 +50,16 @@ export default function Page() {
   //   return () => clearInterval(timerInterval);
   // }, []);
 
+
+
   useEffect(() => {
     /**
      * Initializes the Add-on Side Panel Client.
      * https://developers.google.com/meet/add-ons/reference/websdk/addon_sdk.meetsidepanelclient
      */
+    var searchParams = new URLSearchParams(window.location.search);
+    const endTime = searchParams.get("endTime")!;
+    setEndTime(endTime);
     async function initializeSidePanelClient() {
       const session = await meet.addon.createAddonSession({
         cloudProjectNumber: CLOUD_PROJECT_NUMBER,
