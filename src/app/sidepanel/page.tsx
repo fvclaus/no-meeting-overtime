@@ -70,6 +70,7 @@ export default function Page() {
         setTimeRemaining(diff);
 
         if (diff % 10 == 0) {
+          console.log("Sending alert");
           alert('another minutes has elapsed');
         }
 
