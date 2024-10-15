@@ -21,7 +21,7 @@ export const CLOUD_PROJECT_NUMBER = '285788035016';
 
 export const SITE_BASE = inDebugMode()
   ? 'https://localhost:3000/meet/animation-next-js'
-  : 'https://googleworkspace.github.io/meet/animation-next-js';
+  : 'https://google-meet-timer.vercel.app';
 
 function inDebugMode() {
   return process.env.NEXT_PUBLIC_DEBUG === '1';
