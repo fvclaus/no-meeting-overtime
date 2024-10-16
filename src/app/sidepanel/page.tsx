@@ -116,7 +116,7 @@ export default function Page() {
           name="starting-color"
         />
         <br />
-        <a href={REDIRECT_TO_AUTHORIZATION_API_URL}>Permissions abholen</a>
+        <a href={REDIRECT_TO_AUTHORIZATION_API_URL} target="_blank">Permissions abholen</a>
         <button
           aria-label="Launch activity for all participants"
           onClick={startCollaboration}
