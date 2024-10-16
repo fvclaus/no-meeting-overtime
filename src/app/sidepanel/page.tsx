@@ -9,9 +9,11 @@ import {
   ACTIVITY_SIDE_PANEL_URL,
   CLOUD_PROJECT_NUMBER,
   MAIN_STAGE_URL,
+  REDIRECT_TO_AUTHORIZATION_API_URL,
 } from '../../shared/constants';
 import { setTimeout } from 'timers';
 import { differenceInSeconds, formatISO, set, setHours, setMinutes } from 'date-fns';
+import {authenticate} from '@google-cloud/local-auth';
 
 /**
  * @see {@link https://developers.google.com/meet/add-ons/guides/overview#side-panel}
@@ -84,6 +86,7 @@ export default function Page() {
   }, [endTime]);
 
 
+
   useEffect(() => {
     /**
      * Initializes the Add-on Side Panel Client.
@@ -103,11 +106,6 @@ export default function Page() {
   if (endTime == undefined)  {
     return (
       <>
-      
-        <div>
-          Welcome to Pretty Colors! This is a contrived demo add-on that lets you
-          look at an animation involving your favorite color.
-        </div>
         <label htmlFor="starting-color">
           Pick when this meeting should end
         </label>
@@ -118,6 +116,7 @@ export default function Page() {
           name="starting-color"
         />
         <br />
+        <a href={REDIRECT_TO_AUTHORIZATION_API_URL}>Permissions abholen</a>
         <button
           aria-label="Launch activity for all participants"
           onClick={startCollaboration}
