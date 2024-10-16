@@ -22,7 +22,7 @@ if (CLOUD_PROJECT_NUMBER === undefined) {
   throw new Error('Missing CLOUD_PROJECT_NUMBER');
 }
 export const SITE_BASE = inDebugMode()
-  ? 'https://localhost:3000/'
+  ? 'https://localhost:3000'
   // TODO Variable?
   : 'https://google-meet-timer.vercel.app';
 
@@ -45,6 +45,8 @@ export const SIDE_PANEL_URL = SITE_BASE + '/sidepanel';
  * @see {@link https://developers.google.com/meet/add-ons/guides/overview#side-panel}
  */
 export const ACTIVITY_SIDE_PANEL_URL = SITE_BASE + '/activitysidepanel';
+
+export const AUTHORIZATION_SUCCESS = SITE_BASE + '/authorization-success';
 
 export const GET_TOKEN_API_URL = SITE_BASE + '/api/get-token'
 export const REDIRECT_TO_AUTHORIZATION_API_URL = SITE_BASE + '/api/redirect-to-authorization';

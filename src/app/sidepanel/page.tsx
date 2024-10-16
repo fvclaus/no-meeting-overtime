@@ -51,6 +51,22 @@ export default function Page() {
     // window.location.replace(ACTIVITY_SIDE_PANEL_URL + window.location.search);
   }
 
+  async function endMeeting() {
+    const url = "/api/end-meeting";
+    try {
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`Response status: ${response.status}`);
+      }
+
+      const json = await response.json();
+      console.log(json);
+    } catch (error) {
+      console.error(error);
+    }
+
+  }
+
   const [timeRemaining, setTimeRemaining] = useState<number|undefined>(undefined);
 
   const formatTimeRemaining = (timeRemaining: number): string => {
@@ -117,6 +133,9 @@ export default function Page() {
         />
         <br />
         <a href={REDIRECT_TO_AUTHORIZATION_API_URL} target="_blank">Permissions abholen</a>
+        <button
+          onClick={endMeeting}
+        >End meeting</button>
         <button
           aria-label="Launch activity for all participants"
           onClick={startCollaboration}
