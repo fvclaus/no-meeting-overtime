@@ -6,7 +6,7 @@ import { set } from '@/session-store';
 
   
 const scopes = [
-    'https://www.googleapis.com/auth/meetings.space.readonly'
+    'https://www.googleapis.com/auth/meetings.space.created'
 ];
 
 

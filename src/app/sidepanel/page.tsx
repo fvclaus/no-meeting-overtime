@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import {
   meet,
+  MeetingInfo,
   MeetSidePanelClient,
 } from '@googleworkspace/meet-addons/meet.addons';
 import {
@@ -21,6 +22,7 @@ import {authenticate} from '@google-cloud/local-auth';
 export default function Page() {
   const [sidePanelClient, setSidePanelClient] = useState<MeetSidePanelClient>();
   const [endTime, setEndTime] = useState<Date | undefined>(undefined);
+  const [meetingInfo, setMeetingInfo] = useState<MeetingInfo | undefined>();
 
   /**
    * Starts the add-on activity and passes the selected color to the Main Stage,
@@ -52,7 +54,7 @@ export default function Page() {
   }
 
   async function endMeeting() {
-    const url = "/api/end-meeting";
+    const url = `/api/end-meeting/${meetingInfo?.meetingId}`;
     try {
       const response = await fetch(url);
       if (!response.ok) {
@@ -114,6 +116,7 @@ export default function Page() {
       });
       const client = await session.createSidePanelClient();
       setSidePanelClient(client);
+      setMeetingInfo(await client.getMeetingInfo());
     }
     initializeSidePanelClient();
 
@@ -133,9 +136,10 @@ export default function Page() {
         />
         <br />
         <a href={REDIRECT_TO_AUTHORIZATION_API_URL} target="_blank">Permissions abholen</a>
+        { meetingInfo &&
         <button
           onClick={endMeeting}
-        >End meeting</button>
+        >End meeting</button> }
         <button
           aria-label="Launch activity for all participants"
           onClick={startCollaboration}

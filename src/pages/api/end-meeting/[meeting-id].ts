@@ -8,6 +8,8 @@ export default async function handler(
     res: NextApiResponse
   ) {
 
+    const { meetingId } = req.query;
+
     const tokensFromStore = await get(req, 'tokens');
     if (tokensFromStore == null || tokensFromStore === undefined) {
         console.log('Has no tokens in session');
@@ -27,14 +29,15 @@ export default async function handler(
     const recording = await google.meet('v2')
         .spaces.get({
             // name: 'spaces/MWdIrnxp8rIB',
-            name: 'spaces/wec-kghm-gzs',
+            name: `spaces/${meetingId}`,
             auth: oauth2Client
         });
     console.log(recording);
-    await google.meet('v2')
-        .spaces.endActiveConference({
-            name: 'spaces/wec-kghm-gzs',
-            auth: oauth2Client
-        })
+
+    // await google.meet('v2')
+    //     .spaces.endActiveConference({
+    //         name: 'spaces/wec-kghm-gzs',
+    //         auth: oauth2Client
+    //     })
     return res.json(recording);
 }
