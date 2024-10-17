@@ -33,12 +33,13 @@ export default async function handler(
             });
         isOwner = true;
     } catch (e) {
+        console.error(e);
         if (e instanceof Error && e.toString().includes("Permission denied")) {
             isOwner = false;
-            return;
+        } else {
+            // TODO logging
+            isOwner = false;
         }
-        // TODO logging
-        isOwner = false;
     }
     
     return res.json({
