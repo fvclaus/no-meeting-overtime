@@ -20,17 +20,10 @@ export default async function handler(
     oauth2Client.setCredentials(typeof tokensFromStore === 'string'? JSON.parse(tokensFromStore) : tokensFromStore);
     await oauth2Client.refreshAccessToken();
 
-    const recording = await google.meet('v2')
-        .spaces.get({
-            name: `spaces/${meetingId}`,
+    await google.meet('v2')
+        .spaces.endActiveConference({
+            name: 'spaces/wec-kghm-gzs',
             auth: oauth2Client
-        });
-    console.log(recording);
-
-    // await google.meet('v2')
-    //     .spaces.endActiveConference({
-    //         name: 'spaces/wec-kghm-gzs',
-    //         auth: oauth2Client
-    //     })
-    return res.json(recording);
+        })
+    return res.status(200).end();
 }
