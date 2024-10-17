@@ -54,7 +54,7 @@ export default function Page() {
   }
 
   async function endMeeting() {
-    const url = `/api/end-meeting/${meetingInfo?.meetingId}`;
+    const url = `/api/end-meeting/${meetingInfo?.meetingId.replace("spaces/", "")}`;
     try {
       const response = await fetch(url);
       if (!response.ok) {
