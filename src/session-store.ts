@@ -10,7 +10,7 @@ function getSessionId(req: NextApiRequest): SessionId | undefined {
 }
 
 function setSessionId(res: NextApiResponse, sessionId: SessionId): void {
-  res.setHeader('Set-Cookie', serialize('session-id', sessionId, { path: '/' }))
+  res.setHeader('Set-Cookie', serialize('session-id', sessionId, { path: '/', httpOnly: true, secure: true, sameSite: "none" }))
 }
 
 function getSessionIdAndCreateIfMissing(req: NextApiRequest, res: NextApiResponse) {
@@ -33,6 +33,11 @@ export function get(req: NextApiRequest, key: string) {
     }
     return kv.hget(`session-${sessionId}`, key);
   }
+
+export function deleteKey(req: NextApiRequest, key: string) {
+    const session = getSessionId(req);
+    kv.del(key);
+}
   
 //   export function getAll(namespace: string = "") {
 //     const sessionId = getSessionId();

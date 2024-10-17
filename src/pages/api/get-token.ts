@@ -1,4 +1,4 @@
-import { get, set } from "@/session-store";
+import { deleteKey, get, set } from "@/session-store";
 import { AUTHORIZATION_SUCCESS } from "@/shared/constants";
 import { createOauth2Client } from "@/shared/server_constants";
 import { NextApiRequest, NextApiResponse } from "next";
@@ -17,13 +17,17 @@ export default async function handler(
     
     if (req.query.state !== state) { //check state value
       res.end(`Stored state ${state} does not match received state ${req.query.state}`);
-    } else { // Get access and refresh tokens (if access_type is offline)
-        // TODO Type check
-      const oauth2Client = createOauth2Client();
-      let { tokens } = await oauth2Client.getToken(req.query.code as string);
-      console.log(tokens);
-      oauth2Client.setCredentials(tokens);
-      await set(req, res, 'tokens', JSON.stringify(tokens));
-      res.redirect(AUTHORIZATION_SUCCESS);
+      return;
     }
-}
+
+    deleteKey(req, 'state');
+
+    // Get access and refresh tokens (if access_type is offline)
+        // TODO Type check
+    const oauth2Client = createOauth2Client();
+    let { tokens } = await oauth2Client.getToken(req.query.code as string);
+    console.log(tokens);
+    oauth2Client.setCredentials(tokens);
+    await set(req, res, 'tokens', JSON.stringify(tokens));
+    res.redirect(AUTHORIZATION_SUCCESS);
+};

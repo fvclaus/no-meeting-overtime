@@ -54,7 +54,7 @@ export default function Page() {
   }
 
   async function endMeeting() {
-    const url = `/api/end-meeting/${meetingInfo?.meetingId.replace("spaces/", "")}`;
+    const url = `/api/meeting/end/${meetingInfo?.meetingId.replace("spaces/", "")}`;
     try {
       const response = await fetch(url);
       if (!response.ok) {
@@ -66,7 +66,20 @@ export default function Page() {
     } catch (error) {
       console.error(error);
     }
+  }
 
+  async function isOwner() {
+    const url = `/api/meeting/is-owner/${meetingInfo?.meetingId.replace("spaces/", "")}`;
+    try {
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`Response status: ${response.status}`);
+      }
+
+      console.log(response.text());
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   const [timeRemaining, setTimeRemaining] = useState<number|undefined>(undefined);
@@ -137,9 +150,15 @@ export default function Page() {
         <br />
         <a href={REDIRECT_TO_AUTHORIZATION_API_URL} target="_blank">Permissions abholen</a>
         { meetingInfo &&
+        <>
         <button
           onClick={endMeeting}
-        >End meeting</button> }
+        >End meeting</button>
+        <button
+          onClick={isOwner}
+        >Is Owner</button>
+        </>
+        }
         <button
           aria-label="Launch activity for all participants"
           onClick={startCollaboration}

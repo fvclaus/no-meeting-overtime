@@ -19,16 +19,8 @@ export default async function handler(
     const oauth2Client = createOauth2Client();
     oauth2Client.setCredentials(typeof tokensFromStore === 'string'? JSON.parse(tokensFromStore) : tokensFromStore);
 
-    // const spaces = await google.meet('v2')
-    //     .conferenceRecords.list({
-    //         auth: oauth2Client
-    //     })
-
-    // return res.json(spaces);
-
     const recording = await google.meet('v2')
         .spaces.get({
-            // name: 'spaces/MWdIrnxp8rIB',
             name: `spaces/${meetingId}`,
             auth: oauth2Client
         });
