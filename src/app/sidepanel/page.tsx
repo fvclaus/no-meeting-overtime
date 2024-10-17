@@ -12,7 +12,7 @@ import {
   MAIN_STAGE_URL,
   REDIRECT_TO_AUTHORIZATION_API_URL,
 } from '../../shared/constants';
-import { setTimeout } from 'timers';
+import { clearInterval, setTimeout } from 'timers';
 import { differenceInSeconds, formatISO, set, setHours, setMinutes } from 'date-fns';
 import {authenticate} from '@google-cloud/local-auth';
 
@@ -22,7 +22,7 @@ import {authenticate} from '@google-cloud/local-auth';
 export default function Page() {
   const [sidePanelClient, setSidePanelClient] = useState<MeetSidePanelClient>();
   const [endTime, setEndTime] = useState<Date | undefined>(undefined);
-  const [meetingInfo, setMeetingInfo] = useState<MeetingInfo | undefined>();
+  const [meetingInfo, setMeetingInfo] = useState<MeetingInfo & {isOwner: boolean} | undefined>();
 
   /**
    * Starts the add-on activity and passes the selected color to the Main Stage,
@@ -54,32 +54,37 @@ export default function Page() {
   }
 
   async function endMeeting() {
-    const url = `/api/meeting/end/${meetingInfo?.meetingId.replace("spaces/", "")}`;
-    try {
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error(`Response status: ${response.status}`);
+    if (meetingInfo?.isOwner) {
+      const url = `/api/meeting/end/${meetingInfo?.meetingId.replace("spaces/", "")}`;
+      try {
+        const response = await fetch(url);
+        if (!response.ok) {
+          throw new Error(`Response status: ${response.status}`);
+        }
+  
+        const json = await response.json();
+        console.log(json);
+      } catch (error) {
+        console.error(error);
       }
-
-      const json = await response.json();
-      console.log(json);
-    } catch (error) {
-      console.error(error);
+    } else {
+      closeTab();
     }
   }
 
-  async function isOwner() {
-    const url = `/api/meeting/is-owner/${meetingInfo?.meetingId.replace("spaces/", "")}`;
-    try {
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error(`Response status: ${response.status}`);
-      }
-
-      console.log(response.text());
-    } catch (error) {
-      console.error(error);
+  async function getMeetingInfoFromBackend(meetingId:string) {
+    const url = `/api/meeting/info/${meetingId.replace("spaces/", "")}`;
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`Response status: ${response.status}`);
     }
+    const info = response.json();
+    console.log(info);
+    return info;
+  }
+
+  function closeTab() {
+    parent.window.close();
   }
 
   const [timeRemaining, setTimeRemaining] = useState<number|undefined>(undefined);
@@ -100,14 +105,16 @@ export default function Page() {
       console.log(`Looking at ${endTime}`);
       if (endTime !== undefined) {
         const diff = differenceInSeconds(endTime!, new Date());
-        setTimeRemaining(diff);
 
-        if (diff % 10 == 0) {
-          console.log("Sending alert");
-          alert('another minutes has elapsed');
+        if (diff <= 0) {
+          console.log("Ending meeting");
+          clearInterval(timerInterval);
+          endMeeting();
+        } else {
+          console.log(`Setting diff to ${diff}`);
+          setTimeRemaining(diff);
         }
 
-        console.log(`Setting diff to ${diff}`);
       }
     }, 1000);
 
@@ -129,7 +136,16 @@ export default function Page() {
       });
       const client = await session.createSidePanelClient();
       setSidePanelClient(client);
-      setMeetingInfo(await client.getMeetingInfo());
+      const meetingInfo = await client.getMeetingInfo();
+      let isOwner = false;
+      try {
+        const response = await getMeetingInfoFromBackend(meetingInfo.meetingId);
+        isOwner = response.isOwner;
+      } catch (e) {
+        // TODO Better error logging
+        console.error(e);
+      }
+      setMeetingInfo({...meetingInfo, isOwner});
     }
     initializeSidePanelClient();
 
@@ -155,8 +171,8 @@ export default function Page() {
           onClick={endMeeting}
         >End meeting</button>
         <button
-          onClick={isOwner}
-        >Is Owner</button>
+          onClick={closeTab}
+        >Close tab</button>
         </>
         }
         <button
@@ -170,7 +186,13 @@ export default function Page() {
   } else if (endTime !== undefined && timeRemaining !== undefined) {
     return (
       <>
-        <span> Meeting will end in { formatTimeRemaining(timeRemaining) } at { formatISO(endTime) } </span>
+        <p> Meeting will end in { formatTimeRemaining(timeRemaining) } at { formatISO(endTime) } </p>
+        {meetingInfo?.isOwner && 
+        <p>Because you are the owner, we will end the meeting for everyone</p>
+        }
+        {!meetingInfo?.isOwner && 
+        <p>Because you are not the owner or there is some technical problem, we will just close the tab.</p>
+        }
       </>
     )
     // TODO Loading spinner
