@@ -10,8 +10,13 @@ export default async function handler(
   ) {
     if (req.query.error) { // An error response e.g. error=access_denied
       res.end('Error:' + req.query.error)
-    } else if (req.query.state !== await get(req, 'state')) { //check state value
-      res.end('State mismatch. Possible CSRF attack');
+      return;
+    } 
+
+    const state = await get(req, 'state');
+    
+    if (req.query.state !== state) { //check state value
+      res.end(`Stored state ${state} does not match received state ${req.query.state}`);
     } else { // Get access and refresh tokens (if access_type is offline)
         // TODO Type check
       const oauth2Client = createOauth2Client();
