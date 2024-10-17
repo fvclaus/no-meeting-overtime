@@ -101,25 +101,31 @@ export default function Page() {
 
   useEffect(() => {
     console.log("Starting interval");
-    const timerInterval = setInterval(() => {
-      console.log(`Looking at ${endTime}`);
-      if (endTime !== undefined) {
-        const diff = differenceInSeconds(endTime!, new Date());
-
-        if (diff <= 0) {
-          console.log("Ending meeting");
-          clearInterval(timerInterval);
-          endMeeting();
-        } else {
-          console.log(`Setting diff to ${diff}`);
-          setTimeRemaining(diff);
+    let timerInterval: NodeJS.Timeout | undefined;
+    
+    if (endTime !== undefined) {
+      const timerInterval = setInterval(() => {
+        console.log(`Looking at ${endTime}`);
+        if (endTime !== undefined) {
+          const diff = differenceInSeconds(endTime!, new Date());
+  
+          if (diff <= 0) {
+            console.log("Ending meeting");
+            clearInterval(timerInterval);
+            endMeeting();
+          } else {
+            console.log(`Setting diff to ${diff}`);
+            setTimeRemaining(diff);
+          }
+  
         }
-
-      }
-    }, 1000);
+      }, 1000);
+    }
 
     // Cleanup the interval when the component unmounts
-    return () => clearInterval(timerInterval);
+    return () => {
+      timerInterval !== undefined && clearInterval(timerInterval);
+    }
 
   }, [endTime]);
 

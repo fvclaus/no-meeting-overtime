@@ -40,8 +40,8 @@ export default async function handler(
         // TODO logging
         isOwner = false;
     }
-    res.json({
+    
+    return res.json({
         isOwner
-    });
-    return;
+    });;
 }
