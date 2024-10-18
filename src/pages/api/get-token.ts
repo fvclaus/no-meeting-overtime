@@ -27,7 +27,6 @@ export default async function handler(
     const oauth2Client = createOauth2Client();
     let { tokens } = await oauth2Client.getToken(req.query.code as string);
     console.log(tokens);
-    oauth2Client.setCredentials(tokens);
     await set(req, res, 'tokens', JSON.stringify(tokens));
     res.redirect(AUTHORIZATION_SUCCESS);
 };

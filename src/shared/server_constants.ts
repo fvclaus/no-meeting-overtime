@@ -1,5 +1,4 @@
 import {google} from "googleapis";
-import { GET_TOKEN_API_URL } from "./constants";
 export const CLIENT_ID = process.env.CLIENT_ID!;
 if (CLIENT_ID === undefined) {
   throw new Error('Missing CLIENT_ID');
@@ -18,6 +17,5 @@ if (CLIENT_SECRET == undefined) {
 
 export const createOauth2Client = () => new google.auth.OAuth2(
     CLIENT_ID,
-    CLIENT_SECRET,
-    GET_TOKEN_API_URL
+    CLIENT_SECRET
 );

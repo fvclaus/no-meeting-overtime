@@ -31,7 +31,9 @@ export default function handler(
         // Enable incremental authorization. Recommended as a best practice.
         include_granted_scopes: true,
         // Include the state parameter to reduce the risk of CSRF attacks.
-        state: state
+        state: state,
+        prompt: 'consent',
+        redirect_uri: GET_TOKEN_API_URL
     });
     res.redirect(authorizationUrl);
 }

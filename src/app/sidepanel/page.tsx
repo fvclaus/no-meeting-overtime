@@ -102,7 +102,7 @@ export default function Page() {
   useEffect(() => {
     console.log("Starting interval");
     let timerInterval: NodeJS.Timeout | undefined;
-    
+
     if (endTime !== undefined) {
       const timerInterval = setInterval(() => {
         console.log(`Looking at ${endTime}`);
@@ -129,6 +129,9 @@ export default function Page() {
 
   }, [endTime]);
 
+
+  // TODO
+  // Force new session, because we can't distinguish between different Google Accounts in one browser.
 
 
   useEffect(() => {

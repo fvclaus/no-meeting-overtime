@@ -1,14 +1,18 @@
 import { get, getCredentials } from "@/session-store";
 import { createOauth2Client } from "@/shared/server_constants";
-import { google } from "googleapis";
+import { google, meet_v2 } from "googleapis";
 import { NextApiRequest, NextApiResponse } from "next";
+
+
+// TODO Typing
+type Response =  meet_v2.Schema$Space | {
+    error: unknown;
+}
 
 export default async function handler(
     req: NextApiRequest,
     res: NextApiResponse
   ) {
-
-    const { meetingId } = req.query;
 
     const oauthClient = await getCredentials(req);
 
@@ -16,15 +20,21 @@ export default async function handler(
         res.status(403).end("No credentials in session");
     }
 
+    let isOwner;
     try {
-        await google.meet('v2')
-            .spaces.endActiveConference({
-                name: `spaces/${meetingId}`,
+        const space = await google.meet('v2')
+            .spaces.create({
                 auth: oauthClient
-            })
-            return res.status(200).end();
+            });
+            return res.json(
+                space.data
+            );;
     } catch (e) {
-        // TODO Improve error messages
-        return res.status(400).end();
+        console.error(e);
+        res.status(500).json({
+            error: 'Creation failed'
+        })
     }
+    
+ 
 }

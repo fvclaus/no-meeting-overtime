@@ -46,7 +46,7 @@ export const SIDE_PANEL_URL = SITE_BASE + '/sidepanel';
  */
 export const ACTIVITY_SIDE_PANEL_URL = SITE_BASE + '/activitysidepanel';
 
-export const AUTHORIZATION_SUCCESS = SITE_BASE + '/authorization-success';
+export const AUTHORIZATION_SUCCESS = SITE_BASE + '/start';
 
 export const GET_TOKEN_API_URL = SITE_BASE + '/api/get-token'
 export const REDIRECT_TO_AUTHORIZATION_API_URL = SITE_BASE + '/api/redirect-to-authorization';
