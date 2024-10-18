@@ -51,7 +51,7 @@ export function deleteKey(req: NextApiRequest, key: string) {
 //     return kv.hgetall(`session-${namespace}-${sessionId}`);
 //   }
   
-  export function set(req: NextApiRequest, res: NextApiResponse, key: string, value: string) {
+  export async function set(req: NextApiRequest, res: NextApiResponse, key: string, value: string) {
     const sessionId = getSessionIdAndCreateIfMissing(req, res);
     return kv.hset(`session-${sessionId}`, { [key]: value });
   }

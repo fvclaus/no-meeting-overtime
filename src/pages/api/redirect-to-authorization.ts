@@ -11,7 +11,7 @@ const scopes = [
 ];
 
 
-export default function handler(
+export default async function handler(
     req: NextApiRequest,
     res: NextApiResponse
   ) {
@@ -19,7 +19,7 @@ export default function handler(
     const state = crypto.randomBytes(32).toString('hex');
     
     // Store state in the session
-    set(req, res, 'state', state);
+    await set(req, res, 'state', state);
     
     // Generate a url that asks permissions for the Drive activity scope
     const authorizationUrl = createOauth2Client().generateAuthUrl({

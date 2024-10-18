@@ -17,12 +17,13 @@ export default async function handler(
     }
 
     try {
-        await google.meet('v2')
+        const response = await google.meet('v2')
             .spaces.endActiveConference({
                 name: `spaces/${meetingId}`,
                 auth: oauthClient
-            })
-            return res.status(200).end();
+            });
+        console.log(response);
+            return res.status(response.status).end();
     } catch (e) {
         // TODO Improve error messages
         return res.status(400).end();

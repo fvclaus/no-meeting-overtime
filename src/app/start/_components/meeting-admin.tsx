@@ -19,8 +19,8 @@ export default function MeetingAdministration({isAuthenticated}: {isAuthenticate
     }
 
     function endedMeeting(meeting: Meeting) {
-      // Show an info message that the meeting was ended
       setCurrentMeetingSpace(undefined);
+      alert(`Meeting ${meeting.meetingCode} ended at ${formatISO(meeting.actualEndTime!)}`);
     }
 
     // TODO
