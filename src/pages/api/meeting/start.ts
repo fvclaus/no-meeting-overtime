@@ -20,7 +20,6 @@ export default async function handler(
         res.status(403).end("No credentials in session");
     }
 
-    let isOwner;
     try {
         const space = await google.meet('v2')
             .spaces.create({

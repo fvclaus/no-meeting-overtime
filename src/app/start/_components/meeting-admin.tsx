@@ -1,17 +1,18 @@
 'use client';
 
 
-import { REDIRECT_TO_AUTHORIZATION_API_URL } from "@/shared/constants";
+import { getMissingScopes, REDIRECT_TO_AUTHORIZATION_API_URL } from "@/shared/constants";
 import { formatISO, set } from "date-fns";
 import { meet_v2 } from "googleapis";
 import { FormEvent, useState } from "react";
 import { useForm } from "react-hook-form";
 import CreateMeeting from "./meeting-creation";
 import { MeetingList } from "./meeting-list";
-import { Meeting } from "./meeting";
+import { Meeting, UserInfo } from "./types";
+import { Text, Avatar, Button, Stack, Flex } from "@chakra-ui/react";
 
 
-export default function MeetingAdministration({isAuthenticated}: {isAuthenticated: boolean}) {
+export default function MeetingAdministration({userInfo}: {userInfo: UserInfo}) {
     const [currentMeetingSpace, setCurrentMeetingSpace] = useState<Meeting | undefined>();
 
     function meetingCreated(space: Meeting) {
@@ -23,23 +24,50 @@ export default function MeetingAdministration({isAuthenticated}: {isAuthenticate
       alert(`Meeting ${meeting.meetingCode} ended at ${formatISO(meeting.actualEndTime!)}`);
     }
 
-    // TODO
-    // Force new session, because we can't distinguish between different Google Accounts in one browser.
+    const missingScopes = userInfo.scope !== undefined? getMissingScopes(userInfo.scope) : [];
+
+    function authenticate() {
+      window.location.href = REDIRECT_TO_AUTHORIZATION_API_URL;
+    }
   
-    if (!isAuthenticated) {
+    if (!userInfo.authenticated || missingScopes.length > 0) {
       return <>
-          <p>
-              <a href={REDIRECT_TO_AUTHORIZATION_API_URL} target="_blank">Allow access to create Google Meet spaces</a>
-          </p>
+          {missingScopes.length > 0 &&
+           <p>The following scopes are missing, but required: 
+            <ul>
+            {missingScopes.map(scope => <li>{scope}</li>)}
+            </ul>
+           </p>
+          }
+          <Stack spacing={6} direction={'row'}>
+          <Button
+            rounded={'full'}
+            px={6}
+            colorScheme={'orange'}
+            onClick={authenticate}
+            bg={'orange.400'}
+            _hover={{ bg: 'orange.500' }}>
+            Sign in with Google to get started
+          </Button>
+        </Stack>
       </>;
     } else if (currentMeetingSpace !== undefined) {
-      return (
-        <>
+      return (<>
           <MeetingList newMeeting={currentMeetingSpace} endedMeeting={endedMeeting}></MeetingList>
         </>
       );
     } else {
-      return <CreateMeeting meetingCreated={meetingCreated}></CreateMeeting>
+      return (       <>
+      <Flex>
+       {userInfo.name && 
+          <Text fontSize='3xl'>Welcome, {userInfo.name}!</Text>
+        }
+        {userInfo.picture &&
+        <Avatar src={userInfo.picture} size="lg" shape="circle" />
+        }
+        </Flex>
+      <CreateMeeting meetingCreated={meetingCreated}></CreateMeeting>
+      </>);
     }
     // else if (endTime !== undefined && timeRemaining !== undefined) {
     //   return (

@@ -2,8 +2,9 @@
 
 import { meet_v2 } from "googleapis";
 import { useForm } from "react-hook-form";
-import { Meeting } from "./meeting";
+import { Meeting } from "./types";
 import { set } from "date-fns";
+import { Button, FormControl, FormErrorMessage, FormLabel, Input } from "@chakra-ui/react";
 
 type FormValues = {
     endTime: string;
@@ -42,21 +43,24 @@ export default function CreateMeeting({meetingCreated}: {meetingCreated: (space:
   
     return (
         <>
+
           <form onSubmit={handleSubmit(createMeeting)}>
-          <label htmlFor="starting-color">
+            <FormControl>
+          <FormLabel>
             Create a new meeting with end time
-          </label>
-          <input
+          </FormLabel>
+          <Input
             type="time"
             {...register("endTime", {
                 required: true
             })}
-          />
-          {errors.endTime && <span>This field is required</span>}
-          <br />
-          <button
+            />
+            {errors.endTime && <FormErrorMessage>This is a required field</FormErrorMessage>}
+            </FormControl>
+          <Button
           disabled= {!isValid}
-          >Create meeting</button>
+          >Create meeting</Button>
+          
           </form>
         </>
       );

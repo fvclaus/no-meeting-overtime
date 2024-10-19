@@ -1,5 +1,5 @@
 import { meet_v2 } from "googleapis";
-import { Meeting } from "./meeting";
+import { Meeting } from "./types";
 import { formatISO } from "date-fns";
 import { useState } from "react";
 import { CurrentMeeting } from "./meeting-current";

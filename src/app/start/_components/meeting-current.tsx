@@ -1,7 +1,7 @@
 'use client';
 
 import { differenceInSeconds, formatISO } from "date-fns";
-import { Meeting } from "./meeting";
+import { Meeting } from "./types";
 import { useEffect, useState } from "react";
 
 export function CurrentMeeting({meeting, endedMeeting}: {meeting: Meeting, endedMeeting: (meeting: Meeting) => void}) {

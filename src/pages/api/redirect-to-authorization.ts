@@ -1,13 +1,20 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import crypto from "crypto";
-import { GET_TOKEN_API_URL } from '@/shared/constants';
+import { GET_TOKEN_API_URL, REQUIRED_SCOPES } from '@/shared/constants';
 import { CLIENT_ID, CLIENT_SECRET, createOauth2Client } from "@/shared/server_constants";
 import { set } from '@/session-store';
 
+
+
+// TODO Logout + Revoke?
+
+// https://developers.google.com/identity/protocols/oauth2/production-readiness/policy-compliance
   
 const scopes = [
-    'https://www.googleapis.com/auth/meetings.space.readonly',
-    'https://www.googleapis.com/auth/meetings.space.created'
+    'email',
+    'profile',
+    'openid',
+    ...REQUIRED_SCOPES
 ];
 
 
@@ -32,7 +39,6 @@ export default async function handler(
         include_granted_scopes: true,
         // Include the state parameter to reduce the risk of CSRF attacks.
         state: state,
-        prompt: 'consent',
         redirect_uri: GET_TOKEN_API_URL
     });
     res.redirect(authorizationUrl);

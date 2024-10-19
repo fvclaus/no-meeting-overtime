@@ -7,3 +7,11 @@ export type Meeting = meet_v2.Schema$Space &
     actualEndTime?: Date,
  };
 
+export interface UserInfo {
+   id?: string;
+   name?: string;
+   picture?: string;
+   scope?: string;
+   authenticated: boolean;
+}
+

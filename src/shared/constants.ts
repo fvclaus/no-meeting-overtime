@@ -50,3 +50,13 @@ export const AUTHORIZATION_SUCCESS = SITE_BASE + '/start';
 
 export const GET_TOKEN_API_URL = SITE_BASE + '/api/get-token'
 export const REDIRECT_TO_AUTHORIZATION_API_URL = SITE_BASE + '/api/redirect-to-authorization';
+
+
+export const REQUIRED_SCOPES = [
+  'https://www.googleapis.com/auth/meetings.space.readonly',
+  'https://www.googleapis.com/auth/meetings.space.created',
+];
+
+export function getMissingScopes(scopes: string): string[] {
+  return REQUIRED_SCOPES.filter(scope => !scopes.includes(scope));
+}

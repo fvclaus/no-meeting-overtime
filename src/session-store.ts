@@ -38,9 +38,11 @@ export function get(req: NextApiRequest | ReadonlyRequestCookies, key: string) {
     return kv.hget(`session-${sessionId}`, key);
   }
 
-export function deleteKey(req: NextApiRequest, key: string) {
+export function deleteKey(req: NextApiRequest | ReadonlyRequestCookies, key: string) {
     const session = getSessionId(req);
-    kv.del(key);
+    if (session !== undefined) {
+      kv.hdel(session, key);
+    }
 }
   
 //   export function getAll(namespace: string = "") {
@@ -50,10 +52,22 @@ export function deleteKey(req: NextApiRequest, key: string) {
 //     }
 //     return kv.hgetall(`session-${namespace}-${sessionId}`);
 //   }
-  
-  export async function set(req: NextApiRequest, res: NextApiResponse, key: string, value: string) {
+
+  export async function setIfSession(req: ReadonlyRequestCookies,  key: string, value: string ) {
+    const sessionId = getSessionId(req);
+    if (sessionId) {
+      return kv.hset(`session-${sessionId}`, { [key]: value });
+    }
+  }
+
+  export async function set(req: NextApiRequest | ReadonlyRequestCookies, res: NextApiResponse, key: string, value: string) {
     const sessionId = getSessionIdAndCreateIfMissing(req, res);
     return kv.hset(`session-${sessionId}`, { [key]: value });
+  }
+
+  export async function expire(req: NextApiRequest, key: string, seconds: number) {
+    const sessionId = getSessionId(req);
+    return kv.expire(key, seconds);
   }
 
   export async function getCredentials(req: NextApiRequest | ReadonlyRequestCookies) {

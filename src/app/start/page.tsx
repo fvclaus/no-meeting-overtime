@@ -11,12 +11,14 @@ import {
   REDIRECT_TO_AUTHORIZATION_API_URL,
 } from '../../shared/constants';
 import { clearInterval, setTimeout } from 'timers';
-import { differenceInSeconds, formatISO, set, setHours, setMinutes } from 'date-fns';
 import {authenticate} from '@google-cloud/local-auth';
-import { get, getCredentials } from '@/session-store';
+import { deleteKey, get, set, getCredentials, setIfSession, expire } from '@/session-store';
 import { NextApiRequest } from 'next';
 import { cookies } from 'next/headers';
 import MeetingAdministration from './_components/meeting-admin';
+import { CLIENT_ID } from '@/shared/server_constants';
+import { UserInfo } from './_components/types';
+import { google } from 'googleapis';
 
 interface PageData {
     isAuthenticated: boolean;
@@ -28,12 +30,63 @@ interface PageData {
 export default async function Page() {
 
   const oauth2Client = await getCredentials(cookies());
-  // TODO Check scope
-  const isAuthenticated = oauth2Client?.credentials.refresh_token !== undefined;
+  let userinfo: UserInfo = {
+    authenticated: false
+  }
+  let errorMessage = null;
+  if (oauth2Client !== undefined) {
+    try {
 
- 
-  return <>
-    <MeetingAdministration isAuthenticated={isAuthenticated}></MeetingAdministration>
+      const name = await get(cookies(), 'name');
+      if (typeof name === 'string') {
+        userinfo.name = name;
+      }
+      const picture = await get(cookies(), 'picture');
+      if (typeof picture === 'string') {
+        userinfo.picture = picture;
+      }
+
+      if (userinfo.name === undefined || userinfo.picture === undefined) {
+        const response = await google.oauth2('v2')
+        .userinfo.get({
+          auth: oauth2Client
+        })
+        // TODO
+        console.log(response);
+  
+        if (response.data.name) {
+          setIfSession(cookies(), 'name', response.data.name);
+          // TODO Expire
+          // expire()
+          userinfo.name = response.data.name;
+        }
+  
+        if (response.data.picture) {
+          setIfSession(cookies(), 'picture', response.data.picture)
+          userinfo.picture = response.data.picture;
+        }
+
+      }
+
+
+      userinfo.authenticated = true;
+      userinfo.scope = oauth2Client.credentials.scope;
+    } catch (e) {
+      if (e instanceof Error) {
+        if (e.message === 'invalid_grant') {
+          // TODO Drop refresh token
+          deleteKey(cookies(), 'tokens');
+        } else {
+          // TODO Log this somehow
+          console.log(e);
+          errorMessage = e.message;
+        }
+      }
+    }
+  }
+
+ return <>
+    <MeetingAdministration userInfo={userinfo}></MeetingAdministration>
   </>
 }
 

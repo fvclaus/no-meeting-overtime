@@ -5,3 +5,4 @@ out
 certificates
 .vercel
 .env*.local
+node_modules
