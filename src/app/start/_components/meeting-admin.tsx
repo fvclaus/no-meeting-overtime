@@ -63,7 +63,7 @@ export default function MeetingAdministration({userInfo}: {userInfo: UserInfo}) 
           <Text fontSize='3xl'>Welcome, {userInfo.name}!</Text>
         }
         {userInfo.picture &&
-        <Avatar src={userInfo.picture} size="lg" shape="circle" />
+        <Avatar src={userInfo.picture} size="lg" />
         }
         </Flex>
       <CreateMeeting meetingCreated={meetingCreated}></CreateMeeting>
