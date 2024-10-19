@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@chakra-ui/icons": "^2.2.4",
     "@chakra-ui/react": "^2.10.3",
     "@emotion/react": "^11.13.3",
     "@emotion/styled": "^11.13.0",
@@ -23,8 +24,6 @@
     "framer-motion": "^11.11.9",
     "googleapis": "^144.0.0",
     "next": "14.2.14",
-    "primeflex": "^3.3.1",
-    "primereact": "^10.8.4",
     "react": "^18",
     "react-dom": "^18",
     "react-hook-form": "^7.53.0"
