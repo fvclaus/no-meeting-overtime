@@ -60,7 +60,7 @@ export function deleteKey(req: NextApiRequest | ReadonlyRequestCookies, key: str
     }
   }
 
-  export async function set(req: NextApiRequest | ReadonlyRequestCookies, res: NextApiResponse, key: string, value: string) {
+  export async function set(req: NextApiRequest, res: NextApiResponse, key: string, value: string) {
     const sessionId = getSessionIdAndCreateIfMissing(req, res);
     return kv.hset(`session-${sessionId}`, { [key]: value });
   }
