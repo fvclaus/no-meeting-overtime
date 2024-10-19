@@ -67,8 +67,7 @@ export default async function Page() {
         }
 
       }
-
-
+      // TODO Missing refresh_token error handling
       userinfo.authenticated = true;
       userinfo.scope = oauth2Client.credentials.scope;
     } catch (e) {

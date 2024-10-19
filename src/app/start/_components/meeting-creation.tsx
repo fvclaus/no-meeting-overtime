@@ -47,11 +47,12 @@ export default function CreateMeeting({meetingCreated}: {meetingCreated: (space:
           <form onSubmit={handleSubmit(createMeeting)}>
             <Stack>
             <FormControl>
-          <FormLabel>
+          <FormLabel htmlFor="id">
             Create a new meeting with end time
           </FormLabel>
           <Input
             type="time"
+            id="name"
             {...register("endTime", {
                 required: true
             })}
@@ -61,6 +62,7 @@ export default function CreateMeeting({meetingCreated}: {meetingCreated: (space:
             </Stack>
             <Stack mt={3}>
           <Button
+          type="submit"
           disabled= {!isValid}
           >Create meeting</Button>
           </Stack>

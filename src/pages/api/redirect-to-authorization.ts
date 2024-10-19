@@ -39,6 +39,7 @@ export default async function handler(
         include_granted_scopes: true,
         // Include the state parameter to reduce the risk of CSRF attacks.
         state: state,
+        prompt: 'consent',
         redirect_uri: GET_TOKEN_API_URL
     });
     res.redirect(authorizationUrl);

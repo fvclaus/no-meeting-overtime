@@ -35,8 +35,6 @@ export default async function handler(
     // TODO Missing access token?
     const userInfoResponse = await oauth2Client.getTokenInfo(tokens.access_token!);
 
-    google.auth.getAccessToken
-
     const result = await sql`SELECT * FROM Users where id = ${userInfoResponse.sub}`;
     console.log(result);
 
@@ -48,7 +46,7 @@ export default async function handler(
         tokens = {...tokens, refresh_token: refresh_token}
         if (tokens.refresh_token) {
           // TODO Test
-          await sql`UPDATE Users set refresh_token = '${tokens.refresh_token}';`;
+          await sql`UPDATE Users set refresh_token = ${tokens.refresh_token} where id = ${userInfoResponse.sub};`;
         }
       }
 
@@ -56,8 +54,9 @@ export default async function handler(
 
    }
   catch (error) {
-    // TODO
+    // TODO Error handling when refresh_token leer ist?
     console.log(error);  
+
   }
   set (req, res, 'tokens', JSON.stringify(tokens));
   // set (req, res 'given_name', userInfoResponse.)
