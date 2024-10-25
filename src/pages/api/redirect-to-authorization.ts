@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import crypto from "crypto";
 import { GET_TOKEN_API_URL, REQUIRED_SCOPES } from '@/shared/constants';
-import { CLIENT_ID, CLIENT_SECRET, createOauth2Client } from "@/shared/server_constants";
+import { createOauth2Client } from "@/shared/server_constants";
 import { set } from '@/session-store';
 
 

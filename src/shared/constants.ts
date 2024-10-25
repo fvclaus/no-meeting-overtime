@@ -17,10 +17,6 @@
  * manifest and Google Workspace Marketplace listing.
  * @see {@link https://cloud.google.com/resource-manager/docs/creating-managing-projects#identifying_projects}
  */
-export const CLOUD_PROJECT_NUMBER = process.env.NEXT_PUBLIC_CLOUD_PROJECT_NUMBER!;
-if (CLOUD_PROJECT_NUMBER === undefined) {
-  throw new Error('Missing CLOUD_PROJECT_NUMBER');
-}
 export const SITE_BASE = inDebugMode()
   ? 'https://localhost:3000'
   // TODO Variable?

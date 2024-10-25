@@ -6,7 +6,6 @@ import {
 } from '@googleworkspace/meet-addons/meet.addons';
 import {
   ACTIVITY_SIDE_PANEL_URL,
-  CLOUD_PROJECT_NUMBER,
   MAIN_STAGE_URL,
   REDIRECT_TO_AUTHORIZATION_API_URL,
 } from '../../shared/constants';
@@ -16,7 +15,6 @@ import { deleteKey, get, set, getCredentials, setIfSession, expire } from '@/ses
 import { NextApiRequest } from 'next';
 import { cookies } from 'next/headers';
 import MeetingAdministration from './_components/meeting-admin';
-import { CLIENT_ID } from '@/shared/server_constants';
 import { UserInfo } from './_components/types';
 import { google } from 'googleapis';
 
