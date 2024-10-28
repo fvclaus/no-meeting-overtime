@@ -1,10 +1,10 @@
 steps:
 - name: 'gcr.io/kaniko-project/executor:latest'
   args:
+  # Caching is currently broken:
+  # https://github.com/GoogleContainerTools/kaniko/issues/521
   - --destination=europe-west3-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/google-meet-timer:$COMMIT_SHA
   - --cache=true
-  - --cache-copy-layers
-  - --cache-run-layers
   - --cache-ttl=96h
 - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
   entrypoint: gcloud
@@ -12,7 +12,7 @@ steps:
   - run
   - deploy
   - google-meet-timer
-  - --image='europe-west3-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/google-meet-timer:$COMMIT_SHA'
+  - --image=europe-west3-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/google-meet-timer:$COMMIT_SHA
   - --region=europe-west3
   - --allow-unauthenticated
   - --no-cpu-boost
