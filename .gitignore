@@ -6,3 +6,5 @@ certificates
 .vercel
 .env*.local
 node_modules
+.terraform/
+terraform.tfvars
