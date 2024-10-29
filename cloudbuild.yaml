@@ -19,4 +19,5 @@ steps:
   - --memory=265Mi
   - --tag=gcb-trigger-id=5dd5187e-2c6b-4d85-80c9-ca6c4cccb763
 options:
-  defaultLogsBucketBehavior: REGIONAL_USER_OWNED_BUCKET
+  logging: CLOUD_LOGGING_ONLY
+  # defaultLogsBucketBehavior: REGIONAL_USER_OWNED_BUCKET
