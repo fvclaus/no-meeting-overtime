@@ -20,4 +20,4 @@ steps:
   - --tag=gcb-trigger-id=5dd5187e-2c6b-4d85-80c9-ca6c4cccb763
 # options:
   # logging: CLOUD_LOGGING_ONLY
-  # defaultLogsBucketBehavior: REGIONAL_USER_OWNED_BUCKET
+  defaultLogsBucketBehavior: REGIONAL_USER_OWNED_BUCKET
