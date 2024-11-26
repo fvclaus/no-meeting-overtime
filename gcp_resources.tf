@@ -17,9 +17,18 @@ variable "region" {
 	type = string
 }
 
+variable "firestore_region" {
+  type = string
+}
+
 provider "google" {
   project     = var.project
   region      = var.region
+}
+
+variable "firestore_name" {
+  default = "meetings"
+  type = string
 }
 
 resource "random_id" "terraform_backend" {
@@ -70,8 +79,6 @@ resource "google_artifact_registry_repository" "cloud_run_source_deploy" {
 resource "google_service_account" "cloud_build" {
   account_id = "cloud-build"
 }
-
-
 resource "google_project_iam_member" "cloud_build_sa_run_binding" {
 	member = "serviceAccount:${google_service_account.cloud_build.email}"
   role = "roles/run.admin"
@@ -105,9 +112,20 @@ resource "google_project_iam_member" "cloud_build_sa_registry_binding" {
 	project = var.project
 }
 
+resource "google_service_account" "app" {
+  account_id = "backend-app"
+}
 
-
-
+resource "google_project_iam_member" "app_firestore_binding" {
+	member = "serviceAccount:${google_service_account.app.email}"
+  role = "roles/datastore.user"
+  condition {
+    expression = "resource.name==\"projects/${var.project}/databases/${var.firestore_name}\""
+    title = "Limit access to meetings database"
+  }
+	project = var.project
+  depends_on = [ google_firestore_database.database ]
+}
 
 # # terraform import google_project.avian_sandbox_438712_j6 projects/avian-sandbox-438712-j6
 # resource "google_logging_project_sink" "a_default" {
@@ -182,6 +200,10 @@ resource "google_project_service" "cloudbuild_googleapis_com" {
 resource "google_project_service" "meet_googleapis_com" {
   service = "meet.googleapis.com"
 }
+
+resource "google_project_service" "firestore_googleapis_com" {
+  service = "firestore.googleapis.com"
+}
 # terraform import google_project_service.meet_googleapis_com 702188951486/meet.googleapis.com
 # resource "google_storage_bucket" "702188951486_europe_west1_cloudbuild_logs" {
 #   force_destroy = false
@@ -245,6 +267,15 @@ resource "google_project_service" "artifactregistry_googleapis_com" {
 # terraform import google_storage_bucket.avian_sandbox_438712_j6_cloudbuild avian-sandbox-438712-j6_cloudbuild
 resource "google_project_service" "run_googleapis_com" {
   service = "run.googleapis.com"
+}
+
+
+resource "google_firestore_database" "database" {
+  name        = "${var.firestore_name}"
+  location_id = var.firestore_region
+  type        = "FIRESTORE_NATIVE"
+
+  depends_on = [ google_project_service.firestore_googleapis_com ]
 }
 # terraform import google_project_service.run_googleapis_com 702188951486/run.googleapis.com
 # resource "google_storage_bucket" "702188951486_europe_west3_cloudbuild_logs" {

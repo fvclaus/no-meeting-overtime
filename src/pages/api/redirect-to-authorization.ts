@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import crypto from "crypto";
 import { GET_TOKEN_API_URL, REQUIRED_SCOPES } from '@/shared/constants';
 import { createOauth2Client } from "@/shared/server_constants";
-import { set } from '@/session-store';
+import { setSessionKey } from '@/session-store';
 
 
 
@@ -26,7 +26,7 @@ export default async function handler(
     const state = crypto.randomBytes(32).toString('hex');
     
     // Store state in the session
-    await set(req, res, 'state', state);
+    await setSessionKey(req, res, 'state', state);
     
     // Generate a url that asks permissions for the Drive activity scope
     const authorizationUrl = createOauth2Client().generateAuthUrl({
@@ -39,6 +39,7 @@ export default async function handler(
         include_granted_scopes: true,
         // Include the state parameter to reduce the risk of CSRF attacks.
         state: state,
+        // TODO Remove when missing refresh_token handling is fixed
         prompt: 'consent',
         redirect_uri: GET_TOKEN_API_URL
     });

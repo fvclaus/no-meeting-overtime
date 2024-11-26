@@ -1,147 +1,54 @@
-'use client';
-
-import { type Metadata } from 'next';
-import { Box, ChakraProvider } from '@chakra-ui/react'
-
-import {
-  Flex,
-  Container,
-  Heading,
-  Stack,
-  Text,
-  Button,
-  Image,
-  useColorModeValue,
-  useDisclosure,
-  Avatar,
-  HStack,
-  IconButton,
-  Menu,
-  MenuButton,
-  MenuList,
-  MenuItem,
-  MenuDivider,
-} from '@chakra-ui/react'
-
-import { HamburgerIcon, CloseIcon } from '@chakra-ui/icons'
+import { cookies } from 'next/headers';
+import { UserInfo } from './start-meeting/_components/types';
+import './styles.css';
 
 interface Props {
   children: React.ReactNode
 }
 
-const Links = ['Dashboard', 'Projects', 'Team']
 
-const NavLink = (props: Props) => {
-  const { children } = props
-
-  return (
-    <Box
-      as="a"
-      px={2}
-      py={1}
-      rounded={'md'}
-      _hover={{
-        textDecoration: 'none',
-        bg: useColorModeValue('gray.200', 'gray.700'),
-      }}
-      href={'#'}>
-      {children}
-    </Box>
-  )
-}
-
-
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
 
-  const { isOpen, onOpen, onClose } = useDisclosure()
+  const c = cookies().toString();
+
+  const userinfoRequest = await fetch('http://localhost:3000/api/userinfo', {
+    headers: { Cookie: cookies().toString() },
+  });
+  const userinfo : UserInfo = await userinfoRequest.json();
+
 
   return (
     <html lang="en">
-
-        <body className="flex-row">
-      <ChakraProvider>
-      <Box bg={useColorModeValue('gray.100', 'gray.900')} px={4}>
-        <Flex h={16} alignItems={'center'} justifyContent={'space-between'}>
-          <IconButton
-            size={'md'}
-            icon={isOpen ? <CloseIcon /> : <HamburgerIcon />}
-            aria-label={'Open Menu'}
-            display={{ md: 'none' }}
-            onClick={isOpen ? onClose : onOpen}
-          />
-          <HStack spacing={8} alignItems={'center'}>
-            <Box>Logo</Box>
-            <HStack as={'nav'} spacing={4} display={{ base: 'none', md: 'flex' }}>
-              {Links.map((link) => (
-                <NavLink key={link}>{link}</NavLink>
-              ))}
-            </HStack>
-          </HStack>
-          <Flex alignItems={'center'}>
-            <Menu>
-              <MenuButton
-                as={Button}
-                rounded={'full'}
-                variant={'link'}
-                cursor={'pointer'}
-                minW={0}>
-                <Avatar
-                  size={'sm'}
-                  src={
-                    'https://images.unsplash.com/photo-1493666438817-866a91353ca9?ixlib=rb-0.3.5&q=80&fm=jpg&crop=faces&fit=crop&h=200&w=200&s=b616b2c5b373a80ffc9636ba24f7a4a9'
-                  }
-                />
-              </MenuButton>
-              <MenuList>
-                <MenuItem>Link 1</MenuItem>
-                <MenuItem>Link 2</MenuItem>
-                <MenuDivider />
-                <MenuItem>Link 3</MenuItem>
-              </MenuList>
-            </Menu>
-          </Flex>
-        </Flex>
-
-        {isOpen ? (
-          <Box pb={4} display={{ md: 'none' }}>
-            <Stack as={'nav'} spacing={4}>
-              {Links.map((link) => (
-                <NavLink key={link}>{link}</NavLink>
-              ))}
-            </Stack>
-          </Box>
-        ) : null}
-      </Box>
-
-      <Box p={4}>
-        <Container maxW={'5xl'}>
-      <Stack
-        textAlign={'center'}
-        align={'center'}
-        spacing={{ base: 8, md: 10 }}
-        py={{ base: 20, md: 28 }}>
-        <Heading
-          fontWeight={600}
-          fontSize={{ base: '3xl', sm: '4xl', md: '6xl' }}
-          lineHeight={'110%'}>
-            Schedule a {' '}
-          <Text as={'span'} color={'orange.400'}>
-            fixed end time
-          </Text>{' '} for Google Meet conferences
-        </Heading>
-        <Text color={'gray.500'} maxW={'3xl'}>
-          Make sure that meetings end when they are supposed to.
-        </Text>
-          {children}
-      </Stack>
-    </Container>
-    </Box>
-      </ChakraProvider>
-          </body>
+      <body className="flex-row">
+        <div className="navbar bg-base-100">
+          <div className="flex-1">
+            <a className="btn btn-ghost text-xl">No Meeting Overtime</a>
+          </div>
+          <div className="flex-none">
+            {userinfo.authenticated && 
+            <div className="dropdown dropdown-end">
+              <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
+                <div className="w-10 rounded-full">
+                  <img
+                    alt="Tailwind CSS Navbar component"
+                    src={userinfo.picture} />
+                </div>
+              </div>
+              <ul
+                tabIndex={0}
+                className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow">
+                <li><a>Logout</a></li>
+              </ul>
+            </div>
+  }
+          </div>
+        </div>
+        {children}
+      </body>
     </html>
   );
 }

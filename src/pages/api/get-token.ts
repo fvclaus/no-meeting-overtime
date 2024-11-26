@@ -1,11 +1,8 @@
-import { deleteKey, get, set } from "@/session-store";
-import { AUTHORIZATION_SUCCESS, SITE_BASE } from "@/shared/constants";
-import { createOauth2Client } from "@/shared/server_constants";
-import { sql } from "@vercel/postgres";
-import {JWT} from 'google-auth-library';
-import { google } from "googleapis";
+import { deleteSessionKey, getSessionKey, setSessionKey } from "@/session-store";
+import { AUTHORIZATION_SUCCESS } from "@/shared/constants";
+import { createOauth2Client, db } from "@/shared/server_constants";
 import { NextApiRequest, NextApiResponse } from "next";
-import url from "url";
+
 
 export default async function handler(
     req: NextApiRequest,
@@ -17,14 +14,14 @@ export default async function handler(
       return;
     } 
 
-    const state = await get(req, 'state');
+    const state = await getSessionKey(req, 'state');
     
     if (req.query.state !== state) { //check state value
       res.end(`Stored state ${state} does not match received state ${req.query.state}`);
       return;
     }
 
-    deleteKey(req, 'state');
+    await deleteSessionKey(req, 'state');
 
     // Get access and refresh tokens (if access_type is offline)
         // TODO Type check
@@ -35,20 +32,14 @@ export default async function handler(
     // TODO Missing access token?
     const userInfoResponse = await oauth2Client.getTokenInfo(tokens.access_token!);
 
-    const result = await sql`SELECT * FROM Users where id = ${userInfoResponse.sub}`;
-    console.log(result);
+    const doc = await db.collection("user").doc(userInfoResponse.sub!).get();
 
     try {
-      if (result.rowCount == 0) {
-        await sql`INSERT INTO Users (id, refresh_token) VALUES (${userInfoResponse.sub}, ${tokens.refresh_token});`;
-      } else {
-        const refresh_token = result.rows[0].refresh_token;
-        tokens = {...tokens, refresh_token: refresh_token}
-        if (tokens.refresh_token) {
-          // TODO Test
-          await sql`UPDATE Users set refresh_token = ${tokens.refresh_token} where id = ${userInfoResponse.sub};`;
-        }
+      const data = {id: userInfoResponse.sub} as any;
+      if (tokens.refresh_token) {
+        data.refresh_token = tokens.refresh_token;
       }
+      doc.ref.set(data, {merge: true})
 
       oauth2Client.setCredentials(tokens);
 
@@ -58,7 +49,7 @@ export default async function handler(
     console.log(error);  
 
   }
-  set (req, res, 'tokens', JSON.stringify(tokens));
+  await setSessionKey (req, res, 'tokens', tokens);
   // set (req, res 'given_name', userInfoResponse.)
     res.redirect(AUTHORIZATION_SUCCESS);
 };

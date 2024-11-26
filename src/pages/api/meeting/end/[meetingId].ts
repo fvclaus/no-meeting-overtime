@@ -1,4 +1,4 @@
-import { get, getCredentials } from "@/session-store";
+import { getCredentials } from "@/session-store";
 import { createOauth2Client } from "@/shared/server_constants";
 import { google } from "googleapis";
 import { NextApiRequest, NextApiResponse } from "next";

@@ -1,4 +1,4 @@
-import { get } from "@/session-store";
+import { getSessionKey } from "@/session-store";
 import { createOauth2Client } from "@/shared/server_constants";
 import { google } from "googleapis";
 import { NextApiRequest, NextApiResponse } from "next";
@@ -15,14 +15,14 @@ export default async function handler(
 
     const { meetingId } = req.query;
 
-    const tokensFromStore = await get(req, 'tokens');
+    const tokensFromStore = await getSessionKey(req, 'tokens');
     if (tokensFromStore == null || tokensFromStore === undefined) {
         console.log('Has no tokens in session');
         return res.status(403).end();
     }
 
     const oauth2Client = createOauth2Client();
-    oauth2Client.setCredentials(typeof tokensFromStore === 'string'? JSON.parse(tokensFromStore) : tokensFromStore);
+    oauth2Client.setCredentials(tokensFromStore);
     await oauth2Client.refreshAccessToken();
 
     let isOwner;

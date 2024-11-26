@@ -1,7 +1,13 @@
-import { get, getCredentials } from "@/session-store";
-import { createOauth2Client } from "@/shared/server_constants";
+import { getCredentials } from "@/session-store";
+import { createOauth2Client, KEY_FILE, PROJECT_ID } from "@/shared/server_constants";
 import { google, meet_v2 } from "googleapis";
 import { NextApiRequest, NextApiResponse } from "next";
+import {Firestore} from '@google-cloud/firestore';
+
+const db = new Firestore({
+  projectId: PROJECT_ID,
+  keyFilename: KEY_FILE,
+});
 
 
 // TODO Typing
@@ -25,9 +31,16 @@ export default async function handler(
             .spaces.create({
                 auth: oauthClient
             });
-            return res.json(
-                space.data
-            );;
+        const docRef = db.collection("users").doc("alovelace");
+        // Add document data  with id "alovelace" using a hashmap
+        await docRef.set({
+            first: 'Ada',
+            last: 'Lovelace',
+            born: 1815
+        });
+        return res.json(
+            space.data
+        );
     } catch (e) {
         console.error(e);
         res.status(500).json({

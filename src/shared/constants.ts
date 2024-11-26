@@ -18,9 +18,9 @@
  * @see {@link https://cloud.google.com/resource-manager/docs/creating-managing-projects#identifying_projects}
  */
 export const SITE_BASE = inDebugMode()
-  ? 'https://localhost:3000'
+  ? 'http://localhost:3000'
   // TODO Variable?
-  : 'https://google-meet-timer.vercel.app';
+  : 'http://google-meet-timer.vercel.app';
 
 function inDebugMode() {
   return process.env.NEXT_PUBLIC_DEBUG === '1';

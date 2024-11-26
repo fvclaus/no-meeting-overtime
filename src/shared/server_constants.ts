@@ -1,5 +1,6 @@
 import {google} from "googleapis";
 import { GET_TOKEN_API_URL } from "./constants";
+import { Firestore } from "@google-cloud/firestore";
 export const CLIENT_ID = process.env.CLIENT_ID!;
 if (CLIENT_ID === undefined) {
   throw new Error('Missing CLIENT_ID');
@@ -7,6 +8,16 @@ if (CLIENT_ID === undefined) {
 export const CLIENT_SECRET = process.env.CLIENT_SECRET!;
 if (CLIENT_SECRET == undefined) {
   throw new Error('Missing CLIENT_SECRET');
+}
+
+export const PROJECT_ID = process.env.PROJECT_ID!;
+if (PROJECT_ID === undefined) {
+  throw new Error('Missing CLIENT_SECRET');
+}
+
+export const KEY_FILE = process.env.KEY_FILE!;
+if (KEY_FILE === undefined) {
+  throw new Error('Missing KEY_FILE');
 }
 
 /**
@@ -22,3 +33,10 @@ export const createOauth2Client = () => new google.auth.OAuth2(
     // TODO Necessary?
     GET_TOKEN_API_URL
 );
+
+export const db = new Firestore({
+  projectId: PROJECT_ID,
+  keyFilename: KEY_FILE,
+  databaseId: 'meetings'
+});
+
