@@ -1,9 +1,9 @@
-import { getMissingScopes } from "@/shared/constants";
+import { getMissingScopes, SITE_BASE } from "@/shared/constants";
 import { cookies } from "next/headers";
-import { UserInfo } from "./start-meeting/_components/types";
+import { UserInfo } from "../types";
 
 export async function loadUserInfo(): Promise<UserInfo & {missingScopes: string[], authenticatedWithRequiredScopes: boolean }> {
-  const userInfoRequest = await fetch('http://localhost:3000/api/userinfo', {
+  const userInfoRequest = await fetch(`${SITE_BASE}/api/userinfo`, {
     headers: { Cookie: cookies().toString() },
   });
   const userInfo = await userInfoRequest.json();

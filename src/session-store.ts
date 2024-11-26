@@ -8,17 +8,19 @@ import { FieldValue } from "@google-cloud/firestore";
 
 type SessionId = string;
 
+const SESSION_ID_NAME = 'session-id';
 function getSessionId(req: NextApiRequest | ReadonlyRequestCookies): SessionId | undefined {
-    return 'get' in req? req.get('session-id')?.value : req.cookies["session-id"]
+    return 'get' in req? req.get(SESSION_ID_NAME)?.value : req.cookies[SESSION_ID_NAME]
 }
 
 function setSessionId(res: NextApiResponse, sessionId: SessionId): void {
-  res.setHeader('Set-Cookie', serialize('session-id', sessionId, { path: '/', httpOnly: true, secure: true, sameSite: "none" }))
+  res.setHeader('Set-Cookie', serialize(SESSION_ID_NAME, sessionId, { path: '/', httpOnly: true, secure: true, sameSite: "none" }))
 }
 
 export interface SessionData {
   tokens?: Credentials
   state?: string;
+  userId?: string;
   name?: string;
   picture?: string;
 }
@@ -49,7 +51,7 @@ export async function getSessionKey<T extends keyof SessionData>(req: NextApiReq
     }
 }
 
-async function getSession(req: NextApiRequest | ReadonlyRequestCookies): Promise<SessionData | undefined> {
+export async function getSession(req: NextApiRequest | ReadonlyRequestCookies): Promise<SessionData | undefined> {
   const sessionId = getSessionId(req);
     if (!sessionId) {
       return undefined;
@@ -96,6 +98,23 @@ export async function deleteSessionKey<T extends keyof SessionData>(req: NextApi
     await _set(sessionId, {
       [key]: value
     });
+  }
+
+  export async function setSession(req: NextApiRequest, res: NextApiResponse, session: SessionData): Promise<void> {
+    const sessionId = await getSessionIdAndCreateIfMissing(req, res);
+    await _set(sessionId, session);
+  }
+
+  export async function deleteSession(req: NextApiRequest, res: NextApiResponse): Promise<void> {
+    const sessionId = await getSessionId(req);
+    if (sessionId) {
+      try {
+        await db.collection("session").doc(sessionId).delete();
+      } catch (e) {
+        console.error(`Somthing went wrong when deleting session ${sessionId}: ${e}`);
+      }
+      res.setHeader('Set-Cookie', serialize(SESSION_ID_NAME, 'deleted', { path: '/', expires: new Date(1970, 0, 1, 0, 0, 0, 0) }))
+    }
   }
 
 

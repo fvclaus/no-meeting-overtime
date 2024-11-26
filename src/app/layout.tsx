@@ -1,6 +1,8 @@
 import { cookies } from 'next/headers';
-import { UserInfo } from './start-meeting/_components/types';
+import { UserInfo } from '../types';
 import './styles.css';
+import { loadUserInfo } from './loadUserInfo';
+import Link from 'next/link';
 
 interface Props {
   children: React.ReactNode
@@ -13,20 +15,15 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
 
-  const c = cookies().toString();
-
-  const userinfoRequest = await fetch('http://localhost:3000/api/userinfo', {
-    headers: { Cookie: cookies().toString() },
-  });
-  const userinfo : UserInfo = await userinfoRequest.json();
+  const userinfo = await loadUserInfo();
 
 
   return (
     <html lang="en">
       <body className="flex-row">
-        <div className="navbar bg-base-100">
+        <div className="navbar bg-gray-100">
           <div className="flex-1">
-            <a className="btn btn-ghost text-xl">No Meeting Overtime</a>
+            <Link className="btn btn-ghost text-xl" href="/">No Meeting Overtime</Link>
           </div>
           <div className="flex-none">
             {userinfo.authenticated && 
@@ -41,13 +38,15 @@ export default async function RootLayout({
               <ul
                 tabIndex={0}
                 className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow">
-                <li><a>Logout</a></li>
+                <li><Link href="/api/logout">Logout</Link></li>
               </ul>
             </div>
   }
           </div>
         </div>
-        {children}
+        <div className="grid justify-items-center mt-24">
+          {children}
+        </div>
       </body>
     </html>
   );

@@ -1,4 +1,4 @@
-import { UserInfo } from "@/app/start-meeting/_components/types";
+import { UserInfo } from "@/types";
 import { deleteSessionKey, getCredentials, getSessionOrThrow, setOrThrowSessionKey } from "@/session-store";
 import { google } from "googleapis";
 import { NextApiRequest, NextApiResponse } from "next";
@@ -57,7 +57,9 @@ export default async function handler(
           // TODO Log this somehow
           console.log(e);
           errorMessage = e.message;
+          res.send(e.message);
         }
+        res.status(500);
       }
     }
   }

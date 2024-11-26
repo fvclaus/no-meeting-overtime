@@ -1,5 +1,5 @@
-import { deleteSessionKey, getSessionKey, setSessionKey } from "@/session-store";
-import { AUTHORIZATION_SUCCESS } from "@/shared/constants";
+import { deleteSessionKey, getSessionKey, setSession, setSessionKey, getSession } from "@/session-store";
+import { START_MEETING_URL } from "@/shared/constants";
 import { createOauth2Client, db } from "@/shared/server_constants";
 import { NextApiRequest, NextApiResponse } from "next";
 
@@ -14,10 +14,15 @@ export default async function handler(
       return;
     } 
 
-    const state = await getSessionKey(req, 'state');
+    const session = await getSession(req);
+
+    if (session == null)  {
+      return res.status(400).send("Could not find session");
+      return;
+    }
     
-    if (req.query.state !== state) { //check state value
-      res.end(`Stored state ${state} does not match received state ${req.query.state}`);
+    if (req.query.state !== session.state) { //check state value
+      res.end(`Stored state ${session.state} does not match received state ${req.query.state}`);
       return;
     }
 
@@ -35,7 +40,7 @@ export default async function handler(
     const doc = await db.collection("user").doc(userInfoResponse.sub!).get();
 
     try {
-      const data = {id: userInfoResponse.sub} as any;
+      const data = {} as any;
       if (tokens.refresh_token) {
         data.refresh_token = tokens.refresh_token;
       }
@@ -49,7 +54,9 @@ export default async function handler(
     console.log(error);  
 
   }
-  await setSessionKey (req, res, 'tokens', tokens);
-  // set (req, res 'given_name', userInfoResponse.)
-    res.redirect(AUTHORIZATION_SUCCESS);
+  await setSession(req, res, {
+    tokens: tokens,
+    userId: userInfoResponse.sub!
+  });
+    res.redirect(START_MEETING_URL);
 };

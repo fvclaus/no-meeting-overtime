@@ -26,23 +26,7 @@ function inDebugMode() {
   return process.env.NEXT_PUBLIC_DEBUG === '1';
 }
 
-/**
- * @see {@link https://developers.google.com/meet/add-ons/guides/overview#main-stage}
- */
-export const MAIN_STAGE_URL = SITE_BASE + '/mainstage';
-/**
- * The page that displays in the Side Panel for the activity initiator to set
- * the activity starting state.
- * @see {@link https://developers.google.com/meet/add-ons/guides/overview#side-panel}
- */
-export const SIDE_PANEL_URL = SITE_BASE + '/sidepanel';
-/**
- * The page that displays in the Side Panel for all participants to toggle settings.
- * @see {@link https://developers.google.com/meet/add-ons/guides/overview#side-panel}
- */
-export const ACTIVITY_SIDE_PANEL_URL = SITE_BASE + '/activitysidepanel';
-
-export const AUTHORIZATION_SUCCESS = SITE_BASE + '/start';
+export const START_MEETING_URL = SITE_BASE + '/meeting/start';
 
 export const GET_TOKEN_API_URL = SITE_BASE + '/api/get-token'
 export const REDIRECT_TO_AUTHORIZATION_API_URL = SITE_BASE + '/api/redirect-to-authorization';
