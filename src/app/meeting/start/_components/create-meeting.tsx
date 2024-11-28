@@ -24,6 +24,8 @@ export default function CreateMeeting() {
 
   // TODO Check time not in the past
 
+  // TODO Display spinner
+
   async function createMeeting(data: FormValues) {
     setError(undefined);
     const [hours, minutes] = data.endTime.split(":").map(s => parseInt(s));

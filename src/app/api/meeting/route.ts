@@ -1,6 +1,6 @@
 import { Meeting } from "@/types";
 import { getCredentials, getSessionKey } from "@/session-store";
-import { db, PROJECT_ID, QUEUE_LOCATION } from "@/shared/server_constants";
+import { CLOUD_TASKS_SERVICE_ACCOUNT, db, PROJECT_ID, QUEUE_LOCATION } from "@/shared/server_constants";
 import { google } from "googleapis";
 import {CloudTasksClient} from "@google-cloud/tasks";
 
@@ -54,14 +54,20 @@ export async function POST(
             userId: userId!
         };
         const secondsToEnd = Math.min(0, differenceInSeconds(parseISO(reqData.scheduledEndTime), Date.now()));
-        client.createTask({
+        // TODO eslint Rule Hanging Promise
+        await client.createTask({
             parent: client.queuePath(PROJECT_ID, QUEUE_LOCATION, "end-meetings1"),
             task: {
                 httpRequest: {
                     httpMethod: 'DELETE',
                     url: `${SITE_BASE_CLOUD_TASKS}/api/meeting/${space.data.meetingCode!}`,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    // TODO encoding
+                    body: JSON.stringify({userId}),
                     oidcToken: {
-                        serviceAccountEmail: 'backend-app@no-meeting-overtime.iam.gserviceaccount.com'
+                        serviceAccountEmail: CLOUD_TASKS_SERVICE_ACCOUNT
                     }
                 },
                 scheduleTime:  {

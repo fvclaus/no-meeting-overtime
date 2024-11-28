@@ -1,6 +1,5 @@
 import { cookies } from "next/headers";
 import { createOauth2Client, db } from "./shared/server_constants";
-import { Credentials } from "google-auth-library";
 import { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
 import { FieldValue } from "@google-cloud/firestore";
 import { NextRequest } from "next/server";
@@ -23,8 +22,9 @@ async function setSessionId(sessionId: SessionId): Promise<void> {
   // }
 }
 
+
 export interface SessionData {
-  tokens?: Credentials
+  tokens?: Record<string, string>,
   state?: string;
   userId?: string;
   name?: string;
@@ -125,17 +125,20 @@ export async function deleteSessionKey<T extends keyof SessionData>(req:  Readon
   }
 
 
-  export async function getCredentials() {
-    const tokensFromStore = await getSessionKey('tokens');
+  export async function getCredentials(refresh_token?: string) {
 
-    if (tokensFromStore == null || tokensFromStore === undefined) {
-        console.log('Has no tokens in session');
-        return undefined;
-    }
+    let credentials: any = {refresh_token};
 
-    let tokens = (typeof tokensFromStore === 'string'? JSON.parse(tokensFromStore) : tokensFromStore) as Credentials
+    if (refresh_token == undefined) {
+      credentials = await getSessionKey('tokens');
+  
+      if (credentials == null) {
+          console.log('Has no tokens in session');
+          return undefined;
+      }
+    } 
 
     const oauth2Client = createOauth2Client();
-    oauth2Client.setCredentials(tokens);
+    oauth2Client.setCredentials(credentials);
     return oauth2Client;
   }

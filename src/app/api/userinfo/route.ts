@@ -22,7 +22,8 @@ export async function GET(
         userinfo.picture = sessionData.picture;
       }
 
-      if (userinfo.name === undefined || userinfo.picture === undefined) {
+      // TODO How often do we need to actually load this endpoint to make sure that the user is still logged in.
+      // if (userinfo.name === undefined || userinfo.picture === undefined) {
         const response = await google.oauth2('v2')
         .userinfo.get({
           auth: oauth2Client
@@ -42,9 +43,10 @@ export async function GET(
           userinfo.picture = response.data.picture;
         }
 
-      }
+      // }
       // TODO Missing refresh_token error handling
       userinfo.authenticated = true;
+      // TODO Scope is only defined if we call the userinfo endpoint
       userinfo.scope = oauth2Client.credentials.scope;
     } catch (e) {
       if (e instanceof Error) {

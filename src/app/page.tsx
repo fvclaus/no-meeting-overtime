@@ -1,4 +1,4 @@
-import { REDIRECT_TO_AUTHORIZATION_API_URL, START_MEETING_URL } from "@/shared/constants";
+import { REDIRECT_TO_AUTHORIZATION_API_URL, START_MEETING_URL } from "@/shared/server_constants";
 import { loadUserInfo } from "./loadUserInfo";
 import Link from "next/link";
 

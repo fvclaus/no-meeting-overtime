@@ -40,6 +40,8 @@ export default async function handler(
     // TODO Missing access token?
     const userInfoResponse = await oauth2Client.getTokenInfo(tokens.access_token!);
 
+    // TODO Validate refresh token?
+
     const doc = await db.collection("user").doc(userInfoResponse.sub!).get();
 
     try {

@@ -40,6 +40,12 @@ if (SITE_BASE_CLOUD_TASKS == undefined) {
   SITE_BASE_CLOUD_TASKS = SITE_BASE;
 }
 
+export const CLOUD_TASKS_SERVICE_ACCOUNT = process.env.CLOUD_TASKS_SERVICE_ACCOUNT!;
+
+if (CLOUD_TASKS_SERVICE_ACCOUNT == undefined) {
+  throw new Error("Missing CLOUD_TASKS_SERVICE_ACCOUNT");
+}
+
 export const START_MEETING_URL = SITE_BASE + START_MEETING_PATH;
 
 export const GET_TOKEN_API_URL = SITE_BASE + '/api/get-token'
@@ -60,7 +66,7 @@ export function getMissingScopes(scopes: string): string[] {
  * https://console.cloud.google.com/apis/credentials.
  */
 
-
+// Holds tokens of a user. That's why we need to create a new instance for everyone
 export const createOauth2Client = () => new google.auth.OAuth2(
     CLIENT_ID,
     CLIENT_SECRET,
