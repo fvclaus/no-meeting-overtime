@@ -8,3 +8,5 @@ This add-on is deployed with GitHub pages, so that you can view the live version
 `terraform plan`
 
 `storage: object doesn't exist`? -> `gcloud auth application-default set-quota-project no-meeting-overtime`
+
+`oauth2: "invalid_grant" "Token has been expired or revoked."`? -> `gcloud auth application-default login`

@@ -1,8 +1,8 @@
-import type { NextApiRequest, NextApiResponse } from 'next'
 import crypto from "crypto";
-import { GET_TOKEN_API_URL, REQUIRED_SCOPES } from '@/shared/constants';
+import { GET_TOKEN_API_URL, REQUIRED_SCOPES } from '@/shared/server_constants';
 import { createOauth2Client } from "@/shared/server_constants";
 import { setSessionKey } from '@/session-store';
+import { NextRequest, NextResponse } from 'next/server';
 
 
 
@@ -19,14 +19,13 @@ const scopes = [
 
 
 export default async function handler(
-    req: NextApiRequest,
-    res: NextApiResponse
+    req: NextRequest,
   ) {
     // Generate a secure random state value.
     const state = crypto.randomBytes(32).toString('hex');
     
     // Store state in the session
-    await setSessionKey(req, res, 'state', state);
+    await setSessionKey('state', state);
     
     // Generate a url that asks permissions for the Drive activity scope
     const authorizationUrl = createOauth2Client().generateAuthUrl({
@@ -43,5 +42,5 @@ export default async function handler(
         prompt: 'consent',
         redirect_uri: GET_TOKEN_API_URL
     });
-    res.redirect(authorizationUrl);
+    return NextResponse.redirect(authorizationUrl);
 }

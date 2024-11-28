@@ -4,6 +4,7 @@ import { differenceInSeconds, formatISO } from "date-fns";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Meeting } from "@/types";
+import { START_MEETING_PATH } from "@/shared/constants";
 
 export type MeetingData = Pick<Meeting, "scheduledEndTime"> & Pick<Meeting, "uri"> & { code: string }
 
@@ -66,7 +67,7 @@ export function JoinMeeting({ meeting }: { meeting: MeetingData }) {
         <span>Meeting with code <span className="font-bold">{meeting.code}</span> started and will end in <span className="font-bold">{formatTimeRemaining(timeRemaining)} at {formatISO(meeting.scheduledEndTime)}</span></span>
       </div>
       <div className="flex flex-col lg:flex-row">
-        <div className="card grid flex-grow place-items-center"><Link className="btn btn-secondary" href="/start-meeting">Create another</Link></div>
+        <div className="card grid flex-grow place-items-center"><Link className="btn btn-secondary" href={START_MEETING_PATH}>Create another</Link></div>
         <div className="divider lg:divider-horizontal">OR</div>
         <div className="card grid flex-grow place-items-center"><Link target="_blank" className="btn btn-primary" href={meeting.uri}>Join now</Link></div>
       </div>

@@ -1,4 +1,4 @@
-import { getMissingScopes, SITE_BASE } from "@/shared/constants";
+import { getMissingScopes, SITE_BASE } from "@/shared/server_constants";
 import { cookies } from "next/headers";
 import { UserInfo } from "../types";
 

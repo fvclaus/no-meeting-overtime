@@ -1,12 +1,6 @@
-import { cookies } from 'next/headers';
-import { UserInfo } from '../types';
 import './styles.css';
 import { loadUserInfo } from './loadUserInfo';
 import Link from 'next/link';
-
-interface Props {
-  children: React.ReactNode
-}
 
 
 export default async function RootLayout({

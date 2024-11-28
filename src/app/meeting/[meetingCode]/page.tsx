@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 import { JoinMeeting, MeetingData } from "./_components/join-meeting";
-import { SITE_BASE } from "@/shared/constants";
+import { SITE_BASE } from "@/shared/server_constants";
 
 
 export default async function Page({

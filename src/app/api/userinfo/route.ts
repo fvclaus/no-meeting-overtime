@@ -1,18 +1,16 @@
 import { UserInfo } from "@/types";
 import { deleteSessionKey, getCredentials, getSessionOrThrow, setOrThrowSessionKey } from "@/session-store";
 import { google } from "googleapis";
-import { NextApiRequest, NextApiResponse } from "next";
 import { cookies } from "next/headers";
+import { NextRequest, NextResponse } from "next/server";
 
-export default async function handler(
-    req: NextApiRequest,
-    res: NextApiResponse
+export async function GET(
+    req: NextRequest,
   ) {
-    const oauth2Client = await getCredentials(req);
+  const oauth2Client = await getCredentials();
   let userinfo: UserInfo = {
     authenticated: false
   }
-  let errorMessage = null;
   if (oauth2Client !== undefined) {
     try {
 
@@ -50,19 +48,22 @@ export default async function handler(
       userinfo.scope = oauth2Client.credentials.scope;
     } catch (e) {
       if (e instanceof Error) {
+        let message;
         if (e.message === 'invalid_grant') {
+          message = "Tokens expired or revoked";
           // TODO Drop refresh token
           await deleteSessionKey(cookies(), 'tokens');
         } else {
           // TODO Log this somehow
           console.log(e);
-          errorMessage = e.message;
-          res.send(e.message);
+          message = e.message;
         }
-        res.status(500);
+        const headers = new Headers();
+        headers.set('Content-Type', 'text/plain');
+        return new NextResponse(message, {status: 500, headers})
       }
     }
+    return Response.json(userinfo);
   }
-  return res.json(userinfo);
 }
     

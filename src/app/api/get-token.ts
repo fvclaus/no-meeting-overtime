@@ -1,29 +1,28 @@
 import { deleteSessionKey, getSessionKey, setSession, setSessionKey, getSession } from "@/session-store";
-import { START_MEETING_URL } from "@/shared/constants";
+import { START_MEETING_URL } from "@/shared/server_constants";
 import { createOauth2Client, db } from "@/shared/server_constants";
-import { NextApiRequest, NextApiResponse } from "next";
+import { NextRequest, NextResponse } from "next/server";
 
 
 export default async function handler(
-    req: NextApiRequest,
-    res: NextApiResponse
+    req: NextRequest,
   ) {
-    if (req.query.error) { // An error response e.g. error=access_denied
-      res.end('Error:' + req.query.error)
+  const error = req.nextUrl.searchParams.get('error');
+    if (error) { // An error response e.g. error=access_denied
       // TODO Log this better
-      return;
+      return new NextResponse(error, {status: 500});
     } 
 
-    const session = await getSession(req);
+    const session = await getSession();
 
     if (session == null)  {
-      return res.status(400).send("Could not find session");
-      return;
+      return new NextResponse("Could not find session", {status: 400});
     }
+
+    const state = req.nextUrl.searchParams.get('state');
     
-    if (req.query.state !== session.state) { //check state value
-      res.end(`Stored state ${session.state} does not match received state ${req.query.state}`);
-      return;
+    if (state !== session.state) { //check state value
+      return new NextResponse(`Stored state ${session.state} does not match received state ${state}`, {status: 400});
     }
 
     await deleteSessionKey(req, 'state');
@@ -31,7 +30,11 @@ export default async function handler(
     // Get access and refresh tokens (if access_type is offline)
         // TODO Type check
     const oauth2Client = createOauth2Client();
-    let { tokens } = await oauth2Client.getToken(req.query.code as string);
+    const code = req.nextUrl.searchParams.get("code");
+    if (code == null) {
+      return new NextResponse("No code transmitted", {status: 400});
+    }
+    let { tokens } = await oauth2Client.getToken(code);
     console.log(tokens);
 
     // TODO Missing access token?
@@ -54,9 +57,9 @@ export default async function handler(
     console.log(error);  
 
   }
-  await setSession(req, res, {
+  await setSession({
     tokens: tokens,
     userId: userInfoResponse.sub!
   });
-    res.redirect(START_MEETING_URL);
+  return NextResponse.redirect(START_MEETING_URL);
 };

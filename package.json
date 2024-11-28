@@ -9,15 +9,11 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@chakra-ui/icons": "^2.2.4",
-    "@chakra-ui/react": "^3.2.0",
     "@date-fns/tz": "^1.2.0",
-    "@emotion/react": "^11.13.3",
-    "@emotion/styled": "^11.13.0",
     "@google-apps/meet": "^0.3.0",
     "@google-cloud/firestore": "^7.10.0",
     "@google-cloud/local-auth": "^2.1.0",
-    "cookie": "^1.0.1",
+    "@google-cloud/tasks": "^5.1.0",
     "crypto": "^1.0.1",
     "daisyui": "^4.12.14",
     "date-fns": "^4.1.0",

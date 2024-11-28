@@ -28,7 +28,7 @@ export default function CreateMeeting() {
     setError(undefined);
     const [hours, minutes] = data.endTime.split(":").map(s => parseInt(s));
     const endTime = new TZDate(set(new Date(), { hours, minutes, seconds: 0, milliseconds: 0 }), Intl.DateTimeFormat().resolvedOptions().timeZone);
-    const response = await fetch(`/api/meeting/start/`, {
+    const response = await fetch(`/api/meeting/`, {
       method: "POST",
       body: JSON.stringify({ scheduledEndTime: formatISO(endTime) }),
       headers: {
