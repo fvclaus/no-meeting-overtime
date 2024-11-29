@@ -44,10 +44,10 @@ export default function CreateMeeting() {
       setError(undefined);
     }
 
-    const json = await response.json() as meet_v2.Schema$Space;
-    console.log(json);
+    const meeting = await response.json() as meet_v2.Schema$Space;
+    console.log(meeting);
 
-    router.push(`/meeting/${json.meetingCode}`);
+    router.push(`/meeting/${meeting.meetingCode}`);
 
     return false;
   }

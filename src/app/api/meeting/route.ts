@@ -53,29 +53,30 @@ export async function POST(
             uri: space.data.meetingUri!,
             userId: userId!
         };
-        const secondsToEnd = Math.min(0, differenceInSeconds(parseISO(reqData.scheduledEndTime), Date.now()));
+        console.log(`Created meeting ${space.data.meetingCode}`);
+        const secondsToEnd = Math.max(0, differenceInSeconds(parseISO(reqData.scheduledEndTime), Date.now()));
         // TODO eslint Rule Hanging Promise
-        await client.createTask({
+        const [response] = await client.createTask({
             parent: client.queuePath(PROJECT_ID, QUEUE_LOCATION, "end-meetings1"),
             task: {
                 httpRequest: {
                     httpMethod: 'DELETE',
-                    url: `${SITE_BASE_CLOUD_TASKS}/api/meeting/${space.data.meetingCode!}`,
+                    url: `${SITE_BASE_CLOUD_TASKS}/api/meeting/${space.data.meetingCode!}?userId=${userId}`,
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    // TODO encoding
-                    body: JSON.stringify({userId}),
                     oidcToken: {
                         serviceAccountEmail: CLOUD_TASKS_SERVICE_ACCOUNT
                     }
                 },
                 scheduleTime:  {
-                    seconds: secondsToEnd
+                    seconds: secondsToEnd + Date.now() / 1000
+
                 },
                 
             },
         })
+        console.log(`Created task with name ${response.name} to end meeting ${space.data.meetingCode} in ${secondsToEnd}s`);
         await db.collection("meeting").doc(space.data.meetingCode!).set(meeting);
         return NextResponse.json(
             space.data

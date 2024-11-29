@@ -10,19 +10,6 @@ export type MeetingData = Pick<Meeting, "scheduledEndTime"> & Pick<Meeting, "uri
 
 export function JoinMeeting({ meeting }: { meeting: MeetingData }) {
 
-  async function endMeeting(meetingCode: string) {
-    const url = `/api/meeting/end/${meetingCode}`;
-    try {
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error(`Response status: ${response.status}`);
-      }
-
-    } catch (error) {
-      console.error(error);
-    }
-  }
-
   const [timeRemaining, setTimeRemaining] = useState<number>(differenceInSeconds(meeting.scheduledEndTime, new Date()));
 
   const formatTimeRemaining = (timeRemaining: number): string => {
@@ -36,18 +23,15 @@ export function JoinMeeting({ meeting }: { meeting: MeetingData }) {
   }
 
   useEffect(() => {
-    console.log("Starting interval");
 
     const timerInterval = setInterval(() => {
       if (meeting.scheduledEndTime !== undefined) {
         const diff = differenceInSeconds(meeting.scheduledEndTime, new Date());
 
         if (diff <= 0) {
-          console.log("Ending meeting");
+          setTimeRemaining(0);
           clearInterval(timerInterval);
-          endMeeting(meeting.code);
         } else {
-          console.log(`Setting diff to ${diff}`);
           setTimeRemaining(diff);
         }
 
@@ -64,15 +48,17 @@ export function JoinMeeting({ meeting }: { meeting: MeetingData }) {
   return (<>
     <div className="flex flex-col max-w-screen-xl justify-center w-full">
       <div role="alert" className="alert alert-success">
-        <span>Meeting with code <span className="font-bold">{meeting.code}</span> started and will end in <span className="font-bold">{formatTimeRemaining(timeRemaining)} at {formatISO(meeting.scheduledEndTime)}</span></span>
+        <p>Meeting with code <span className="font-bold">{meeting.code}</span> started and will end {timeRemaining > 0 && 
+            <>in <span className="font-bold">{formatTimeRemaining(timeRemaining)} at {formatISO(meeting.scheduledEndTime)}</span></>
+        }
+        {timeRemaining <= 0 && <span className="font-bold">now</span>}
+        </p>
       </div>
       <div className="flex flex-col lg:flex-row">
         <div className="card grid flex-grow place-items-center"><Link className="btn btn-secondary" href={START_MEETING_PATH}>Create another</Link></div>
         <div className="divider lg:divider-horizontal">OR</div>
         <div className="card grid flex-grow place-items-center"><Link target="_blank" className="btn btn-primary" href={meeting.uri}>Join now</Link></div>
       </div>
-
-      <button onClick={() => endMeeting(meeting.code)}>End meeting</button>
     </div>
   </>);
 

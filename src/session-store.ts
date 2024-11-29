@@ -125,18 +125,13 @@ export async function deleteSessionKey<T extends keyof SessionData>(req:  Readon
   }
 
 
-  export async function getCredentials(refresh_token?: string) {
-
-    let credentials: any = {refresh_token};
-
-    if (refresh_token == undefined) {
-      credentials = await getSessionKey('tokens');
+  export async function getCredentials() {
+    const credentials = await getSessionKey('tokens');
   
       if (credentials == null) {
           console.log('Has no tokens in session');
           return undefined;
       }
-    } 
 
     const oauth2Client = createOauth2Client();
     oauth2Client.setCredentials(credentials);

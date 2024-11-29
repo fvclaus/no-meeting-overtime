@@ -60,7 +60,7 @@ export default async function handler(
 
   }
   await setSession({
-    tokens: tokens,
+    tokens: tokens as any,
     userId: userInfoResponse.sub!
   });
   return NextResponse.redirect(START_MEETING_URL);
