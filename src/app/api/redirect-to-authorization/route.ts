@@ -18,7 +18,7 @@ const scopes = [
 ];
 
 
-export default async function handler(
+export async function GET(
     req: NextRequest,
   ) {
     // Generate a secure random state value.

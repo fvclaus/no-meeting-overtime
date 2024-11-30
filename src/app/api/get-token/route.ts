@@ -4,7 +4,7 @@ import { createOauth2Client, db } from "@/shared/server_constants";
 import { NextRequest, NextResponse } from "next/server";
 
 
-export default async function handler(
+export async function GET(
     req: NextRequest,
   ) {
   const error = req.nextUrl.searchParams.get('error');

@@ -1,11 +1,12 @@
 'use client';
 
 import { meet_v2 } from "googleapis";
-import { useForm } from "react-hook-form";
-import { formatISO, set } from "date-fns";
-import { useState } from "react";
+import { useForm, get } from "react-hook-form";
+import { addMinutes, formatISO, isAfter, set } from "date-fns";
+import { useEffect, useState } from "react";
 import { TZDate } from "@date-fns/tz";
 import { useRouter } from "next/navigation";
+import {clsx} from 'clsx';
 
 type FormValues = {
   endTime: string;
@@ -13,26 +14,22 @@ type FormValues = {
 
 export default function CreateMeeting() {
 
+
   const [error, setError] = useState<string | undefined>();
 
   const router = useRouter()
 
-  const { register, handleSubmit, formState: { errors, isValid } } = useForm<FormValues>();
+  // TODO default mode doesn't work. Why?
+  const { register, handleSubmit,  formState} = useForm<FormValues>({mode: 'all'});
+  const{ errors, isValid, isSubmitting }= formState;
 
-  // TODO
-  // Force new session, because we can't distinguish between different Google Accounts in one browser.
-
-  // TODO Check time not in the past
-
-  // TODO Display spinner
+  // TODO Server using up lots of RAM
 
   async function createMeeting(data: FormValues) {
     setError(undefined);
-    const [hours, minutes] = data.endTime.split(":").map(s => parseInt(s));
-    const endTime = new TZDate(set(new Date(), { hours, minutes, seconds: 0, milliseconds: 0 }), Intl.DateTimeFormat().resolvedOptions().timeZone);
     const response = await fetch(`/api/meeting/`, {
       method: "POST",
-      body: JSON.stringify({ scheduledEndTime: formatISO(endTime) }),
+      body: JSON.stringify({ scheduledEndTime: formatISO(data.endTime) }),
       headers: {
         "Content-Type": "application/json",
       }
@@ -65,20 +62,38 @@ export default function CreateMeeting() {
             <div className="label">
               <span className="label-text">When Should the Meeting End?</span>
             </div>
-            <input type="time" className="input input-bordered w-full"  {...register("endTime", {
-              required: true
+            
+            <input type="time" className={clsx("input input-bordered w-full", errors.endTime && "input-error")}  {...register("endTime", {
+              required: true,
+              setValueAs(value: string | undefined) {
+                console.log(`Setting value from ${value}`);
+                if (value == undefined) {
+                  return value;
+                }
+                const [hours, minutes] = value.split(":").map(s => parseInt(s));
+                const endTime = set(new Date(), { hours, minutes, seconds: 0, milliseconds: 0 });
+                return endTime;
+              },
+              validate: {
+                wrongTime: ((v: TZDate) => {
+                  console.log(`Validating ${v}`);
+                  const minLengthInMinutes = 5;
+                  const earliestEndTime = addMinutes(new Date(), minLengthInMinutes);
+                  console.log(`Is ${v} after ${earliestEndTime}`);
+                  return isAfter(v, earliestEndTime) || `Meeting must be at least ${minLengthInMinutes} minutes long.`;
+                }) as any
+              }
             })} />
-            <div className="label">
-              <span className="label-text-alt">Your meeting will automatically end at this time.</span>
-            </div>
           </label>
           {errors.endTime &&
-            <div role="alert" className="alert alert-error w-full">
-              <span>This is a required field</span>
-            </div>
+            <p className="text-error text-size text-base mt-1">
+                {errors.endTime.message}
+            </p>
           }
-
-          <button className="btn btn-primary w-full" type="submit" disabled={!isValid}>Create Meeting</button>
+          <button className="btn btn-primary w-full mt-6" type="submit" disabled={!isValid || isSubmitting}>
+            {!isSubmitting && <span>Create Meeting</span>}
+            {isSubmitting && <span className="loading loading-spinner"></span>}
+          </button>
 
         </form >
       </div>

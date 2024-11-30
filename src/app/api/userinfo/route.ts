@@ -6,7 +6,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
     req: NextRequest,
-  ) {
+  ): Promise<Response> {
   const oauth2Client = await getCredentials();
   let userinfo: UserInfo = {
     authenticated: false
@@ -65,7 +65,7 @@ export async function GET(
         return new NextResponse(message, {status: 500, headers})
       }
     }
-    return Response.json(userinfo);
   }
+  return Response.json(userinfo);
 }
     
