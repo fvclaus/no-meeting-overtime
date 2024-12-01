@@ -19,6 +19,12 @@ COPY . .
 # Avoid errors during NextJS prerendering
 ENV CLIENT_SECRET='foo'
 ENV CLIENT_ID='foo'
+ENV KEY_FILE='foo'
+ENV PROJECT_ID='foo'
+ENV QUEUE_NAME='foo'
+ENV QUEUE_LOCATION='foo'
+ENV SITE_BASE='foo'
+ENV CLOUD_TASKS_SERVICE_ACCOUNT='foo'
 
 # Next.js collects completely anonymous telemetry data about general usage.
 # Learn more here: https://nextjs.org/telemetry

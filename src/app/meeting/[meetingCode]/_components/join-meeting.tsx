@@ -10,6 +10,7 @@ export type MeetingData = Pick<Meeting, "scheduledEndTime"> & Pick<Meeting, "uri
 
 export function JoinMeeting({ meeting }: { meeting: MeetingData }) {
 
+  // TODO Server side rendering causes issue, because the client state is different.
   const [timeRemaining, setTimeRemaining] = useState<number>(differenceInSeconds(meeting.scheduledEndTime, new Date()));
 
   const formatTimeRemaining = (timeRemaining: number): string => {
