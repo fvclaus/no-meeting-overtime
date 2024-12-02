@@ -1,26 +1,27 @@
+# TODO Make region dynamic
 steps:
 # Caching is currently broken:
 # https://github.com/GoogleContainerTools/kaniko/issues/521
 # - name: 'gcr.io/kaniko-project/executor:latest'
   # args:
-  # - --destination=europe-west3-docker.pkg.dev/$PROJECT_ID/repo/no-meeting-overtime:$COMMIT_SHA
+  # - --destination=europe-west1-docker.pkg.dev/$PROJECT_ID/repo/no-meeting-overtime:$COMMIT_SHA
   # - --cache=true
   # - --cache-ttl=96h
 - name: 'gcr.io/cloud-builders/docker'
   args: ['build', '-t', 
-          'europe-west3-docker.pkg.dev/$PROJECT_ID/repo/no-meeting-overtime:$COMMIT_SHA', 
+          'europe-west1-docker.pkg.dev/$PROJECT_ID/repo/no-meeting-overtime:$COMMIT_SHA', 
           '.']
 - name: 'gcr.io/cloud-builders/docker'
   args: ['push', 
-          'europe-west3-docker.pkg.dev/$PROJECT_ID/repo/no-meeting-overtime:$COMMIT_SHA']
+          'europe-west1-docker.pkg.dev/$PROJECT_ID/repo/no-meeting-overtime:$COMMIT_SHA']
 - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
   entrypoint: gcloud
   args: 
   - run
   - deploy
   - app
-  - --image=europe-west3-docker.pkg.dev/$PROJECT_ID/repo/no-meeting-overtime:$COMMIT_SHA
-  - --region=europe-west3
+  - --image=europe-west1-docker.pkg.dev/$PROJECT_ID/repo/no-meeting-overtime:$COMMIT_SHA
+  - --region=europe-west1
   - --allow-unauthenticated
   - --no-cpu-boost
   - --memory=265Mi

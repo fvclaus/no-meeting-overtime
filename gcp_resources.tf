@@ -75,8 +75,6 @@ resource "google_artifact_registry_repository" "cloud_run_source_deploy" {
   depends_on = [google_project_service.artifactregistry_googleapis_com]
 }
 
-
-# terraform import google_artifact_registry_repository.cloud_run_source_deploy projects/avian-sandbox-438712-j6/locations/europe-west3/repositories/cloud-run-source-deploy
 resource "google_service_account" "cloud_build" {
   account_id = "cloud-build"
 }
