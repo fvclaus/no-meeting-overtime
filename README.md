@@ -4,6 +4,9 @@ This is a [Meet Add-on](https://developers.google.com/meet/add-ons/guides/overvi
 
 This add-on is deployed with GitHub pages, so that you can view the live versions of its [Side Panel](https://googleworkspace.github.io/meet/animation-next-js/sidepanel), [Main Stage](https://googleworkspace.github.io/meet/animation-next-js/mainstage), and all other routes. The screensharing promotion at the [index.html](https://googleworkspace.github.io/meet/animation-next-js/) will not fully work until this add-on is published.
 
+Don't install glcoud from snap. You won't let you install the terraform extension
+terraform can be installed from snap
+
 
 `terraform plan`
 
