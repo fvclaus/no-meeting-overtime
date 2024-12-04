@@ -56,9 +56,9 @@ export function JoinMeeting({ meeting }: { meeting: MeetingData }) {
         </p>
       </div>
       <div className="flex flex-col lg:flex-row">
-        <div className="card grid flex-grow place-items-center"><Link className="btn btn-secondary" href={START_MEETING_PATH}>Create another</Link></div>
+        <div className="card grid flex-grow place-items-center"><Link className="btn btn-secondary" href={START_MEETING_PATH} prefetch={false}>Create another</Link></div>
         <div className="divider lg:divider-horizontal">OR</div>
-        <div className="card grid flex-grow place-items-center"><Link target="_blank" className="btn btn-primary" href={meeting.uri}>Join now</Link></div>
+        <div className="card grid flex-grow place-items-center"><Link target="_blank" className="btn btn-primary" href={meeting.uri} prefetch={false}>Join now</Link></div>
       </div>
     </div>
   </>);

@@ -66,6 +66,6 @@ export async function GET(
       }
     }
   }
-  return Response.json(userinfo);
+  return NextResponse.json(userinfo);
 }
     

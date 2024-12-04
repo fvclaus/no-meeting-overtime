@@ -17,7 +17,8 @@ async function setSessionId(sessionId: SessionId): Promise<void> {
     // res.cookies.set(SESSION_ID_NAME, sessionId, { path: '/', httpOnly: true, secure: true, sameSite: "none" })
   // } else {
   const cookieStore = await cookies();
-  cookieStore.set(SESSION_ID_NAME, sessionId, { path: '/', httpOnly: true, secure: true, sameSite: "none" });
+  // TODO Reintroduce secure: true + sameSite: none if SITE_BASE starts with https
+  cookieStore.set(SESSION_ID_NAME, sessionId, { path: '/', httpOnly: true});
     // setHeader('Set-Cookie', serialize(SESSION_ID_NAME, sessionId, { path: '/', httpOnly: true, secure: true, sameSite: "none" }))
   // }
 }
