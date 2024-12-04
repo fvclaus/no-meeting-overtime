@@ -25,6 +25,7 @@ steps:
   - --allow-unauthenticated
   - --no-cpu-boost
   - --memory=265Mi
+  - --set-env-vars=CLIENT_ID=${_CLIENT_ID},CLIENT_SECRET=${_CLIENT_SECRET}
 options:
   # logging: CLOUD_LOGGING_ONLY
   defaultLogsBucketBehavior: REGIONAL_USER_OWNED_BUCKET

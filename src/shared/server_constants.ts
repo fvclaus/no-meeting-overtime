@@ -12,7 +12,7 @@ if (CLIENT_SECRET == null) {
 
 export const PROJECT_ID = process.env.PROJECT_ID!;
 if (PROJECT_ID == null) {
-  throw new Error('Missing CLIENT_SECRET');
+  throw new Error('Missing PROJECT_ID');
 }
 
 export const QUEUE_LOCATION = process.env.QUEUE_LOCATION!;
