@@ -20,10 +20,9 @@ if (QUEUE_LOCATION == null) {
   throw new Error("Missing QUEUE_LOCATION");
 }
 
-export const KEY_FILE = process.env.KEY_FILE!;
-if (KEY_FILE === null) {
-  throw new Error('Missing KEY_FILE');
-}
+// Not required on Cloud Run
+export const KEY_FILE = process.env.KEY_FILE;
+
 
 export const SITE_BASE = process.env.SITE_BASE!;
 

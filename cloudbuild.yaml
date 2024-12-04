@@ -25,7 +25,8 @@ steps:
   - --allow-unauthenticated
   - --no-cpu-boost
   - --memory=265Mi
-  - --set-env-vars=CLIENT_ID=${_CLIENT_ID},CLIENT_SECRET=${_CLIENT_SECRET}
+  - --service-account=${_SERVICE_ACCOUNT}
+  - --set-env-vars=CLIENT_ID=${_CLIENT_ID},CLIENT_SECRET=${_CLIENT_SECRET},PROJECT_ID=${_PROJECT_ID},QUEUE_LOCATION=${_QUEUE_LOCATION},SITE_BASE=${_SITE_BASE},CLOUD_TASKS_SERVICE_ACCOUNT=${_CLOUD_TASKS_SERVICE_ACCOUNT}
 options:
   # logging: CLOUD_LOGGING_ONLY
   defaultLogsBucketBehavior: REGIONAL_USER_OWNED_BUCKET
