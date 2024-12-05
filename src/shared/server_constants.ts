@@ -21,6 +21,8 @@ if (QUEUE_LOCATION == null) {
 }
 
 // Not required on Cloud Run
+// TODO Migration to GOOGLE_APPLICATION_CREDENTIALS
+// https://cloud.google.com/docs/authentication/application-default-credentials
 export const KEY_FILE = process.env.KEY_FILE;
 
 

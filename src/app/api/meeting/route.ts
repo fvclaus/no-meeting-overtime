@@ -19,6 +19,10 @@ const client = new CloudTasksClient();
 export async function POST(
     req: NextRequest,
   ) {
+
+    await client.initialize();
+
+    console.log(client.auth);
       
     const body = await req.json();
       // TODO Must not be in the past and must be a time
@@ -53,6 +57,7 @@ export async function POST(
             uri: space.data.meetingUri!,
             userId: userId!
         };
+        
         console.log(`Created meeting ${space.data.meetingCode}`);
         const secondsToEnd = Math.max(0, differenceInSeconds(parseISO(reqData.scheduledEndTime), Date.now()));
         // TODO eslint Rule Hanging Promise
