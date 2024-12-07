@@ -77,7 +77,7 @@ export default function CreateMeeting() {
               validate: {
                 wrongTime: ((v: TZDate) => {
                   console.log(`Validating ${v}`);
-                  const minLengthInMinutes = 5;
+                  const minLengthInMinutes = 2;
                   const earliestEndTime = addMinutes(new Date(), minLengthInMinutes);
                   console.log(`Is ${v} after ${earliestEndTime}`);
                   return isAfter(v, earliestEndTime) || `Meeting must be at least ${minLengthInMinutes} minutes long.`;

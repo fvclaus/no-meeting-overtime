@@ -128,7 +128,8 @@ resource "google_project_iam_member" "app_firestore_binding" {
 
 resource "google_project_iam_member" "app_end-meetings_queue_binding" {
   member = "serviceAccount:${google_service_account.app.email}"
-  role   = "roles/cloudtasks.enqueuer"
+  # TODO enqueuer roles give permisson denied
+  role   = "roles/cloudtasks.admin"
   condition {
     expression = "resource.name==\"projects/${var.project}/locations/${var.tasks_region}/queues/end-meetings1\""
     title      = "Limit access to one resource"
@@ -136,6 +137,18 @@ resource "google_project_iam_member" "app_end-meetings_queue_binding" {
   project    = var.project
   depends_on = [google_cloud_tasks_queue.end_meetings]
 }
+
+resource "google_service_account_iam_binding" "allow_act_as" {
+  service_account_id = google_service_account.app.id
+  role               = "roles/iam.serviceAccountUser"
+
+  #TODO Create dedicated account
+  members = [
+    "serviceAccount:${google_service_account.app.email}"
+  ]
+
+}
+
 resource "google_project_service" "iam_googleapis_com" {
   service = "iam.googleapis.com"
 }
