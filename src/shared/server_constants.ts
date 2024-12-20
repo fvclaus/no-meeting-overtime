@@ -34,6 +34,7 @@ if (SITE_BASE == null) {
 
 export let SITE_BASE_CLOUD_TASKS = process.env.SITE_BASE_CLOUD_TASKS!;
 
+// Usage of ngrok https URL only is cumbersome, because it requires administration of OAuth redirect URLs.
 if (SITE_BASE_CLOUD_TASKS == undefined) {
   if (SITE_BASE.includes("localhost")) {
     throw new Error("SITE_BASE includes localhost you have to then defined a URL that can be reached by Google CloudTasks. Use ngrok for example");
