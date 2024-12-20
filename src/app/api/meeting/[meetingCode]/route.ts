@@ -1,22 +1,10 @@
-import { Meeting } from "@/types";
 import { getSessionKey } from "@/session-store";
 import { CLOUD_TASKS_SERVICE_ACCOUNT, createOauth2Client, db } from "@/shared/server_constants";
 import { google } from "googleapis";
 import { NextRequest, NextResponse } from "next/server";
+import { findMeeting } from "./findMeeting";
 
-const findMeeting = async (params: RouteParams): Promise<Meeting & {code: string} | undefined> => {
-    const {meetingCode} = await params;
-    const meetingDocs = await db.collection("meeting").doc(meetingCode).get();
-
-    const meeting = meetingDocs.data() as Meeting;
-    return {
-        ...meeting,
-        code: meetingCode
-    }
-}
-
-
-type RouteParams = 
+export type RouteParams = 
      Promise<{
         meetingCode: string;
     }>;

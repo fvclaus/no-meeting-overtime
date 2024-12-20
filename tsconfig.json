@@ -33,10 +33,7 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "build/types/**/*.ts",
-    "../dist/game-next-js/types/**/*.ts",
-    "firebasedist/types/**/*.ts",
-    "../dist/animation-next-js/types/**/*.ts"
-  ],
+    "vitest.config.mts"  ],
   "exclude": [
     "node_modules"
   ]
