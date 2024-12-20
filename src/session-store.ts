@@ -1,5 +1,5 @@
 import { cookies } from "next/headers";
-import { createOauth2Client, db } from "./shared/server_constants";
+import { createOauth2Client, db, SITE_BASE } from "./shared/server_constants";
 import { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
 import { FieldValue } from "@google-cloud/firestore";
 import { NextRequest } from "next/server";
@@ -13,14 +13,12 @@ async function getSessionId(): Promise<SessionId | undefined> {
 }
 
 async function setSessionId(sessionId: SessionId): Promise<void> {
-  // if (res instanceof NextResponse) {
-    // res.cookies.set(SESSION_ID_NAME, sessionId, { path: '/', httpOnly: true, secure: true, sameSite: "none" })
-  // } else {
   const cookieStore = await cookies();
-  // TODO Reintroduce secure: true + sameSite: none if SITE_BASE starts with https
-  cookieStore.set(SESSION_ID_NAME, sessionId, { path: '/', httpOnly: true});
-    // setHeader('Set-Cookie', serialize(SESSION_ID_NAME, sessionId, { path: '/', httpOnly: true, secure: true, sameSite: "none" }))
-  // }
+  if (SITE_BASE.startsWith("https://")) {
+    cookieStore.set(SESSION_ID_NAME, sessionId, { path: '/', httpOnly: true, secure: true, sameSite: "none" });
+  } else {
+    cookieStore.set(SESSION_ID_NAME, sessionId, { path: '/', httpOnly: true});
+  }
 }
 
 
