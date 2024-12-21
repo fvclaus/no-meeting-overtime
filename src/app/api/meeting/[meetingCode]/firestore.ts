@@ -2,8 +2,8 @@ import { db } from "@/shared/server_constants";
 import { Meeting } from "@/types";
 import { RouteParams } from "./route";
 
-// TODO Export because of test
-export const findMeeting = async (params: RouteParams): Promise<(Meeting & { code: string; }) | undefined> => {
+// Don't need to unit test this. One E2E Test should be enough
+export async function findMeeting(params: RouteParams): Promise<(Meeting & { code: string; }) | undefined> {
     const { meetingCode } = await params;
     const meetingDocs = await db.collection("meeting").doc(meetingCode).get();
 
@@ -13,3 +13,8 @@ export const findMeeting = async (params: RouteParams): Promise<(Meeting & { cod
         code: meetingCode
     };
 };
+
+export async function findUser(userId: string) {
+    return await db.collection("user").doc(userId).get();
+}
+

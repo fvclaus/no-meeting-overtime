@@ -26,6 +26,16 @@
               "uriFormat": "%s",
               "action": "debugWithChrome"
             }
+          },
+          {
+            "type": "node",
+            "request": "launch",
+            "name": "vitest",
+            "autoAttachChildProcesses": true,
+            "skipFiles": ["<node_internals>/**", "**/node_modules/**"],
+            "program": "${workspaceRoot}/node_modules/vitest/vitest.mjs",
+            "smartStep": true,
+            "console": "integratedTerminal"
           }
     ]
 }

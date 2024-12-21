@@ -1,8 +1,8 @@
 import { getSessionKey } from "@/session-store";
-import { CLOUD_TASKS_SERVICE_ACCOUNT, createOauth2Client, db } from "@/shared/server_constants";
+import { CLOUD_TASKS_SERVICE_ACCOUNT, createOauth2Client } from "@/shared/server_constants";
 import { google } from "googleapis";
 import { NextRequest, NextResponse } from "next/server";
-import { findMeeting } from "./findMeeting";
+import { findMeeting, findUser } from "./firestore";
 
 export type RouteParams = 
      Promise<{
@@ -37,7 +37,7 @@ export async function DELETE(
 
     const taskName = req.headers.get('X-CLOUDTASKS-TASKNAME');
     if (taskName == undefined) {
-        console.error(`No X-CLOUDTASKS-TASKNAME header`);
+        return new NextResponse(`No X-CLOUDTASKS-TASKNAME header`, {status: 403});
     }
 
     const oauth2Client = createOauth2Client();
@@ -45,20 +45,20 @@ export async function DELETE(
     if (idToken == null) {
         // TODO Structured logging?
         console.error(`[${taskName}]: Missing authorization header`);
-        return new NextResponse("Missing Authorization Header", {status: 400});
+        return new NextResponse("Missing Authorization Header", {status: 403});
     }
     try {
         // TODO Test
         const login = await oauth2Client.verifyIdToken({
-            idToken: idToken
+            idToken
         });
         if (CLOUD_TASKS_SERVICE_ACCOUNT !== login.getPayload()?.email) {
             console.error(`[${taskName}]: OIDC token has the wrong mail: ${login.getPayload()?.email} instead of ${CLOUD_TASKS_SERVICE_ACCOUNT}`)
-            return new NextResponse(undefined, {status: 403});
+            return new NextResponse("Unexpected service account", {status: 403});
         }
     } catch (e) {
         console.error(`[${taskName}]: OIDC signature validation failed`);
-        return new NextResponse(undefined, {status: 403});
+        return new NextResponse("Invalid OIDC token", {status: 403});
     }
 
     const userId = req.nextUrl.searchParams.get('userId');
@@ -68,7 +68,7 @@ export async function DELETE(
         return new NextResponse("Missing userId parameter",  {status: 400});
     }
 
-    const userDoc = await db.collection("user").doc(userId).get();
+    const userDoc = await findUser(userId);
     const user = userDoc.data();
 
     if (!userDoc.exists || user == undefined) {
@@ -95,9 +95,9 @@ export async function DELETE(
         // TODO Maybe make meetings subcollection of User?
         // TODO Keep or delete meeting?
         return new NextResponse(undefined, {status: response.status});
-    } catch (e: any) {
+    } catch (e: unknown) {
         // TODO How to handle 'There is no active conference for the given space.'?
-        if ('status' in e && typeof e.status === 'number') {
+        if (typeof e === 'object' && e != null && 'status' in e && typeof e.status === 'number') {
             const status = e.status;
             if (status === 403) { // Deleted or permission denied
                 return new NextResponse(undefined, {status: 204});
@@ -111,3 +111,5 @@ export async function DELETE(
         return new NextResponse(undefined, {status: 500});
     }
 }
+
+
