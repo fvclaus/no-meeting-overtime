@@ -1,4 +1,4 @@
-import { deleteSessionKey, getSessionKey, setSession, setSessionKey, getSession } from "@/session-store";
+import { deleteSessionKey, getSessionKey, setSession, setSessionKey, getSession } from "@/app/session-store";
 import { START_MEETING_URL } from "@/shared/server_constants";
 import { createOauth2Client, db } from "@/shared/server_constants";
 import { NextRequest, NextResponse } from "next/server";

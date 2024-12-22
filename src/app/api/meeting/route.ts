@@ -1,17 +1,30 @@
 import { Meeting } from "@/types";
-import { getCredentials, getSessionKey } from "@/session-store";
-import { CLOUD_TASKS_SERVICE_ACCOUNT, db, PROJECT_ID, QUEUE_LOCATION } from "@/shared/server_constants";
+import { getCredentials, getSessionKey } from "@/app/session-store";
+import { CLOUD_TASKS_SERVICE_ACCOUNT, PROJECT_ID, QUEUE_LOCATION } from "@/shared/server_constants";
 import { google } from "googleapis";
 import {CloudTasksClient} from "@google-cloud/tasks";
 
 import z from "zod";
 import { SITE_BASE_CLOUD_TASKS } from "@/shared/server_constants";
-import { differenceInSeconds, parseISO } from "date-fns";
+import { differenceInSeconds, formatISO, parseISO } from "date-fns";
 import { NextRequest, NextResponse } from "next/server";
+import { saveMeeting } from "../../firestore";
+
+const EARLIEST_START_OFFSET_IN_MINUTES = 5;
 
 const RequestBodySchema = z.object({
-    scheduledEndTime: z.string()
+    scheduledEndTime: z.string().datetime({ offset: true })
+    .refine((value) => {
+        const date = new Date(value);
+        const now = new Date();
+        const fiveMinutesFromNow = new Date(now.getTime() + EARLIEST_START_OFFSET_IN_MINUTES * 60 * 1000);
+        return date > fiveMinutesFromNow;
+    }, {
+        message: `Datetime must be ${EARLIEST_START_OFFSET_IN_MINUTES} minutes in future`
+    })
+    .pipe(z.coerce.date())
 })
+
 
 const client = new CloudTasksClient();
 
@@ -19,20 +32,16 @@ const client = new CloudTasksClient();
 export async function POST(
     req: NextRequest,
   ) {
-
-    await client.initialize();
-
     console.log(client.auth);
       
     const body = await req.json();
-      // TODO Must not be in the past and must be a time
-      try {
-        RequestBodySchema.parse(body);
-    } catch (e: any) {
-        return new NextResponse("The request was invalid", {status: 400});
+    const result = RequestBodySchema.safeParse(body);
+    if (result.error) {
+        return NextResponse.json(result.error.errors, {status: 400})
     }
 
-    const reqData = body as z.infer<typeof RequestBodySchema>;
+    const reqData = result.data;
+
 
     const oauthClient = await getCredentials();
 
@@ -52,14 +61,14 @@ export async function POST(
                 auth: oauthClient
             });
         const meeting: Meeting = {
-            scheduledEndTime: reqData.scheduledEndTime,
+            scheduledEndTime: formatISO(reqData.scheduledEndTime),
             name: space.data.name!,
             uri: space.data.meetingUri!,
             userId: userId!
         };
         
         console.log(`Created meeting ${space.data.meetingCode}`);
-        const secondsToEnd = Math.max(0, differenceInSeconds(parseISO(reqData.scheduledEndTime), Date.now()));
+        const secondsToEnd = Math.max(0, differenceInSeconds(reqData.scheduledEndTime, Date.now()));
         // TODO eslint Rule Hanging Promise
         const [response] = await client.createTask({
             parent: client.queuePath(PROJECT_ID, QUEUE_LOCATION, "end-meetings1"),
@@ -82,12 +91,12 @@ export async function POST(
             },
         })
         console.log(`Created task with name ${response.name} to end meeting ${space.data.meetingCode} in ${secondsToEnd}s`);
-        await db.collection("meeting").doc(space.data.meetingCode!).set(meeting);
+        await saveMeeting(space.data.meetingCode!, meeting);
         return NextResponse.json(
             space.data
         );
     } catch (e) {
         console.error(e);
-        return new NextResponse(`Creation of meeting failed`, {status: 500})
+        return new NextResponse(`Creation of meeting failed: ${e instanceof Error? e.message : e}`, {status: 500})
     }
 }

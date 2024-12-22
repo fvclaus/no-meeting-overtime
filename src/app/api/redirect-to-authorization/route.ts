@@ -1,7 +1,7 @@
 import crypto from "crypto";
 import { GET_TOKEN_API_URL, REQUIRED_SCOPES } from '@/shared/server_constants';
 import { createOauth2Client } from "@/shared/server_constants";
-import { setSessionKey } from '@/session-store';
+import { setSessionKey } from '@/app/session-store';
 import { NextRequest, NextResponse } from 'next/server';
 
 

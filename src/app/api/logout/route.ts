@@ -1,4 +1,4 @@
-import { deleteSession } from "@/session-store";
+import { deleteSession } from "@/app/session-store";
 import { SITE_BASE } from "@/shared/server_constants";
 import { NextRequest, NextResponse } from "next/server";
 

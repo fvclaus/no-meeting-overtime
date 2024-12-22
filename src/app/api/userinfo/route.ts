@@ -1,5 +1,5 @@
 import { UserInfo } from "@/types";
-import { deleteSessionKey, getCredentials, getSessionOrThrow, setOrThrowSessionKey } from "@/session-store";
+import { deleteSessionKey, getCredentials, getSessionOrThrow, setOrThrowSessionKey } from "@/app/session-store";
 import { google } from "googleapis";
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";

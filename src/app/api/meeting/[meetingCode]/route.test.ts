@@ -1,16 +1,15 @@
 import { describe, it, expect, vi, beforeEach, beforeAll } from 'vitest';
 import * as handler from './route';
-import { findMeeting, findUser } from './firestore';
-import { getSessionKey } from '@/session-store';
+import { findMeeting, findUser } from '../../../firestore';
+import { getSessionKey } from '@/app/session-store';
 import { google } from 'googleapis';
 import { NextRequest, NextResponse } from 'next/server';
 
 describe('/api/meeting/[meetingCode]', () => {
   beforeEach(() => {
-    vi.mock('./firestore');
-    vi.mock('@/session-store');
+    vi.mock('./../../../firestore');
+    vi.mock('./../../../session-store');
     vi.mock('googleapis');
-    vi.mock('@/db');
     vi.resetAllMocks();
     const findMeetingMock: typeof findMeeting = async (params) => {
       const meetingCode = (await params).meetingCode;

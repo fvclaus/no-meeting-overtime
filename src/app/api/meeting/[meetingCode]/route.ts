@@ -1,8 +1,8 @@
-import { getSessionKey } from "@/session-store";
+import { getSessionKey } from "@/app/session-store";
 import { CLOUD_TASKS_SERVICE_ACCOUNT, createOauth2Client } from "@/shared/server_constants";
 import { google } from "googleapis";
 import { NextRequest, NextResponse } from "next/server";
-import { findMeeting, findUser } from "./firestore";
+import { findMeeting, findUser } from "../../../firestore";
 
 export type RouteParams = 
      Promise<{

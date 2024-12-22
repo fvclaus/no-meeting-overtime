@@ -1,5 +1,5 @@
 import { cookies } from "next/headers";
-import { createOauth2Client, db, SITE_BASE } from "./shared/server_constants";
+import { createOauth2Client, db, SITE_BASE } from "../shared/server_constants";
 import { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
 import { FieldValue } from "@google-cloud/firestore";
 import { NextRequest } from "next/server";
