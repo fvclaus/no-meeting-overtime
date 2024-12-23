@@ -40,8 +40,8 @@ export async function DELETE(
     return new NextResponse(`No X-CLOUDTASKS-TASKNAME header`, { status: 403 });
   }
 
-  const oauth2Client = createOauth2Client();
-  const idToken = req.headers.get("Authorization")?.replace("Bearer ", "");
+  const oauth2Client = createOauth2Client(),
+    idToken = req.headers.get("Authorization")?.replace("Bearer ", "");
   if (idToken == null) {
     // TODO Structured logging?
     console.error(`[${taskName}]: Missing authorization header`);
@@ -70,8 +70,8 @@ export async function DELETE(
     return new NextResponse("Missing userId parameter", { status: 400 });
   }
 
-  const userDoc = await findUser(userId);
-  const user = userDoc.data();
+  const userDoc = await findUser(userId),
+    user = userDoc.data();
 
   if (!userDoc.exists || user == undefined) {
     console.error(`[${taskName}]: Did not find user ${userId}`);
@@ -103,14 +103,13 @@ export async function DELETE(
       "status" in e &&
       typeof e.status === "number"
     ) {
-      const status = e.status;
+      const { status } = e;
       if (status === 403) {
         // Deleted or permission denied
         return new NextResponse(undefined, { status: 204 });
-      } else {
-        console.error(`[${taskName}]`, e);
-        return new NextResponse(undefined, { status });
       }
+      console.error(`[${taskName}]`, e);
+      return new NextResponse(undefined, { status });
     }
     console.error(`[${taskName}]`, e);
     return new NextResponse(undefined, { status: 500 });

@@ -1,7 +1,7 @@
 "use client";
 
 import { meet_v2 } from "googleapis";
-import { useForm, get } from "react-hook-form";
+import { get, useForm } from "react-hook-form";
 import { addMinutes, formatISO, isAfter, set } from "date-fns";
 import { useEffect, useState } from "react";
 import { TZDate } from "@date-fns/tz";
@@ -13,15 +13,13 @@ type FormValues = {
 };
 
 export default function CreateMeeting() {
-  const [error, setError] = useState<string | undefined>();
-
-  const router = useRouter();
-
-  // TODO default mode doesn't work. Why?
-  const { register, handleSubmit, formState } = useForm<FormValues>({
-    mode: "all",
-  });
-  const { errors, isValid, isSubmitting } = formState;
+  const [error, setError] = useState<string | undefined>(),
+    router = useRouter(),
+    // TODO default mode doesn't work. Why?
+    { register, handleSubmit, formState } = useForm<FormValues>({
+      mode: "all",
+    }),
+    { errors, isValid, isSubmitting } = formState;
 
   // TODO Server using up lots of RAM
 
@@ -37,9 +35,8 @@ export default function CreateMeeting() {
     if (!response.ok) {
       setError(await response.text());
       return false;
-    } else {
-      setError(undefined);
     }
+    setError(undefined);
 
     const meeting = (await response.json()) as meet_v2.Schema$Space;
     console.log(meeting);
@@ -80,24 +77,24 @@ export default function CreateMeeting() {
                     return value;
                   }
                   const [hours, minutes] = value
-                    .split(":")
-                    .map((s) => parseInt(s));
-                  const endTime = set(new Date(), {
-                    hours,
-                    minutes,
-                    seconds: 0,
-                    milliseconds: 0,
-                  });
+                      .split(":")
+                      .map((s) => parseInt(s)),
+                    endTime = set(new Date(), {
+                      hours,
+                      minutes,
+                      seconds: 0,
+                      milliseconds: 0,
+                    });
                   return endTime;
                 },
                 validate: {
                   wrongTime: ((v: TZDate) => {
                     console.log(`Validating ${v}`);
-                    const minLengthInMinutes = 2;
-                    const earliestEndTime = addMinutes(
-                      new Date(),
-                      minLengthInMinutes,
-                    );
+                    const minLengthInMinutes = 2,
+                      earliestEndTime = addMinutes(
+                        new Date(),
+                        minLengthInMinutes,
+                      );
                     console.log(`Is ${v} after ${earliestEndTime}`);
                     return (
                       isAfter(v, earliestEndTime) ||

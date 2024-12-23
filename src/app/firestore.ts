@@ -6,10 +6,9 @@ import { RouteParams } from "./api/meeting/[meetingCode]/route";
 export async function findMeeting(
   params: RouteParams,
 ): Promise<(Meeting & { code: string }) | undefined> {
-  const { meetingCode } = await params;
-  const meetingDocs = await db.collection("meeting").doc(meetingCode).get();
-
-  const meeting = meetingDocs.data() as Meeting;
+  const { meetingCode } = await params,
+    meetingDocs = await db.collection("meeting").doc(meetingCode).get(),
+    meeting = meetingDocs.data() as Meeting;
   return {
     ...meeting,
     code: meetingCode,

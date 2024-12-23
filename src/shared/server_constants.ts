@@ -23,7 +23,7 @@ if (QUEUE_LOCATION == null) {
 // Not required on Cloud Run
 // TODO Migration to GOOGLE_APPLICATION_CREDENTIALS
 // https://cloud.google.com/docs/authentication/application-default-credentials
-export const KEY_FILE = process.env.KEY_FILE;
+export const { KEY_FILE } = process.env;
 
 export const SITE_BASE = process.env.SITE_BASE!;
 
@@ -52,9 +52,8 @@ if (CLOUD_TASKS_SERVICE_ACCOUNT == undefined) {
 
 export const START_MEETING_URL = SITE_BASE + START_MEETING_PATH;
 
-export const GET_TOKEN_API_URL = SITE_BASE + "/api/get-token";
-export const REDIRECT_TO_AUTHORIZATION_API_URL =
-  SITE_BASE + "/api/redirect-to-authorization";
+export const GET_TOKEN_API_URL = `${SITE_BASE}/api/get-token`;
+export const REDIRECT_TO_AUTHORIZATION_API_URL = `${SITE_BASE}/api/redirect-to-authorization`;
 
 export const REQUIRED_SCOPES = [
   "https://www.googleapis.com/auth/meetings.space.readonly",

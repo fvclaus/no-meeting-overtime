@@ -27,7 +27,7 @@ export async function GET(req: NextRequest) {
     // Enable incremental authorization. Recommended as a best practice.
     include_granted_scopes: true,
     // Include the state parameter to reduce the risk of CSRF attacks.
-    state: state,
+    state,
     // TODO Remove when missing refresh_token handling is fixed
     prompt: "consent",
     redirect_uri: GET_TOKEN_API_URL,

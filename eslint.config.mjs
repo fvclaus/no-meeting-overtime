@@ -1,3 +1,5 @@
+// @ts-check
+
 import globals from "globals";
 import pluginJs from "@eslint/js";
 import tseslint from "typescript-eslint";
@@ -7,9 +9,10 @@ import parser from "@typescript-eslint/parser"; // optional
 
 /** @type {import('eslint').Linter.Config[]} */
 export default tseslint.config(
+  
   { files: ["**/*.{js,mjs,cjs,ts,jsx,tsx}"] },
   { languageOptions: { globals: globals.browser } },
-  pluginJs.configs.recommended,
+  pluginJs.configs.all,
   tseslint.configs.strictTypeChecked,
   {
     languageOptions: {

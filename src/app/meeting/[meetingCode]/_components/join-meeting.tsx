@@ -12,20 +12,19 @@ export type MeetingData = Pick<Meeting, "scheduledEndTime"> &
 export function JoinMeeting({ meeting }: { meeting: MeetingData }) {
   // TODO Server side rendering causes issue, because the client state is different.
   const [timeRemaining, setTimeRemaining] = useState<number>(
-    differenceInSeconds(meeting.scheduledEndTime, new Date()),
-  );
-
-  const formatTimeRemaining = (timeRemaining: number): string => {
-    let remaining = timeRemaining;
-    const hours = Math.floor(remaining / (60 * 60));
-    remaining = remaining - hours * 60 * 60;
-    const minutes = Math.floor(remaining / 60);
-    remaining = remaining - minutes * 60;
-    const seconds = remaining;
-    return [hours, minutes, seconds]
-      .map((n) => n.toString().padStart(2, "0"))
-      .join(":");
-  };
+      differenceInSeconds(meeting.scheduledEndTime, new Date()),
+    ),
+    formatTimeRemaining = (timeRemaining: number): string => {
+      let remaining = timeRemaining;
+      const hours = Math.floor(remaining / (60 * 60));
+      remaining -= hours * 60 * 60;
+      const minutes = Math.floor(remaining / 60);
+      remaining -= minutes * 60;
+      const seconds = remaining;
+      return [hours, minutes, seconds]
+        .map((n) => n.toString().padStart(2, "0"))
+        .join(":");
+    };
 
   useEffect(() => {
     const timerInterval = setInterval(() => {

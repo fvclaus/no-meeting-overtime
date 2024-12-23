@@ -10,10 +10,10 @@ import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest): Promise<Response> {
-  const oauth2Client = await getCredentials();
-  const userinfo: UserInfo = {
-    authenticated: false,
-  };
+  const oauth2Client = await getCredentials(),
+    userinfo: UserInfo = {
+      authenticated: false,
+    };
   if (oauth2Client !== undefined) {
     try {
       const sessionData = await getSessionOrThrow(req);
@@ -25,7 +25,7 @@ export async function GET(req: NextRequest): Promise<Response> {
       }
 
       // TODO How often do we need to actually load this endpoint to make sure that the user is still logged in.
-      // if (userinfo.name === undefined || userinfo.picture === undefined) {
+      // If (userinfo.name === undefined || userinfo.picture === undefined) {
       const response = await google.oauth2("v2").userinfo.get({
         auth: oauth2Client,
       });
@@ -34,7 +34,7 @@ export async function GET(req: NextRequest): Promise<Response> {
 
       if (response.data.name) {
         // TODO Expire
-        // expire()
+        // Expire()
         await setOrThrowSessionKey(req, "name", response.data.name);
         userinfo.name = response.data.name;
       }

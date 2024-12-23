@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, beforeAll } from "vitest";
+import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import * as handler from "./route";
 import { findMeeting, findUser } from "../../../firestore";
 import { getSessionKey } from "@/app/session-store";
@@ -12,7 +12,7 @@ describe("/api/meeting/[meetingCode]", () => {
     vi.mock("googleapis");
     vi.resetAllMocks();
     const findMeetingMock: typeof findMeeting = async (params) => {
-      const meetingCode = (await params).meetingCode;
+      const { meetingCode } = await params;
       switch (meetingCode) {
         case "existingMeeting": {
           return {
@@ -137,11 +137,11 @@ describe("/api/meeting/[meetingCode]", () => {
 
     it("should fail if gcloud header is missing", async () => {
       const req = new NextRequest(
-        "http://localhost/api/meeting/existingMeeting",
-      );
-      const response = await handler.DELETE(req, {
-        params: Promise.resolve({ meetingCode: "existingMeeting" }),
-      });
+          "http://localhost/api/meeting/existingMeeting",
+        ),
+        response = await handler.DELETE(req, {
+          params: Promise.resolve({ meetingCode: "existingMeeting" }),
+        });
       expect(response.status).toBe(403);
       expect(await response.text()).toBe("No X-CLOUDTASKS-TASKNAME header");
     });

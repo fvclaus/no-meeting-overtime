@@ -7,13 +7,12 @@ export default async function Page({
 }: {
   params: Promise<{ meetingCode: string }>;
 }) {
-  const meetingCode = (await params).meetingCode;
+  const { meetingCode } = await params,
+    res = await fetch(`${SITE_BASE}/api/meeting/${meetingCode}`, {
+      headers: { Cookie: cookies().toString() },
+    });
 
-  const res = await fetch(`${SITE_BASE}/api/meeting/${meetingCode}`, {
-    headers: { Cookie: cookies().toString() },
-  });
-
-  let meeting: MeetingData | undefined = undefined;
+  let meeting: MeetingData | undefined;
 
   if (res.ok) {
     const data = await res.json();
@@ -31,7 +30,6 @@ export default async function Page({
         </div>
       </div>
     );
-  } else {
-    return <JoinMeeting meeting={meeting}></JoinMeeting>;
   }
+  return <JoinMeeting meeting={meeting}></JoinMeeting>;
 }

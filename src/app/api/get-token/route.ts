@@ -1,9 +1,9 @@
 import {
   deleteSessionKey,
+  getSession,
   getSessionKey,
   setSession,
   setSessionKey,
-  getSession,
 } from "@/app/session-store";
 import { START_MEETING_URL } from "@/shared/server_constants";
 import { createOauth2Client, db } from "@/shared/server_constants";
@@ -26,7 +26,7 @@ export async function GET(req: NextRequest) {
   const state = req.nextUrl.searchParams.get("state");
 
   if (state !== session.state) {
-    //check state value
+    //Check state value
     return new NextResponse(
       `Stored state ${session.state} does not match received state ${state}`,
       { status: 400 },
@@ -37,8 +37,8 @@ export async function GET(req: NextRequest) {
 
   // Get access and refresh tokens (if access_type is offline)
   // TODO Type check
-  const oauth2Client = createOauth2Client();
-  const code = req.nextUrl.searchParams.get("code");
+  const oauth2Client = createOauth2Client(),
+    code = req.nextUrl.searchParams.get("code");
   if (code == null) {
     return new NextResponse("No code transmitted", { status: 400 });
   }
@@ -47,12 +47,11 @@ export async function GET(req: NextRequest) {
 
   // TODO Missing access token?
   const userInfoResponse = await oauth2Client.getTokenInfo(
-    tokens.access_token!,
-  );
+      tokens.access_token!,
+    ),
+    // TODO Validate refresh token?
 
-  // TODO Validate refresh token?
-
-  const doc = await db.collection("user").doc(userInfoResponse.sub!).get();
+    doc = await db.collection("user").doc(userInfoResponse.sub!).get();
 
   try {
     const data = {} as any;

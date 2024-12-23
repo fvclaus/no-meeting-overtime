@@ -1,5 +1,5 @@
 import { cookies } from "next/headers";
-import { createOauth2Client, db, SITE_BASE } from "../shared/server_constants";
+import { SITE_BASE, createOauth2Client, db } from "../shared/server_constants";
 import { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
 import { FieldValue } from "@google-cloud/firestore";
 import { NextRequest } from "next/server";
@@ -55,9 +55,8 @@ export async function getSessionKey<T extends keyof SessionData>(
   const data = await getSession();
   if (!data) {
     return undefined;
-  } else {
-    return data[key];
   }
+  return data[key];
 }
 
 export async function getSession(): Promise<SessionData | undefined> {
@@ -65,13 +64,12 @@ export async function getSession(): Promise<SessionData | undefined> {
   if (!sessionId) {
     return undefined;
   }
-  const doc = await db.collection("session").doc(sessionId).get();
-  const data = doc.data();
+  const doc = await db.collection("session").doc(sessionId).get(),
+    data = doc.data();
   if (!data) {
     return undefined;
-  } else {
-    return data;
   }
+  return data;
 }
 
 export async function getSessionOrThrow(

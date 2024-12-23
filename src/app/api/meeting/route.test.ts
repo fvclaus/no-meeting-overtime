@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import * as handler from "./route";
 import { getCredentials, getSessionKey } from "@/app/session-store";
 import { google } from "googleapis";
@@ -28,11 +28,10 @@ describe("/api/meeting/[meetingCode]", () => {
   describe("POST", () => {
     it("should return 400 for invalid request body", async () => {
       const req = new NextRequest("http://localhost/api/meeting", {
-        method: "POST",
-        body: JSON.stringify({ invalid: "data" }),
-      });
-
-      const response = await handler.POST(req);
+          method: "POST",
+          body: JSON.stringify({ invalid: "data" }),
+        }),
+        response = await handler.POST(req);
       await expectBadRequest(response, {
         path: ["scheduledEndTime"],
         message: "Required",
@@ -41,11 +40,10 @@ describe("/api/meeting/[meetingCode]", () => {
 
     it("should fail if it is not a date", async () => {
       const req = new NextRequest("http://localhost/api/meeting", {
-        method: "POST",
-        body: JSON.stringify({ scheduledEndTime: "foo" }),
-      });
-
-      const response = await handler.POST(req);
+          method: "POST",
+          body: JSON.stringify({ scheduledEndTime: "foo" }),
+        }),
+        response = await handler.POST(req);
       await expectBadRequest(response, {
         path: ["scheduledEndTime"],
         message: "Invalid datetime",
@@ -54,13 +52,12 @@ describe("/api/meeting/[meetingCode]", () => {
 
     it("should fail if time is not far enough in the future", async () => {
       const req = new NextRequest("http://localhost/api/meeting", {
-        method: "POST",
-        body: JSON.stringify({
-          scheduledEndTime: formatISO(add(new Date(), { minutes: 2 })),
+          method: "POST",
+          body: JSON.stringify({
+            scheduledEndTime: formatISO(add(new Date(), { minutes: 2 })),
+          }),
         }),
-      });
-
-      const response = await handler.POST(req);
+        response = await handler.POST(req);
       await expectBadRequest(response, {
         path: ["scheduledEndTime"],
         message: "Datetime must be 5 minutes in future",
@@ -69,13 +66,12 @@ describe("/api/meeting/[meetingCode]", () => {
 
     it("should return 403 if no credentials in session", async () => {
       const req = new NextRequest("http://localhost/api/meeting", {
-        method: "POST",
-        body: JSON.stringify({
-          scheduledEndTime: formatISO(add(new Date(), { minutes: 10 })),
+          method: "POST",
+          body: JSON.stringify({
+            scheduledEndTime: formatISO(add(new Date(), { minutes: 10 })),
+          }),
         }),
-      });
-
-      const response = await handler.POST(req);
+        response = await handler.POST(req);
       expect(response.status).toBe(403);
       expect(await response.text()).toBe("No credentials in session");
     });
@@ -84,13 +80,12 @@ describe("/api/meeting/[meetingCode]", () => {
       vi.mocked(getCredentials).mockResolvedValue({} as any);
 
       const req = new NextRequest("http://localhost/api/meeting", {
-        method: "POST",
-        body: JSON.stringify({
-          scheduledEndTime: formatISO(add(new Date(), { minutes: 10 })),
+          method: "POST",
+          body: JSON.stringify({
+            scheduledEndTime: formatISO(add(new Date(), { minutes: 10 })),
+          }),
         }),
-      });
-
-      const response = await handler.POST(req);
+        response = await handler.POST(req);
       expect(response.status).toBe(403);
       expect(await response.text()).toBe("No userId in session");
     });
@@ -105,13 +100,12 @@ describe("/api/meeting/[meetingCode]", () => {
       } as any);
 
       const req = new NextRequest("http://localhost/api/meeting", {
-        method: "POST",
-        body: JSON.stringify({
-          scheduledEndTime: formatISO(add(new Date(), { minutes: 10 })),
+          method: "POST",
+          body: JSON.stringify({
+            scheduledEndTime: formatISO(add(new Date(), { minutes: 10 })),
+          }),
         }),
-      });
-
-      const response = await handler.POST(req);
+        response = await handler.POST(req);
       expect(response.status).toBe(500);
       expect(await response.text()).toBe(
         "Creation of meeting failed: Google API error",
@@ -133,7 +127,7 @@ describe("/api/meeting/[meetingCode]", () => {
         },
       } as any);
 
-      // const CloudTasksClientMock = vi.fn()
+      // Const CloudTasksClientMock = vi.fn()
       // CloudTasksClientMock.prototype.createTask = vi.fn(() => Promise.resolve());
       // CloudTasksClientMock.prototype.queuePath = vi.fn(() => "queuePath");
       vi.mocked(CloudTasksClient.prototype.createTask).mockResolvedValue([
@@ -141,13 +135,12 @@ describe("/api/meeting/[meetingCode]", () => {
       ] as any);
 
       const req = new NextRequest("http://localhost/api/meeting", {
-        method: "POST",
-        body: JSON.stringify({
-          scheduledEndTime: formatISO(add(new Date(), { minutes: 10 })),
+          method: "POST",
+          body: JSON.stringify({
+            scheduledEndTime: formatISO(add(new Date(), { minutes: 10 })),
+          }),
         }),
-      });
-
-      const response = await handler.POST(req);
+        response = await handler.POST(req);
       expect(response.status).toBe(200);
       const data = await response.json();
       expect(data).toEqual({

@@ -14,42 +14,39 @@ import { differenceInSeconds, formatISO, parseISO } from "date-fns";
 import { NextRequest, NextResponse } from "next/server";
 import { saveMeeting } from "../../firestore";
 
-const EARLIEST_START_OFFSET_IN_MINUTES = 5;
-
-const RequestBodySchema = z.object({
-  scheduledEndTime: z
-    .string()
-    .datetime({ offset: true })
-    .refine(
-      (value) => {
-        const date = new Date(value);
-        const now = new Date();
-        const fiveMinutesFromNow = new Date(
-          now.getTime() + EARLIEST_START_OFFSET_IN_MINUTES * 60 * 1000,
-        );
-        return date > fiveMinutesFromNow;
-      },
-      {
-        message: `Datetime must be ${EARLIEST_START_OFFSET_IN_MINUTES} minutes in future`,
-      },
-    )
-    .pipe(z.coerce.date()),
-});
-
-const client = new CloudTasksClient();
+const EARLIEST_START_OFFSET_IN_MINUTES = 5,
+  RequestBodySchema = z.object({
+    scheduledEndTime: z
+      .string()
+      .datetime({ offset: true })
+      .refine(
+        (value) => {
+          const date = new Date(value),
+            now = new Date(),
+            fiveMinutesFromNow = new Date(
+              now.getTime() + EARLIEST_START_OFFSET_IN_MINUTES * 60 * 1000,
+            );
+          return date > fiveMinutesFromNow;
+        },
+        {
+          message: `Datetime must be ${EARLIEST_START_OFFSET_IN_MINUTES} minutes in future`,
+        },
+      )
+      .pipe(z.coerce.date()),
+  }),
+  client = new CloudTasksClient();
 
 export async function POST(req: NextRequest) {
   console.log(client.auth);
 
-  const body = await req.json();
-  const result = RequestBodySchema.safeParse(body);
+  const body = await req.json(),
+    result = RequestBodySchema.safeParse(body);
   if (result.error) {
     return NextResponse.json(result.error.errors, { status: 400 });
   }
 
-  const reqData = result.data;
-
-  const oauthClient = await getCredentials();
+  const reqData = result.data,
+    oauthClient = await getCredentials();
 
   if (oauthClient === undefined) {
     return new NextResponse("No credentials in session", { status: 403 });
@@ -63,39 +60,39 @@ export async function POST(req: NextRequest) {
 
   try {
     const space = await google.meet("v2").spaces.create({
-      auth: oauthClient,
-    });
-    const meeting: Meeting = {
-      scheduledEndTime: formatISO(reqData.scheduledEndTime),
-      name: space.data.name!,
-      uri: space.data.meetingUri!,
-      userId: userId,
-    };
+        auth: oauthClient,
+      }),
+      meeting: Meeting = {
+        scheduledEndTime: formatISO(reqData.scheduledEndTime),
+        name: space.data.name!,
+        uri: space.data.meetingUri!,
+        userId,
+      };
 
     console.log(`Created meeting ${space.data.meetingCode}`);
     const secondsToEnd = Math.max(
-      0,
-      differenceInSeconds(reqData.scheduledEndTime, Date.now()),
-    );
-    // TODO eslint Rule Hanging Promise
-    const [response] = await client.createTask({
-      parent: client.queuePath(PROJECT_ID, QUEUE_LOCATION, "end-meetings1"),
-      task: {
-        httpRequest: {
-          httpMethod: "DELETE",
-          url: `${SITE_BASE_CLOUD_TASKS}/api/meeting/${space.data.meetingCode!}?userId=${userId}`,
-          headers: {
-            "Content-Type": "application/json",
+        0,
+        differenceInSeconds(reqData.scheduledEndTime, Date.now()),
+      ),
+      // TODO eslint Rule Hanging Promise
+      [response] = await client.createTask({
+        parent: client.queuePath(PROJECT_ID, QUEUE_LOCATION, "end-meetings1"),
+        task: {
+          httpRequest: {
+            httpMethod: "DELETE",
+            url: `${SITE_BASE_CLOUD_TASKS}/api/meeting/${space.data.meetingCode!}?userId=${userId}`,
+            headers: {
+              "Content-Type": "application/json",
+            },
+            oidcToken: {
+              serviceAccountEmail: CLOUD_TASKS_SERVICE_ACCOUNT,
+            },
           },
-          oidcToken: {
-            serviceAccountEmail: CLOUD_TASKS_SERVICE_ACCOUNT,
+          scheduleTime: {
+            seconds: secondsToEnd + Date.now() / 1000,
           },
         },
-        scheduleTime: {
-          seconds: secondsToEnd + Date.now() / 1000,
-        },
-      },
-    });
+      });
     console.log(
       `Created task with name ${response.name} to end meeting ${space.data.meetingCode} in ${secondsToEnd}s`,
     );
