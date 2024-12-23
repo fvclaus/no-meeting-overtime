@@ -69,7 +69,7 @@ export async function POST(req: NextRequest) {
       scheduledEndTime: formatISO(reqData.scheduledEndTime),
       name: space.data.name!,
       uri: space.data.meetingUri!,
-      userId: userId!,
+      userId: userId,
     };
 
     console.log(`Created meeting ${space.data.meetingCode}`);

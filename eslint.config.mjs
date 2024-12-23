@@ -6,11 +6,19 @@ import pluginNext from "@next/eslint-plugin-next";
 import parser from "@typescript-eslint/parser"; // optional
 
 /** @type {import('eslint').Linter.Config[]} */
-export default [
+export default tseslint.config(
   { files: ["**/*.{js,mjs,cjs,ts,jsx,tsx}"] },
   { languageOptions: { globals: globals.browser } },
   pluginJs.configs.recommended,
-  ...tseslint.configs.recommended,
+  tseslint.configs.strictTypeChecked,
+  {
+    languageOptions: {
+      parserOptions: {
+        projectService: true,
+        tsconfigRootDir: import.meta.dirname,
+      },
+    },
+  },
   eslintPluginPrettierRecommended,
   {
     name: "ESLint Config - nextjs",
@@ -33,4 +41,4 @@ export default [
       ...pluginNext.configs["core-web-vitals"].rules,
     },
   },
-];
+);

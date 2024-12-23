@@ -161,7 +161,7 @@ describe("/api/meeting/[meetingCode]", () => {
 });
 
 async function expectBadRequest(
-  response: NextResponse<unknown>,
+  response: NextResponse,
   error: Partial<ZodIssue>,
 ) {
   expect(response.status).toBe(400);
