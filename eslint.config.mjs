@@ -6,6 +6,7 @@ import tseslint from "typescript-eslint";
 import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended";
 import pluginNext from "@next/eslint-plugin-next";
 import parser from "@typescript-eslint/parser"; // optional
+import json from "@eslint/json";
 
 /** @type {import('eslint').Linter.Config[]} */
 export default tseslint.config(
@@ -44,4 +45,30 @@ export default tseslint.config(
       ...pluginNext.configs["core-web-vitals"].rules,
     },
   },
+  {
+    rules: {
+      'max-lines-per-function': 'off'
+    }
+  },
+  {
+		plugins: {
+			json,
+		},
+	},
+
+	// lint JSON files
+	{
+		files: ["**/*.json"],
+		ignores: ["package-lock.json"],
+		language: "json/json",
+		...json.configs.recommended,
+	},
+
+		// lint JSONC files
+    {
+      files: ["**/*.jsonc"],
+      language: "json/jsonc",
+      ...json.configs.recommended,
+    },
+  
 );

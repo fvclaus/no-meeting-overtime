@@ -4,6 +4,7 @@ import {
 } from "@/shared/server_constants";
 import { loadUserInfo } from "./loadUserInfo";
 import Link from "next/link";
+import GoogleLoginButton from "./GoogleLoginButton";
 
 export default async function Page() {
   const userInfo = await loadUserInfo();
@@ -31,6 +32,7 @@ export default async function Page() {
                 </ul>
               </p>
             )}
+            <GoogleLoginButton />
             <a
               className="bg-gray-200 hover:bg-gray-300 rounded-lg px-6 py-3"
               href={REDIRECT_TO_AUTHORIZATION_API_URL}

@@ -1,15 +1,12 @@
 {
-  "[typescript]": {
-    "editor.defaultFormatter": "dbaeumer.vscode-eslint",
-    "editor.codeActionsOnSave": {
-      "source.formatDocument": "always",
-    },
+  "editor.indentSize": "2",
+  "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+  "editor.codeActionsOnSave": {
+    "source.formatDocument": "always",
   },
-  "[javascript]": {
-    "editor.defaultFormatter": "dbaeumer.vscode-eslint",
-    "editor.codeActionsOnSave": {
-      "source.formatDocument": "always",
-    },
+  ["css"]: {
+    "editor.formatOnSave": false,
+    "editor.codeActionsOnSave": []
   },
   "typescript.format.enable": true
 }
