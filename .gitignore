@@ -8,3 +8,7 @@ certificates
 node_modules
 .terraform/
 terraform.tfvars
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/

@@ -53,6 +53,8 @@ export default tseslint.config(
       'sort-vars': 'off',
       'one-var': 'off',
       'no-warning-comments': 'off',
+      'capitalized-comments': 'off',
+      'sort-keys': 'off',
     }
   },
   {
