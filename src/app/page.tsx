@@ -33,12 +33,6 @@ export default async function Page() {
               </p>
             )}
             <GoogleLoginButton />
-            <a
-              className="bg-gray-200 hover:bg-gray-300 rounded-lg px-6 py-3"
-              href={REDIRECT_TO_AUTHORIZATION_API_URL}
-            >
-              Sign in with Google to get started
-            </a>
           </>
         )}
         {userInfo.authenticatedWithRequiredScopes && (

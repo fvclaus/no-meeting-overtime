@@ -47,7 +47,12 @@ export default tseslint.config(
   },
   {
     rules: {
-      'max-lines-per-function': 'off'
+      'max-lines-per-function': 'off',
+      'sort-imports': 'off',
+      'no-magic-numbers': 'off',
+      'sort-vars': 'off',
+      'one-var': 'off',
+      'no-warning-comments': 'off',
     }
   },
   {

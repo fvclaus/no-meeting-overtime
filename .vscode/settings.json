@@ -1,10 +1,8 @@
 {
   "editor.indentSize": "2",
   "editor.defaultFormatter": "dbaeumer.vscode-eslint",
-  "editor.codeActionsOnSave": {
-    "source.formatDocument": "always",
-  },
-  ["css"]: {
+  "editor.codeActionsOnSave": ["source.fixAll.eslint"],
+  "[css]": {
     "editor.formatOnSave": false,
     "editor.codeActionsOnSave": []
   },
