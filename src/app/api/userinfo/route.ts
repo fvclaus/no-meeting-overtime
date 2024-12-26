@@ -14,7 +14,7 @@ export async function GET(req: NextRequest): Promise<Response> {
     userinfo: UserInfo = {
       authenticated: false,
     };
-  if (oauth2Client !== undefined) {
+  if (typeof oauth2Client !== "undefined") {
     try {
       const sessionData = await getSessionOrThrow(req);
       if (typeof sessionData.name === "string") {
