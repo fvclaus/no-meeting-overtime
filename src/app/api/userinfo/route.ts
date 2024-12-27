@@ -29,8 +29,6 @@ export async function GET(req: NextRequest): Promise<Response> {
       const response = await google.oauth2("v2").userinfo.get({
         auth: oauth2Client,
       });
-      // TODO
-      console.log(response);
 
       if (response.data.name) {
         // TODO Expire
@@ -49,22 +47,33 @@ export async function GET(req: NextRequest): Promise<Response> {
       userinfo.authenticated = true;
       // TODO Scope is only defined if we call the userinfo endpoint
       userinfo.scope = oauth2Client.credentials.scope;
-    } catch (e) {
-      if (e instanceof Error) {
-        let message;
-        if (e.message === "invalid_grant") {
-          message = "Tokens expired or revoked";
+    } catch (error) {
+      const headers = new Headers();
+      headers.set("Content-Type", "text/plain");
+      if (
+        error instanceof Error &&
+        "status" in error &&
+        typeof error.status === "number"
+      ) {
+        if (error.message === "invalid_grant" || error.status === 401) {
           // TODO Drop refresh token
           await deleteSessionKey(cookies(), "tokens");
-        } else {
-          // TODO Log this somehow
-          console.log(e);
-          message = e.message;
+          return new NextResponse("Tokens expired or revoked", {
+            status: error.status,
+            headers,
+          });
         }
-        const headers = new Headers();
-        headers.set("Content-Type", "text/plain");
-        return new NextResponse(message, { status: 500, headers });
+
+        console.log(error);
+        return new NextResponse("Unknown error", {
+          status: error.status,
+          headers,
+        });
       }
+      // TODO Log this somehow
+      console.log(error);
+
+      return new NextResponse("Unknown error", { status: 500, headers });
     }
   }
   return NextResponse.json(userinfo);

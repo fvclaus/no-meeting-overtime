@@ -1,9 +1,5 @@
-import {
-  REDIRECT_TO_AUTHORIZATION_API_URL,
-  START_MEETING_URL,
-} from "@/shared/server_constants";
+import { START_MEETING_URL } from "@/shared/server_constants";
 import { loadUserInfo } from "./loadUserInfo";
-import Link from "next/link";
 import GoogleLoginButton from "./GoogleLoginButton";
 
 export default async function Page() {
@@ -20,7 +16,12 @@ export default async function Page() {
           can set a firm end time for your Google Meet sessions, and we'll make
           sure the meeting wraps up when it’s supposed to.
         </p>
-        {!userInfo.authenticatedWithRequiredScopes && (
+        {!userInfo.authenticated && (
+          <>
+            <GoogleLoginButton />
+          </>
+        )}
+        {userInfo.authenticated && userInfo.missingScopes.length > 0 && (
           <>
             {userInfo.missingScopes.length > 0 && (
               <p>
@@ -35,13 +36,17 @@ export default async function Page() {
             <GoogleLoginButton />
           </>
         )}
-        {userInfo.authenticatedWithRequiredScopes && (
-          <Link
-            className="btn bg-gray-200 hover:bg-gray-300 rounded-lg px-6 py-3"
-            href={START_MEETING_URL}
-          >
-            Get Started
-          </Link>
+        {userInfo.authenticated && userInfo.missingScopes.length === 0 && (
+          <>
+            <form action={START_MEETING_URL} method="get">
+              <button
+                type="submit"
+                className="btn bg-gray-200 hover:bg-gray-300 rounded-lg px-6 py-3"
+              >
+                Get started
+              </button>
+            </form>
+          </>
         )}
       </div>
     </>

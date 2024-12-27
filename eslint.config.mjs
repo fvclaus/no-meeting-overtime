@@ -56,7 +56,8 @@ export default tseslint.config(
       'capitalized-comments': 'off',
       'sort-keys': 'off',
       'max-statements': 'off',
-      'func-style': 'off'
+      'func-style': 'off',
+      'no-undefined': 'off'
     }
   },
   {

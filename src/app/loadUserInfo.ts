@@ -9,7 +9,6 @@ import { UserInfo } from "../types";
 export async function loadUserInfo(): Promise<
   UserInfo & {
     missingScopes: string[];
-    authenticatedWithRequiredScopes: boolean;
   }
 > {
   const userInfoRequest = await fetch(`${SITE_BASE}/api/userinfo`, {
@@ -19,7 +18,6 @@ export async function loadUserInfo(): Promise<
     return {
       authenticated: false,
       missingScopes: REQUIRED_SCOPES,
-      authenticatedWithRequiredScopes: false,
     };
   }
   const userInfo = (await userInfoRequest.json()) as UserInfo;
@@ -28,7 +26,5 @@ export async function loadUserInfo(): Promise<
   return {
     ...userInfo,
     missingScopes,
-    authenticatedWithRequiredScopes:
-      userInfo.authenticated && missingScopes.length === 0,
   };
 }
