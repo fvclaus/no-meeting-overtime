@@ -9,7 +9,7 @@ export default async function Page() {
   const userInfo = await loadUserInfo();
   console.log(`User for /start is userinfo ${userInfo.authenticated}`);
 
-  if (!userInfo.authenticated && userInfo.missingScopes.length === 0) {
+  if (!userInfo.authenticated || userInfo.missingScopes.length > 0) {
     redirect("/");
   }
 

@@ -1,6 +1,14 @@
 import { START_MEETING_URL } from "@/shared/server_constants";
 import { loadUserInfo } from "./loadUserInfo";
 import GoogleLoginButton from "./GoogleLoginButton";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { AlertCircle } from "lucide-react";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 export default async function Page() {
   const userInfo = await loadUserInfo();
@@ -11,11 +19,11 @@ export default async function Page() {
         <h1 className="text-5xl font-bold">
           Take Control of Your Time. End Meetings on Schedule.
         </h1>
-        <p className="py-6">
-          Say goodbye to meetings that drag on and on. With our solution, you
-          can set a firm end time for your Google Meet sessions, and we'll make
-          sure the meeting wraps up when it’s supposed to.
+        <p className="py-6 text-lg">
+          Avoid meetings that go overtime. This app allows you to set an end
+          time for your Google Meet conferences, ensuring they end on time.
         </p>
+
         {!userInfo.authenticated && (
           <>
             <GoogleLoginButton />
@@ -23,16 +31,19 @@ export default async function Page() {
         )}
         {userInfo.authenticated && userInfo.missingScopes.length > 0 && (
           <>
-            {userInfo.missingScopes.length > 0 && (
-              <p>
-                The following scopes are missing, but required:
-                <ul>
-                  {userInfo.missingScopes.map((scope) => (
-                    <li>{scope}</li>
-                  ))}
-                </ul>
-              </p>
-            )}
+            <Alert variant="destructive" className="max-w-xl mx-auto mb-5 mt-5">
+              <AlertCircle className="h-8 w-8" />
+              <AlertTitle className="text-lg font-semibold">
+                Missing permission
+              </AlertTitle>
+              <AlertDescription>
+                This app is missing the permission to create new Google Meet
+                conferences. This permissions is required for the functionality
+                of this app. Please click on the Sign in with Google Button and
+                grant this permission.
+              </AlertDescription>
+            </Alert>
+
             <GoogleLoginButton />
           </>
         )}
@@ -48,6 +59,30 @@ export default async function Page() {
             </form>
           </>
         )}
+
+        <Accordion type="single" collapsible className="max-w-xl mx-auto">
+          <AccordionItem value="item-1">
+            <AccordionTrigger>How does it work?</AccordionTrigger>
+            <AccordionContent>
+              This app integrates with the Google Meet API to create and end
+              conferences. When you start a meeting, this app sends a request to
+              the Google Meet API to create a new conference. At the scheduled
+              end time, another request is sent to the Google Meet API to end
+              the meeting. The conference can only be ended, if it is active at
+              that moment.
+            </AccordionContent>
+          </AccordionItem>
+          <AccordionItem value="item-2">
+            <AccordionTrigger>
+              Why can it not end conferences I created myself?
+            </AccordionTrigger>
+            <AccordionContent>
+              The app can only end conferences that it created itself due to
+              limitations in the Google Meet API. These ensures that apps in
+              general cannot interfere with meetings created by other means.
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
       </div>
     </>
   );
