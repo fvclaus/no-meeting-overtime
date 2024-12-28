@@ -43,7 +43,6 @@ export async function GET(req: NextRequest) {
     return new NextResponse("No code transmitted", { status: 400 });
   }
   const { tokens } = await oauth2Client.getToken(code);
-  console.log(tokens);
 
   // TODO Missing access token?
   const userInfoResponse = await oauth2Client.getTokenInfo(
