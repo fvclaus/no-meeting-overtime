@@ -2,87 +2,150 @@ import { START_MEETING_URL } from "@/shared/server_constants";
 import { loadUserInfo } from "./loadUserInfo";
 import GoogleLoginButton from "./GoogleLoginButton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, Clock, Calendar, ArrowRight } from "lucide-react";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { Button } from "@/components/ui/button";
 
 export default async function Page() {
   const userInfo = await loadUserInfo();
 
   return (
     <>
-      <div className="max-w-screen-xl text-center">
-        <h1 className="text-5xl font-bold">
-          Take Control of Your Time. End Meetings on Schedule.
-        </h1>
-        <p className="py-6 text-lg">
-          Avoid meetings that go overtime. This app allows you to set an end
-          time for your Google Meet conferences, ensuring they end on time.
-        </p>
+      <div className="flex min-h-svh flex-col items-center justify-center">
+        <div className="w-full max-w-4xl text-center px-4 mb-8 mt-10">
+          <div className="flex justify-center space-x-6 mb-8">
+            <div className="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center transition-colors hover:bg-blue-100">
+              <Clock className="h-6 w-6 text-blue-600" />
+            </div>
+            <div className="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center transition-colors hover:bg-blue-100">
+              <Calendar className="h-6 w-6 text-blue-600" />
+            </div>
+          </div>
+          <h1 className="mb-4 text-4xl font-bold tracking-tight text-gray-800 sm:text-5xl">
+            Take Control of Your Time.
+            <span className="block text-blue-600">
+              End Meetings on Schedule
+            </span>
+          </h1>
+        </div>
 
-        {!userInfo.authenticated && (
-          <>
-            <GoogleLoginButton />
-          </>
-        )}
-        {userInfo.authenticated && userInfo.missingScopes.length > 0 && (
-          <>
-            <Alert variant="destructive" className="max-w-xl mx-auto mb-5 mt-5">
-              <AlertCircle className="h-8 w-8" />
-              <AlertTitle className="text-lg font-semibold">
-                Missing permission
-              </AlertTitle>
-              <AlertDescription>
-                This app is missing the permission to create new Google Meet
-                conferences. This permissions is required for the functionality
-                of this app. Please click on the Sign in with Google Button and
-                grant this permission.
-              </AlertDescription>
-            </Alert>
+        <div className="w-full bg-blue-50 py-16">
+          <div className="max-w-6xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between">
+            <div className="md:w-1/2 mb-8 md:mb-0 md:pr-8">
+              <p className="text-xl text-gray-600 mb-8">
+                Avoid meetings that go overtime. This app allows you to set an
+                end time for your Google Meet meetings, ensuring they end on
+                time.
+              </p>
+              {!userInfo.authenticated && (
+                <>
+                  <GoogleLoginButton />
+                </>
+              )}
+              {userInfo.authenticated && userInfo.missingScopes.length > 0 && (
+                <>
+                  <Alert
+                    variant="destructive"
+                    className="max-w-xl mx-auto mb-5 mt-5"
+                  >
+                    <AlertCircle className="h-8 w-8" />
+                    <AlertTitle className="text-lg font-semibold">
+                      Missing permission
+                    </AlertTitle>
+                    <AlertDescription>
+                      This app is missing the permission to create new Google
+                      Meet meetings. This permissions is required for the
+                      functionality of this app. Please click on the Sign in
+                      with Google Button and grant this permission.
+                    </AlertDescription>
+                  </Alert>
 
-            <GoogleLoginButton />
-          </>
-        )}
-        {userInfo.authenticated && userInfo.missingScopes.length === 0 && (
-          <>
-            <form action={START_MEETING_URL} method="get">
-              <button
-                type="submit"
-                className="btn bg-gray-200 hover:bg-gray-300 rounded-lg px-6 py-3"
-              >
-                Get started
-              </button>
-            </form>
-          </>
-        )}
-
-        <Accordion type="single" collapsible className="max-w-xl mx-auto">
-          <AccordionItem value="item-1">
-            <AccordionTrigger>How does it work?</AccordionTrigger>
-            <AccordionContent>
-              This app integrates with the Google Meet API to create and end
-              conferences. When you start a meeting, this app sends a request to
-              the Google Meet API to create a new conference. At the scheduled
-              end time, another request is sent to the Google Meet API to end
-              the meeting. The conference can only be ended, if it is active at
-              that moment.
-            </AccordionContent>
-          </AccordionItem>
-          <AccordionItem value="item-2">
-            <AccordionTrigger>
-              Why can it not end conferences I created myself?
-            </AccordionTrigger>
-            <AccordionContent>
-              The app can only end conferences that it created itself due to
-              limitations in the Google Meet API. These ensures that apps in
-              general cannot interfere with meetings created by other means.
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
+                  <GoogleLoginButton />
+                </>
+              )}
+              {userInfo.authenticated &&
+                userInfo.missingScopes.length === 0 && (
+                  <>
+                    <form action={START_MEETING_URL} method="get">
+                      <Button
+                        size="lg"
+                        className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-6 text-lg font-semibold shadow-lg transition-all hover:shadow-xl"
+                      >
+                        Get Started
+                        <ArrowRight className="ml-2 h-5 w-5" />
+                      </Button>
+                    </form>
+                  </>
+                )}
+            </div>
+            <div className="md:w-1/2 max-w-sm w-full">
+              <div className="relative">
+                <div className="absolute inset-0 bg-white opacity-80 blur-md rounded-lg"></div>
+                <form className="relative bg-white p-8 rounded-lg shadow-lg">
+                  <div className="mb-4">
+                    <label
+                      htmlFor="end-time"
+                      className="block text-sm font-medium text-blue-700 mb-1 text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    >
+                      When Should the Meeting End?
+                    </label>
+                    <input
+                      type="time"
+                      id="end-time"
+                      disabled
+                      className="bg-white flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                    />
+                  </div>
+                  <Button
+                    type="submit"
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                    disabled
+                  >
+                    Create Meeting
+                  </Button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="w-full max-w-4xl text-center px-4 mt-16">
+          <div className="mt-16">
+            <h2 className="text-2xl font-semibold mb-4 text-center flex items-center justify-center text-gray-800">
+              <Clock className="w-6 h-6 mr-2 text-blue-600" />
+              Frequently Asked Questions
+            </h2>
+            <Accordion type="single" collapsible className="w-full">
+              <AccordionItem value="item-1" className="border-blue-200">
+                <AccordionTrigger className="text-gray-700 hover:text-blue-600">
+                  How does it work?
+                </AccordionTrigger>
+                <AccordionContent className="text-gray-600">
+                  This app integrates with the Google Meet API to create and end
+                  meetings. When you start a meeting, this app sends a request
+                  to the Google Meet API to create a new meeting. At the
+                  scheduled end time, another request is sent to the Google Meet
+                  API to end the meeting. The meeting can only be ended if it is
+                  active at that moment.
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="item-2" className="border-blue-200">
+                <AccordionTrigger className="text-gray-700 hover:text-blue-600">
+                  Why can it not end meetings I created myself?
+                </AccordionTrigger>
+                <AccordionContent className="text-gray-600">
+                  The app can only end meetings that it created itself due to
+                  limitations in the Google Meet API. These ensures that apps in
+                  general cannot interfere with meetings created by other means.
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+          </div>
+        </div>
       </div>
     </>
   );

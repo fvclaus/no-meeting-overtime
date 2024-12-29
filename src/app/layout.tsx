@@ -1,6 +1,7 @@
 import "./styles.css";
 import { loadUserInfo } from "./loadUserInfo";
 import Link from "next/link";
+import { Calendar, Clock } from "lucide-react";
 
 export default async function RootLayout({
   children,
@@ -12,10 +13,12 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body className="flex-row">
-        <div className="navbar bg-gray-100">
+        <div className="navbar bg-white border-b border-gray-100">
           <div className="flex-1">
             <Link className="btn btn-ghost text-xl" href="/">
-              No Meeting Overtime
+              <Clock className="w-6 h-6 text-blue-700" />
+              <Calendar className="w-6 h-6 text-blue-600" />
+              <span className="font-space font-bold">No Meeting Overtime</span>
             </Link>
           </div>
           <div className="flex-none">
@@ -47,7 +50,8 @@ export default async function RootLayout({
             )}
           </div>
         </div>
-        <div className="grid justify-items-center mt-24">{children}</div>
+        {/* <div className="grid justify-items-center mt-24">{children}</div> */}
+        <div className="">{children}</div>
       </body>
     </html>
   );
