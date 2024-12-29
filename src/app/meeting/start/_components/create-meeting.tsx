@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 import { clsx } from "clsx";
 import { Calendar, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import FAQSection from "@/app/FAQSection";
 
 type FormValues = {
   endTime: string;
@@ -146,7 +147,9 @@ export default function CreateMeeting() {
           </div>
         </div>
       </div>
-      <div className="flex justify-center w-full"></div>
+      <div className="flex justify-center w-full max-w-4xl">
+        <FAQSection />
+      </div>
     </>
   );
 }
