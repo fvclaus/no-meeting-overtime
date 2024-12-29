@@ -26,7 +26,7 @@ steps:
   - --no-cpu-boost
   - --memory=265Mi
   - --log-http
-  - --service-account="${_SERVICE_ACCOUNT}"
+  - --service-account=${_SERVICE_ACCOUNT}
   - --set-env-vars="CLIENT_ID=${_CLIENT_ID}"
   - --set-env-vars="CLIENT_SECRET=${_CLIENT_SECRET}"
   - --set-env-vars="PROJECT_ID=${_PROJECT_ID}"
