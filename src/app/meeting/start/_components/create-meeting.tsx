@@ -7,9 +7,10 @@ import { useEffect, useState } from "react";
 import { TZDate } from "@date-fns/tz";
 import { useRouter } from "next/navigation";
 import { clsx } from "clsx";
-import { Calendar, Clock } from "lucide-react";
+import { AlertCircle, Calendar, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import FAQSection from "@/app/FAQSection";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 type FormValues = {
   endTime: string;
@@ -51,7 +52,7 @@ export default function CreateMeeting() {
 
   return (
     <>
-      <div className="flex min-h-svh flex-col items-center justify-center">
+      <div className="flex flex-col items-center justify-center">
         <div className="w-full max-w-4xl text-center px-4 mb-8 mt-10">
           <div className="flex justify-center space-x-6 mb-8">
             <div className="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center transition-colors hover:bg-blue-100">
@@ -75,9 +76,18 @@ export default function CreateMeeting() {
               className="bg-white p-8 rounded-lg shadow-lg w-full max-w-screen-sm"
             >
               {error && (
-                <div role="alert" className="alert alert-error w-full">
-                  <span>{error}</span>
-                </div>
+                <Alert
+                  variant="destructive"
+                  className="max-w-xl mx-auto mb-5 mt-5"
+                >
+                  <div className="flex flex-row items-center">
+                    <AlertCircle className="h-6 w-6" />
+                    <AlertTitle className="text-lg font-semibold ml-2">
+                      Problem while creating meeting
+                    </AlertTitle>
+                  </div>
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
               )}
               <label className="form-control w-full ">
                 <div className="label">
@@ -146,9 +156,9 @@ export default function CreateMeeting() {
             </form>
           </div>
         </div>
-      </div>
-      <div className="flex justify-center w-full max-w-4xl">
-        <FAQSection />
+        <div className="w-full max-w-4xl text-center px-4 mt-16">
+          <FAQSection />
+        </div>
       </div>
     </>
   );

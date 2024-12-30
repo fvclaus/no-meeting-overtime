@@ -81,34 +81,31 @@ export default async function Page() {
             <div className="md:w-1/2 max-w-sm w-full">
               <div className="relative">
                 <div className="absolute inset-0 bg-white opacity-80 blur-md rounded-lg"></div>
-                <form className="relative bg-white p-8 rounded-lg shadow-lg">
+                <div className="relative bg-white p-8 rounded-lg shadow-lg blur-[1px] pointer-events-none">
                   <div className="mb-4">
-                    <label
-                      htmlFor="end-time"
-                      className="block text-sm font-medium text-blue-700 mb-1 text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                    >
+                    <span className="block text-sm font-medium text-blue-700 mb-1">
                       When Should the Meeting End?
-                    </label>
-                    <input
-                      type="time"
-                      id="end-time"
-                      disabled
-                      className="bg-white flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                    />
+                    </span>
+                    <div
+                      className="h-10 w-full rounded-md border border-input bg-white px-3 py-2 text-sm text-gray-400 flex items-center"
+                      aria-label="End time display"
+                      id="end-time-display"
+                    >
+                      12:00 PM
+                    </div>
                   </div>
-                  <Button
-                    type="submit"
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white"
-                    disabled
+                  <div
+                    className="w-full bg-gray-100 text-gray-600 py-2 px-4 rounded-md text-center font-medium border border-gray-300"
+                    aria-label="Schedule Meeting button display"
                   >
                     Create Meeting
-                  </Button>
-                </form>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
-        <div className="w-full max-w-4xl text-center px-4 mt-16">
+        <div className="w-full max-w-4xl text-center px-4">
           <FAQSection />
         </div>
       </div>

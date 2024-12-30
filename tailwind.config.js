@@ -2,6 +2,16 @@ module.exports = {
     darkMode: ['class'],
     content: ['./src/**/*.{js,ts,jsx,tsx,mdx}'],
     plugins: [require('daisyui'), require("tailwindcss-animate")],
+	daisyui: {
+		themes: [
+			{
+				mytheme: {
+					"primary": "#2563eb",
+					"primary-content": "#ffffff"
+				}
+			}
+		]
+	},
     theme: {
     	extend: {
 			fontFamily: {
