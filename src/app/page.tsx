@@ -84,7 +84,7 @@ export default async function Page() {
                 <div className="relative bg-white p-8 rounded-lg shadow-lg blur-[1px] pointer-events-none">
                   <div className="mb-4">
                     <span className="block text-sm font-medium text-blue-700 mb-1">
-                      When Should the Meeting End?
+                      When should the meeting end?
                     </span>
                     <div
                       className="h-10 w-full rounded-md border border-input bg-white px-3 py-2 text-sm text-gray-400 flex items-center"

@@ -1,16 +1,19 @@
 "use client";
 
 import { meet_v2 } from "googleapis";
-import { get, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { addMinutes, formatISO, isAfter, set } from "date-fns";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { TZDate } from "@date-fns/tz";
 import { useRouter } from "next/navigation";
 import { clsx } from "clsx";
 import { AlertCircle, Calendar, Clock } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import FAQSection from "@/app/FAQSection";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import {
+  isMeetingEndAfterOffset,
+  MEETING_END_MINUTES_OFFSET,
+} from "@/shared/constants";
 
 type FormValues = {
   endTime: string;
@@ -89,15 +92,16 @@ export default function CreateMeeting() {
                   <AlertDescription>{error}</AlertDescription>
                 </Alert>
               )}
-              <label className="form-control w-full ">
+              <label htmlFor="endTime" className="form-control w-full ">
                 <div className="label">
                   <span className="label-text text-blue-700">
-                    When Should the Meeting End?
+                    When should the meeting end?
                   </span>
                 </div>
 
                 <input
                   type="time"
+                  id="endTime"
                   className={clsx(
                     "input input-bordered w-full",
                     errors.endTime && "input-error",
@@ -121,17 +125,11 @@ export default function CreateMeeting() {
                       return endTime;
                     },
                     validate: {
+                      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
                       wrongTime: ((v: TZDate) => {
-                        console.log(`Validating ${v}`);
-                        const minLengthInMinutes = 2,
-                          earliestEndTime = addMinutes(
-                            new Date(),
-                            minLengthInMinutes,
-                          );
-                        console.log(`Is ${v} after ${earliestEndTime}`);
                         return (
-                          isAfter(v, earliestEndTime) ||
-                          `Meeting must be at least ${minLengthInMinutes} minutes long.`
+                          isMeetingEndAfterOffset(v) ||
+                          `Meeting must be at least ${MEETING_END_MINUTES_OFFSET} minutes long.`
                         );
                       }) as any,
                     },

@@ -57,7 +57,8 @@ export default tseslint.config(
       'sort-keys': 'off',
       'max-statements': 'off',
       'func-style': 'off',
-      'no-undefined': 'off'
+      'no-undefined': 'off',
+      '@typescript-eslint/restrict-template-expressions': 'off'
     }
   },
   {

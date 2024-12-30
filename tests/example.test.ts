@@ -1,5 +1,6 @@
 import { REQUIRED_SCOPES } from "@/shared/server_constants";
 import { chromium, expect, Locator, Page } from "@playwright/test";
+import { addSeconds, format, roundToNearestMinutes } from "date-fns";
 import { afterEach, beforeEach, describe, it } from "vitest";
 
 //google-chrome-stable --remote-debugging-port=9222
@@ -31,26 +32,27 @@ describe("test", { timeout: 200_000 }, () => {
     await page.waitForURL("**");
 
     const notVerified = page.getByText(/given access/);
-    let isVisible = false;
-    try {
-      await notVerified.waitFor({
-        timeout: 20000,
-      });
-      // TODO Doesn't work any other way
-      isVisible = true;
-    } catch (error) {
-      // Ignore
-    }
-    if (isVisible) {
+    const additionalAccess = page.getByText(/wants additional access/);
+    const access = page.getByText(/wants access/);
+
+    await expect(notVerified.or(additionalAccess).or(access)).toBeVisible();
+
+    if (await notVerified.isVisible()) {
       await continueButton.click();
     }
+
+    await expect(
+      page.getByText("Sign in to No Meeting Overtime"),
+    ).toBeVisible();
     await continueButton.click();
-    if (scopes === REQUIRED_SCOPES) {
-      await page.getByRole("checkbox", { name: "Select all" }).click();
-    } else {
-      for (const scope of scopes) {
+
+    await expect(additionalAccess.or(access)).toBeVisible();
+    for (const scope of scopes) {
+      const locator = page.locator(`css=[data-value="${scope}"]`);
+      // eslint-disable-next-line no-await-in-loop
+      if (await locator.isVisible()) {
         // eslint-disable-next-line no-await-in-loop
-        await page.locator(`css=[data-value="${scope}"]`).click();
+        await locator.click();
       }
     }
     await continueButton.click();
@@ -64,6 +66,8 @@ describe("test", { timeout: 200_000 }, () => {
       await signInWithGoogleButton.click();
       await signInWithGoogle();
       await expect(createMeetingButton).toBeVisible();
+    } else {
+      await getStartedButton.click();
     }
   }
 
@@ -86,13 +90,20 @@ describe("test", { timeout: 200_000 }, () => {
   });
 
   it("happy path", async () => {
-    // const page = defaultContext.pages()[0];
-    // const page = await browser.newPage();
-    await revokeGoogleSignIn();
-    await page.goto("http://localhost:3000");
-    await signInWithGoogleButton.click();
-    await signInWithGoogle();
-    await expect(createMeetingButton).toBeVisible();
+    await signInIfNecessary();
+    const meetingEnd = roundToNearestMinutes(addSeconds(Date.now(), 65), {
+      roundingMethod: "ceil",
+    });
+
+    await page
+      .getByLabel("When should the meeting end?")
+      .fill(format(meetingEnd, "HH:mm"));
+
+    await createMeetingButton.click();
+    const successText = page.getByText(/Meeting with code .* created/);
+    await expect(successText).toBeVisible({ timeout: 20_000 });
+    await expect(page.getByRole("link", { name: "Join now" })).toBeVisible();
+
     // TODO Verify Get started button
   });
 
@@ -112,7 +123,7 @@ describe("test", { timeout: 200_000 }, () => {
     await expect(page.getByText("Missing permission")).toBeVisible();
     await signInWithGoogleButton.click();
     // There is no selection, because it is only a single permission
-    await signInWithGoogle([]);
+    await signInWithGoogle();
     await expect(createMeetingButton).toBeVisible();
   });
 });

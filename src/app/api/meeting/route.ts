@@ -13,23 +13,21 @@ import { SITE_BASE_CLOUD_TASKS } from "@/shared/server_constants";
 import { differenceInSeconds, formatISO, parseISO } from "date-fns";
 import { NextRequest, NextResponse } from "next/server";
 import { saveMeeting } from "../../firestore";
+import {
+  isMeetingEndAfterOffset,
+  MEETING_END_MINUTES_OFFSET,
+} from "@/shared/constants";
 
-const EARLIEST_START_OFFSET_IN_MINUTES = 5,
-  RequestBodySchema = z.object({
+const RequestBodySchema = z.object({
     scheduledEndTime: z
       .string()
       .datetime({ offset: true })
       .refine(
         (value) => {
-          const date = new Date(value),
-            now = new Date(),
-            fiveMinutesFromNow = new Date(
-              now.getTime() + EARLIEST_START_OFFSET_IN_MINUTES * 60 * 1000,
-            );
-          return date > fiveMinutesFromNow;
+          return isMeetingEndAfterOffset(new Date(value));
         },
         {
-          message: `Datetime must be ${EARLIEST_START_OFFSET_IN_MINUTES} minutes in future`,
+          message: `Datetime must be ${MEETING_END_MINUTES_OFFSET} minutes in future`,
         },
       )
       .pipe(z.coerce.date()),
