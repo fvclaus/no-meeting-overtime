@@ -58,7 +58,8 @@ export default tseslint.config(
       'max-statements': 'off',
       'func-style': 'off',
       'no-undefined': 'off',
-      '@typescript-eslint/restrict-template-expressions': 'off'
+      '@typescript-eslint/restrict-template-expressions': 'off',
+      'id-length': 'off'
     }
   },
   {

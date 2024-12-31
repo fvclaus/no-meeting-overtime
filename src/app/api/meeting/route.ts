@@ -4,12 +4,11 @@ import {
   CLOUD_TASKS_SERVICE_ACCOUNT,
   PROJECT_ID,
   QUEUE_LOCATION,
+  SITE_BASE_CLOUD_TASKS,
 } from "@/shared/server_constants";
 import { google } from "googleapis";
 import { CloudTasksClient } from "@google-cloud/tasks";
 
-import z from "zod";
-import { SITE_BASE_CLOUD_TASKS } from "@/shared/server_constants";
 import { differenceInSeconds, formatISO, parseISO } from "date-fns";
 import { NextRequest, NextResponse } from "next/server";
 import { saveMeeting } from "../../firestore";
@@ -17,6 +16,7 @@ import {
   isMeetingEndAfterOffset,
   MEETING_END_MINUTES_OFFSET,
 } from "@/shared/constants";
+import { z } from "zod";
 
 const RequestBodySchema = z.object({
     scheduledEndTime: z
@@ -95,7 +95,9 @@ export async function POST(req: NextRequest) {
       `Created task with name ${response.name} to end meeting ${space.data.meetingCode} in ${secondsToEnd}s`,
     );
     await saveMeeting(space.data.meetingCode!, meeting);
-    return NextResponse.json(space.data);
+    return NextResponse.json({
+      meetingCode: space.data.meetingCode,
+    });
   } catch (e) {
     console.error(e);
     return new NextResponse(

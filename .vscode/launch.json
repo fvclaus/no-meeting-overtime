@@ -36,6 +36,34 @@
             "program": "${workspaceRoot}/node_modules/vitest/vitest.mjs",
             "smartStep": true,
             "console": "integratedTerminal"
+          },
+          {
+            "type": "node",
+            "request": "launch",
+            "name": "Run E2E --test-only",
+            "runtimeExecutable": "tsx",
+            "runtimeArgs": ["--test-only", "--test-force-exit"],
+            "program": "${workspaceFolder}/tests/example.test.ts",
+            "console": "integratedTerminal",
+            "internalConsoleOptions": "neverOpen",
+            "skipFiles": [
+              "<node_internals>/**",
+              "${workspaceFolder}/node_modules/**",
+            ]
+          },
+          {
+            "type": "node",
+            "request": "launch",
+            "name": "Run E2E",
+            "runtimeExecutable": "tsx",
+            "runtimeArgs": ["--test-force-exit"],
+            "program": "${workspaceFolder}/tests/example.test.ts",
+            "console": "integratedTerminal",
+            "internalConsoleOptions": "neverOpen",
+            "skipFiles": [
+              "<node_internals>/**",
+              "${workspaceFolder}/node_modules/**",
+            ]
           }
     ]
 }

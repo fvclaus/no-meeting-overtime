@@ -1,12 +1,29 @@
-import { REQUIRED_SCOPES } from "@/shared/server_constants";
-import { chromium, expect, Locator, Page } from "@playwright/test";
-import { addSeconds, format, roundToNearestMinutes } from "date-fns";
-import { afterEach, beforeEach, describe, it } from "vitest";
+// TODO Just copied to avoid problems with other env variables
+export const REQUIRED_SCOPES = [
+  "https://www.googleapis.com/auth/meetings.space.created",
+];
+import {
+  BrowserContext,
+  chromium,
+  expect,
+  Locator,
+  Page,
+} from "@playwright/test";
+import {
+  addSeconds,
+  differenceInSeconds,
+  format,
+  formatISO,
+  roundToNearestMinutes,
+} from "date-fns";
+import { afterEach, beforeEach, describe, it } from "node:test";
 
 //google-chrome-stable --remote-debugging-port=9222
+// eslint-disable-next-line @typescript-eslint/no-floating-promises
 describe("test", { timeout: 200_000 }, () => {
   // eslint-disable-next-line init-declarations
   let page: Page;
+  let context: BrowserContext;
   let signInWithGoogleButton: Locator;
   let createMeetingButton: Locator;
 
@@ -75,8 +92,8 @@ describe("test", { timeout: 200_000 }, () => {
     const browser = await chromium.connectOverCDP("http://localhost:9222", {
       slowMo: 200,
     });
-    const [defaultContext] = browser.contexts();
-    page = await defaultContext.newPage();
+    [context] = browser.contexts();
+    page = await context.newPage();
     signInWithGoogleButton = page.getByRole("button", {
       name: "Sign in with Google",
     });
@@ -89,24 +106,52 @@ describe("test", { timeout: 200_000 }, () => {
     }
   });
 
+  // eslint-disable-next-line @typescript-eslint/no-floating-promises
   it("happy path", async () => {
     await signInIfNecessary();
-    const meetingEnd = roundToNearestMinutes(addSeconds(Date.now(), 65), {
-      roundingMethod: "ceil",
-    });
+    const shortMeetingEnd = addSeconds(Date.now(), 10);
 
-    await page
-      .getByLabel("When should the meeting end?")
-      .fill(format(meetingEnd, "HH:mm"));
+    const response = await page
+      .context()
+      .request.post("http://localhost:3000/api/meeting", {
+        data: {
+          scheduledEndTime: formatISO(shortMeetingEnd),
+        },
+      });
+    if (response.status() !== 200) {
+      console.error(await response.text());
+    }
+    expect(response.status()).toEqual(200);
+    const body = (await response.json()) as { meetingCode: string };
+    await page.goto(`http://localhost:3000/meeting/${body.meetingCode}`);
+    // const meetingEnd = roundToNearestMinutes(addSeconds(Date.now(), 65), {
+    //   roundingMethod: "ceil",
+    // });
+    // await page
+    //   .getByLabel("When should the meeting end?")
+    //   .fill(format(meetingEnd, "HH:mm"));
 
-    await createMeetingButton.click();
+    // await createMeetingButton.click();
     const successText = page.getByText(/Meeting with code .* created/);
-    await expect(successText).toBeVisible({ timeout: 20_000 });
-    await expect(page.getByRole("link", { name: "Join now" })).toBeVisible();
-
-    // TODO Verify Get started button
+    await expect(successText).toBeVisible({ timeout: 45_000 });
+    const pagePromise = page
+      .context()
+      .waitForEvent("page", (p) =>
+        p.url().startsWith("https://meet.google.com/"),
+      );
+    await page.getByRole("link", { name: "Join now" }).click();
+    const newPage = await pagePromise;
+    await newPage.bringToFront();
+    await expect(
+      newPage.getByRole("heading", {
+        name: "Your host ended the meeting for everyone",
+      }),
+    ).toBeVisible({
+      timeout: (differenceInSeconds(shortMeetingEnd, new Date()) + 10) * 1000,
+    });
   });
 
+  // eslint-disable-next-line @typescript-eslint/no-floating-promises
   it("should display login button after removing connection to app", async () => {
     await signInIfNecessary();
     await revokeGoogleSignIn();
@@ -114,6 +159,7 @@ describe("test", { timeout: 200_000 }, () => {
     await expect(signInWithGoogleButton).toBeVisible();
   });
 
+  // eslint-disable-next-line @typescript-eslint/no-floating-promises
   it("should display missing scopes", async () => {
     await revokeGoogleSignIn();
     await page.goto("http://localhost:3000");
