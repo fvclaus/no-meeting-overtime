@@ -78,16 +78,8 @@ export default function CreateMeeting() {
               className="bg-white p-8 rounded-lg shadow-lg w-full max-w-screen-sm"
             >
               {error && (
-                <Alert
-                  variant="destructive"
-                  className="max-w-xl mx-auto mb-5 mt-5"
-                >
-                  <div className="flex flex-row items-center">
-                    <AlertCircle className="h-6 w-6" />
-                    <AlertTitle className="text-lg font-semibold ml-2">
-                      Problem while creating meeting
-                    </AlertTitle>
-                  </div>
+                <Alert>
+                  <AlertTitle>Problem while creating meeting</AlertTitle>
                   <AlertDescription>{error}</AlertDescription>
                 </Alert>
               )}

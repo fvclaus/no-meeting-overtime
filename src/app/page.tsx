@@ -2,7 +2,7 @@ import { START_MEETING_URL } from "@/shared/server_constants";
 import { loadUserInfo } from "./loadUserInfo";
 import GoogleLoginButton from "./GoogleLoginButton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { AlertCircle, Clock, Calendar, ArrowRight } from "lucide-react";
+import { Clock, Calendar, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import FAQSection from "./FAQSection";
 
@@ -44,14 +44,8 @@ export default async function Page() {
               )}
               {userInfo.authenticated && userInfo.missingScopes.length > 0 && (
                 <>
-                  <Alert
-                    variant="destructive"
-                    className="max-w-xl mx-auto mb-5 mt-5"
-                  >
-                    <AlertCircle className="h-8 w-8" />
-                    <AlertTitle className="text-lg font-semibold">
-                      Missing permission
-                    </AlertTitle>
+                  <Alert>
+                    <AlertTitle>Missing permission</AlertTitle>
                     <AlertDescription>
                       This app is missing the permission to create new Google
                       Meet meetings. This permissions is required for the

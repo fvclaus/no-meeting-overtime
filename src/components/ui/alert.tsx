@@ -1,59 +1,44 @@
 import * as React from "react";
-import { cva, type VariantProps } from "class-variance-authority";
-
 import { cn } from "@/lib/utils";
+import { AlertCircle } from "lucide-react";
 
-const alertVariants = cva(
-  "relative w-full rounded-lg border p-4 [&>svg~*]:pl-7 [&>svg+div]:translate-y-[-3px] [&>svg]:absolute [&>svg]:left-4 [&>svg]:top-4 [&>svg]:text-foreground",
-  {
-    variants: {
-      variant: {
-        default: "bg-background text-foreground",
-        destructive:
-          "border-destructive/50 text-destructive dark:border-destructive [&>svg]:text-destructive",
-      },
-    },
-    defaultVariants: {
-      variant: "default",
-    },
-  },
+const Alert: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({
+  className,
+  ...props
+}) => (
+  <div
+    role="alert"
+    className={cn(
+      "relative w-full rounded-lg border p-4 [&>svg~*]:pl-7 [&>svg+div]:translate-y-[-3px] [&>svg]:absolute [&>svg]:left-4 [&>svg]:top-4 [&>svg]:text-foreground border-destructive/50 text-destructive dark:border-destructive [&>svg]:text-destructive mb-5 mt-5",
+      className,
+    )}
+    {...props}
+  />
 );
 
-const Alert = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement> & VariantProps<typeof alertVariants>
->(({ className, variant, ...props }, ref) => (
-  <div
-    ref={ref}
-    role="alert"
-    className={cn(alertVariants({ variant }), className)}
-    {...props}
-  />
-));
-Alert.displayName = "Alert";
+const AlertTitle: React.FC<React.HTMLAttributes<HTMLHeadingElement>> = ({
+  className,
+  ...props
+}) => (
+  <div className="flex flex-row items-center">
+    <AlertCircle className="h-6 w-6" />
+    <h5
+      className={cn(
+        "text-lg font-semibold leading-none tracking-tight ml-2",
+        className,
+      )}
+      {...props}
+    />
+  </div>
+);
 
-const AlertTitle = React.forwardRef<
-  HTMLParagraphElement,
-  React.HTMLAttributes<HTMLHeadingElement>
->(({ className, ...props }, ref) => (
-  <h5
-    ref={ref}
-    className={cn("font-medium leading-none tracking-tight", className)}
-    {...props}
-  />
-));
-AlertTitle.displayName = "AlertTitle";
-
-const AlertDescription = React.forwardRef<
-  HTMLParagraphElement,
+const AlertDescription: React.FC<
   React.HTMLAttributes<HTMLParagraphElement>
->(({ className, ...props }, ref) => (
+> = ({ className, ...props }) => (
   <div
-    ref={ref}
-    className={cn("text-sm [&_p]:leading-relaxed", className)}
+    className={cn("text-sm [&_p]:leading-relaxed mt-2", className)}
     {...props}
   />
-));
-AlertDescription.displayName = "AlertDescription";
+);
 
 export { Alert, AlertTitle, AlertDescription };
