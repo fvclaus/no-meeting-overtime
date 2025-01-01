@@ -4,7 +4,8 @@
   "editor.codeActionsOnSave": ["source.fixAll.eslint"],
   "[css]": {
     "editor.formatOnSave": false,
-    "editor.codeActionsOnSave": []
+    "editor.codeActionsOnSave": [],
+    "editor.defaultFormatter": "vscode.css-language-features"
   },
   "typescript.format.enable": true
 }

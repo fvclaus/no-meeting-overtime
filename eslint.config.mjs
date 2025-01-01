@@ -7,10 +7,16 @@ import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended"
 import pluginNext from "@next/eslint-plugin-next";
 import parser from "@typescript-eslint/parser"; // optional
 import json from "@eslint/json";
+// import css from "@eslint/css";
 
 /** @type {import('eslint').Linter.Config[]} */
 export default tseslint.config(
-  
+  // TODO
+  // {
+	// 	files: ["**/*.css"],
+	// 	language: "css/css",
+	// 	...css.configs.recommended,
+	// },
   { files: ["**/*.{js,mjs,cjs,ts,jsx,tsx}"] },
   { languageOptions: { globals: globals.browser } },
   pluginJs.configs.all,
@@ -59,9 +65,11 @@ export default tseslint.config(
       'func-style': 'off',
       'no-undefined': 'off',
       '@typescript-eslint/restrict-template-expressions': 'off',
-      'id-length': 'off'
+      'id-length': 'off',
+      'max-lines': 'off'
     }
   },
+  
   {
 		plugins: {
 			json,

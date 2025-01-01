@@ -1,12 +1,16 @@
 import { cookies } from "next/headers";
-import { SITE_BASE, createOauth2Client, db } from "../shared/server_constants";
+import {
+  SESSION_ID_NAME,
+  SITE_BASE,
+  createOauth2Client,
+  db,
+} from "../shared/server_constants";
 import { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
 import { FieldValue } from "@google-cloud/firestore";
 import { NextRequest } from "next/server";
 
 type SessionId = string;
 
-const SESSION_ID_NAME = "session-id";
 async function getSessionId(): Promise<SessionId | undefined> {
   const cookieStore = await cookies();
   return cookieStore.get(SESSION_ID_NAME)?.value;

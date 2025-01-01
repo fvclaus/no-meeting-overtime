@@ -33,6 +33,7 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "build/types/**/*.ts",
+    "eslint.config.mjs",
     "vitest.config.mts"  ],
   "exclude": [
     "node_modules"
