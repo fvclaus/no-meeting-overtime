@@ -11,13 +11,13 @@ import { NextRequest } from "next/server";
 
 type SessionId = string;
 
-async function getSessionId(): Promise<SessionId | undefined> {
-  const cookieStore = await cookies();
+function getSessionId(): SessionId | undefined {
+  const cookieStore = cookies();
   return cookieStore.get(SESSION_ID_NAME)?.value;
 }
 
-async function setSessionId(sessionId: SessionId): Promise<void> {
-  const cookieStore = await cookies();
+function setSessionId(sessionId: SessionId): void {
+  const cookieStore = cookies();
   if (SITE_BASE.startsWith("https://")) {
     cookieStore.set(SESSION_ID_NAME, sessionId, {
       path: "/",
@@ -36,21 +36,48 @@ export interface SessionData {
   userId?: string;
   name?: string;
   picture?: string;
+  hasAcceptedPrivacyPolicy: boolean;
 }
 
-async function _set(sessionId: string, data: SessionData): Promise<void> {
+async function createNewSession(
+  sessionId: string,
+  data: SessionData,
+): Promise<void> {
+  await db.collection("session").doc(sessionId).set(data);
+}
+
+async function _set(
+  sessionId: string,
+  data: Partial<SessionData>,
+): Promise<void> {
   await db.collection("session").doc(sessionId).set(data, { merge: true });
 }
 
 async function getSessionIdAndCreateIfMissing(): Promise<string> {
-  const sessionId = await getSessionId();
+  const sessionId = getSessionId();
   if (!sessionId) {
     const newSessionId = crypto.randomUUID();
-    await setSessionId(newSessionId);
+    setSessionId(newSessionId);
+    await createNewSession(newSessionId, {
+      hasAcceptedPrivacyPolicy: false,
+    });
     return newSessionId;
   }
 
   return sessionId;
+}
+
+export async function getSession(): Promise<SessionData | undefined> {
+  const sessionId = getSessionId();
+  if (!sessionId) {
+    return undefined;
+  }
+  const doc = await db.collection("session").doc(sessionId).get(),
+    data = doc.data() as SessionData | undefined;
+  if (!data) {
+    return undefined;
+  }
+  return data;
 }
 
 export async function getSessionKey<T extends keyof SessionData>(
@@ -63,34 +90,11 @@ export async function getSessionKey<T extends keyof SessionData>(
   return data[key];
 }
 
-export async function getSession(): Promise<SessionData | undefined> {
-  const sessionId = await getSessionId();
-  if (!sessionId) {
-    return undefined;
-  }
-  const doc = await db.collection("session").doc(sessionId).get(),
-    data = doc.data();
-  if (!data) {
-    return undefined;
-  }
-  return data;
-}
-
-export async function getSessionOrThrow(
-  req: ReadonlyRequestCookies | NextRequest,
-): Promise<SessionData> {
-  const data = await getSession();
-  if (data === undefined) {
-    throw new Error("User should not be here without session");
-  }
-  return data;
-}
-
 export async function deleteSessionKey<T extends keyof SessionData>(
   req: ReadonlyRequestCookies | NextRequest,
   key: T,
 ): Promise<void> {
-  const sessionId = await getSessionId();
+  const sessionId = getSessionId();
   if (sessionId !== undefined) {
     await db
       .collection("session")
@@ -106,7 +110,7 @@ export async function setOrThrowSessionKey<T extends keyof SessionData>(
   key: T,
   value: NonNullable<SessionData[T]>,
 ): Promise<void> {
-  const sessionId = await getSessionId();
+  const sessionId = getSessionId();
   if (!sessionId) {
     throw new Error("User should not be here without session");
   }
@@ -131,7 +135,7 @@ export async function setSession(session: SessionData): Promise<void> {
 }
 
 export async function deleteSession(): Promise<void> {
-  const sessionId = await getSessionId();
+  const sessionId = getSessionId();
   if (sessionId) {
     try {
       await db.collection("session").doc(sessionId).delete();
@@ -140,7 +144,7 @@ export async function deleteSession(): Promise<void> {
         `Something went wrong when deleting session ${sessionId}: ${e}`,
       );
     }
-    const cookieStore = await cookies();
+    const cookieStore = cookies();
     cookieStore.delete(SESSION_ID_NAME);
   }
 }

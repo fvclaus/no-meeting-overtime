@@ -2,7 +2,7 @@ import { UserInfo } from "@/types";
 import {
   deleteSessionKey,
   getCredentials,
-  getSessionOrThrow,
+  getSession,
   setOrThrowSessionKey,
 } from "@/app/session-store";
 import { google } from "googleapis";
@@ -10,20 +10,28 @@ import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest): Promise<Response> {
-  const oauth2Client = await getCredentials(),
-    userinfo: UserInfo = {
-      authenticated: false,
-    };
+  const userinfo: UserInfo = {
+    authenticated: false,
+    hasAcceptedPrivacyPolicy: false,
+  };
+
+  const sessionData = await getSession();
+
+  if (sessionData === undefined) {
+    return NextResponse.json(userinfo);
+  }
+
+  if (typeof sessionData.name === "string") {
+    userinfo.name = sessionData.name;
+  }
+  if (typeof sessionData.picture === "string") {
+    userinfo.picture = sessionData.picture;
+  }
+  userinfo.hasAcceptedPrivacyPolicy = sessionData.hasAcceptedPrivacyPolicy;
+
+  const oauth2Client = await getCredentials();
   if (typeof oauth2Client !== "undefined") {
     try {
-      const sessionData = await getSessionOrThrow(req);
-      if (typeof sessionData.name === "string") {
-        userinfo.name = sessionData.name;
-      }
-      if (typeof sessionData.picture === "string") {
-        userinfo.picture = sessionData.picture;
-      }
-
       // TODO How often do we need to actually load this endpoint to make sure that the user is still logged in.
       // If (userinfo.name === undefined || userinfo.picture === undefined) {
       const response = await google.oauth2("v2").userinfo.get({

@@ -13,10 +13,10 @@ import json from "@eslint/json";
 export default tseslint.config(
   // TODO
   // {
-	// 	files: ["**/*.css"],
-	// 	language: "css/css",
-	// 	...css.configs.recommended,
-	// },
+  // 	files: ["**/*.css"],
+  // 	language: "css/css",
+  // 	...css.configs.recommended,
+  // },
   { files: ["**/*.{js,mjs,cjs,ts,jsx,tsx}"] },
   { languageOptions: { globals: globals.browser } },
   pluginJs.configs.all,
@@ -53,42 +53,43 @@ export default tseslint.config(
   },
   {
     rules: {
-      'max-lines-per-function': 'off',
-      'sort-imports': 'off',
-      'no-magic-numbers': 'off',
-      'sort-vars': 'off',
-      'one-var': 'off',
-      'no-warning-comments': 'off',
-      'capitalized-comments': 'off',
-      'sort-keys': 'off',
-      'max-statements': 'off',
-      'func-style': 'off',
-      'no-undefined': 'off',
-      '@typescript-eslint/restrict-template-expressions': 'off',
-      'id-length': 'off',
-      'max-lines': 'off'
-    }
-  },
-  
-  {
-		plugins: {
-			json,
-		},
-	},
-
-	// lint JSON files
-	{
-		files: ["**/*.json"],
-		ignores: ["package-lock.json"],
-		language: "json/json",
-		...json.configs.recommended,
-	},
-
-		// lint JSONC files
-    {
-      files: ["**/*.jsonc"],
-      language: "json/jsonc",
-      ...json.configs.recommended,
+      "max-lines-per-function": "off",
+      "sort-imports": "off",
+      "no-magic-numbers": "off",
+      "sort-vars": "off",
+      "one-var": "off",
+      "no-warning-comments": "off",
+      "capitalized-comments": "off",
+      "sort-keys": "off",
+      "max-statements": "off",
+      "func-style": "off",
+      "no-undefined": "off",
+      "@typescript-eslint/restrict-template-expressions": "off",
+      "id-length": "off",
+      "max-lines": "off",
+      "no-ternary": "off",
+      "no-underscore-dangle": "off",
     },
-  
+  },
+
+  {
+    plugins: {
+      json,
+    },
+  },
+
+  // lint JSON files
+  {
+    files: ["**/*.json"],
+    ignores: ["package-lock.json"],
+    language: "json/json",
+    ...json.configs.recommended,
+  },
+
+  // lint JSONC files
+  {
+    files: ["**/*.jsonc"],
+    language: "json/jsonc",
+    ...json.configs.recommended,
+  },
 );

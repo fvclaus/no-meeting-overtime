@@ -39,7 +39,11 @@ export default async function Page() {
               </p>
               {!userInfo.authenticated && (
                 <>
-                  <GoogleLoginButton />
+                  <GoogleLoginButton
+                    hasAcceptedPrivacyPolicyInSession={
+                      userInfo.hasAcceptedPrivacyPolicy
+                    }
+                  />
                 </>
               )}
               {userInfo.authenticated && userInfo.missingScopes.length > 0 && (
@@ -54,7 +58,11 @@ export default async function Page() {
                     </AlertDescription>
                   </Alert>
 
-                  <GoogleLoginButton />
+                  <GoogleLoginButton
+                    hasAcceptedPrivacyPolicyInSession={
+                      userInfo.hasAcceptedPrivacyPolicy
+                    }
+                  />
                 </>
               )}
               {userInfo.authenticated &&

@@ -14,6 +14,8 @@ export async function GET(req: NextRequest) {
   // Generate a secure random state value.
   const state = crypto.randomBytes(32).toString("hex");
 
+  await setSessionKey("hasAcceptedPrivacyPolicy", true);
+
   // Store state in the session
   await setSessionKey("state", state);
 

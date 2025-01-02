@@ -4,6 +4,7 @@ export interface UserInfo {
   picture?: string;
   scope?: string;
   authenticated: boolean;
+  hasAcceptedPrivacyPolicy: boolean;
 }
 
 export interface Meeting {

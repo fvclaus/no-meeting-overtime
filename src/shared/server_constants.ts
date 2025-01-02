@@ -53,8 +53,6 @@ if (CLOUD_TASKS_SERVICE_ACCOUNT == undefined) {
 export const START_MEETING_URL = SITE_BASE + START_MEETING_PATH;
 
 export const GET_TOKEN_API_URL = `${SITE_BASE}/api/get-token`;
-export const REDIRECT_TO_AUTHORIZATION_API_URL = `${SITE_BASE}/api/redirect-to-authorization`;
-
 export const REQUIRED_SCOPES = [
   "https://www.googleapis.com/auth/meetings.space.created",
 ];

@@ -1,10 +1,48 @@
-import { REDIRECT_TO_AUTHORIZATION_API_URL } from "@/shared/server_constants";
+"use client";
+
+import {
+  HAS_ACCEPTED_PRIVACY_POLICY,
+  REDIRECT_TO_AUTHORIZATION_API_URL,
+} from "@/shared/constants";
+import Link from "./Link";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import clsx from "clsx";
+
+type FormValues = {
+  acceptedPrivacyPolicy: string;
+};
 
 // https://developers.google.com/identity/branding-guidelines
-export default function GoogleLoginButton() {
+export default function GoogleLoginButton({
+  hasAcceptedPrivacyPolicyInSession,
+}: {
+  hasAcceptedPrivacyPolicyInSession: true | false;
+}) {
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    formState: { errors },
+  } = useForm<FormValues>({
+    mode: "all",
+  });
+
+  useEffect(() => {
+    // TODO Is this allowed? What if multiple user use the same browser?
+    if (localStorage.getItem("hasAcceptedPrivacyPolicy") === "true") {
+      setValue("acceptedPrivacyPolicy", "true");
+    }
+  }, []);
+
   return (
     <>
-      <form action={REDIRECT_TO_AUTHORIZATION_API_URL} method="get">
+      <form
+        onSubmit={handleSubmit(() => {
+          localStorage.setItem(HAS_ACCEPTED_PRIVACY_POLICY, "true");
+          window.location.href = REDIRECT_TO_AUTHORIZATION_API_URL;
+        })}
+      >
         <button type="submit" className="gsi-material-button">
           <div className="gsi-material-button-state"></div>
           <div className="gsi-material-button-content-wrapper">
@@ -41,6 +79,35 @@ export default function GoogleLoginButton() {
             <span style={{ display: "none" }}>Sign in with Google</span>
           </div>
         </button>
+        {/* We hide instead of remove the DOM node in order to not break hydration */}
+        <div
+          className={clsx(
+            hasAcceptedPrivacyPolicyInSession ? "hidden" : "mt-4 flex flex-col",
+          )}
+        >
+          <label className="flex items-center space-x-2 text-sm text-gray-600">
+            <input
+              {...register("acceptedPrivacyPolicy", {
+                required: true,
+              })}
+              className={clsx(
+                "h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500",
+                errors.acceptedPrivacyPolicy &&
+                  "outline outline-red-600 outline-2 outline-offset-0",
+              )}
+              type="checkbox"
+            />
+            <span>
+              By clicking Sign In With Google I have read and agree to the{" "}
+              <Link href="/privacy-policy">privacy policy</Link>
+            </span>
+          </label>
+          {errors.acceptedPrivacyPolicy && (
+            <p className="text-error text-size text-base mt-1">
+              You must accept the privacy policy before continuing
+            </p>
+          )}
+        </div>
       </form>
     </>
   );
