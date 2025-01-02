@@ -2,6 +2,7 @@ import "./styles.css";
 import { loadUserInfo } from "./loadUserInfo";
 import Link from "next/link";
 import { Calendar, Clock } from "lucide-react";
+import { Footer } from "./Footer";
 
 export default async function RootLayout({
   children,
@@ -51,7 +52,8 @@ export default async function RootLayout({
           </div>
         </div>
         {/* <div className="grid justify-items-center mt-24">{children}</div> */}
-        <div className="">{children}</div>
+        <main className="mt-10 mb-10">{children}</main>
+        <Footer></Footer>
       </body>
     </html>
   );
