@@ -5,6 +5,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Clock, Calendar, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import FAQSection from "./FAQSection";
+import { Title } from "@/components/ui/title";
 
 export default async function Page() {
   const userInfo = await loadUserInfo();
@@ -12,22 +13,10 @@ export default async function Page() {
   return (
     <>
       <div className="flex min-h-svh flex-col items-center justify-center">
-        <div className="w-full max-w-4xl text-center px-4 mb-8 mt-10">
-          <div className="flex justify-center space-x-6 mb-8">
-            <div className="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center transition-colors hover:bg-blue-100">
-              <Clock className="h-6 w-6 text-blue-600" />
-            </div>
-            <div className="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center transition-colors hover:bg-blue-100">
-              <Calendar className="h-6 w-6 text-blue-600" />
-            </div>
-          </div>
-          <h1 className="mb-4 text-4xl font-bold tracking-tight text-gray-800 sm:text-5xl">
-            Take Control of Your Time.
-            <span className="block text-blue-600">
-              End Meetings on Schedule
-            </span>
-          </h1>
-        </div>
+        <Title
+          title="Take Control of Your Time."
+          subtitle="End Meetings on Schedule"
+        />
 
         <div className="w-full bg-blue-50 py-16">
           <div className="max-w-6xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between">
@@ -107,7 +96,7 @@ export default async function Page() {
             </div>
           </div>
         </div>
-        <div className="w-full max-w-4xl text-center px-4">
+        <div className="w-full max-w-4xl text-center">
           <FAQSection />
         </div>
       </div>

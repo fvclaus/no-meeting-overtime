@@ -18,6 +18,7 @@ export async function loadUserInfo(): Promise<
     return {
       authenticated: false,
       missingScopes: REQUIRED_SCOPES,
+      hasAcceptedPrivacyPolicy: false,
     };
   }
   const userInfo = (await userInfoRequest.json()) as UserInfo;

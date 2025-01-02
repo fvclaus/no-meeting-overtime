@@ -18,7 +18,7 @@ export default function FAQSection() {
           <AccordionTrigger className="text-gray-700 hover:text-blue-600">
             How does it work?
           </AccordionTrigger>
-          <AccordionContent className="text-gray-600">
+          <AccordionContent className="text-gray-600 text-left">
             This app integrates with the Google Meet API to create and end
             meetings. When you start a meeting, this app sends a request to the
             Google Meet API to create a new meeting. At the scheduled end time,
@@ -30,7 +30,7 @@ export default function FAQSection() {
           <AccordionTrigger className="text-gray-700 hover:text-blue-600">
             Why can it not end meetings I created myself?
           </AccordionTrigger>
-          <AccordionContent className="text-gray-600">
+          <AccordionContent className="text-gray-600 text-left">
             The app can only end meetings that it created itself due to
             limitations in the Google Meet API. These ensures that apps in
             general cannot interfere with meetings created by other means.

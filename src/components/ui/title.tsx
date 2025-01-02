@@ -9,7 +9,7 @@ export function Title({
 }) {
   return (
     <>
-      <div className="w-full max-w-4xl text-center px-4 mb-8 mt-10">
+      <div className="w-full max-w-4xl text-center px-4 mb-8">
         <div className="flex justify-center space-x-6 mb-8">
           <div className="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center transition-colors hover:bg-blue-100">
             <Clock className="h-6 w-6 text-blue-600" />

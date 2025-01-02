@@ -145,7 +145,7 @@ export default function CreateMeeting() {
             </form>
           </div>
         </div>
-        <div className="w-full max-w-4xl text-center px-4 mt-16">
+        <div className="w-full max-w-4xl text-center mt-16">
           <FAQSection />
         </div>
       </div>
