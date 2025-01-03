@@ -75,7 +75,7 @@ export default function CreateMeeting() {
           <div className="px-4 flex flex-col items-center">
             <form
               onSubmit={handleSubmit(createMeeting)}
-              className="bg-white p-8 rounded-lg shadow-lg w-full max-w-screen-sm"
+              className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md"
             >
               {error && (
                 <Alert>
