@@ -27,12 +27,12 @@ steps:
   - --memory=265Mi
   - --log-http
   - --service-account=${_SERVICE_ACCOUNT}
-  - --set-env-vars=CLIENT_ID="${_CLIENT_ID}"
-  - --set-env-vars=CLIENT_SECRET="${_CLIENT_SECRET}"
-  - --set-env-vars=PROJECT_ID="${_PROJECT_ID}"
-  - --set-env-vars=QUEUE_LOCATION="${_QUEUE_LOCATION}"
-  - --set-env-vars=SITE_BASE="${_SITE_BASE}"
-  - --set-env-vars=CLOUD_TASKS_SERVICE_ACCOUNT="${_CLOUD_TASKS_SERVICE_ACCOUNT}"
+  - "--set-env-vars=CLIENT_ID=${_CLIENT_ID}"
+  - "--set-env-vars=CLIENT_SECRET=${_CLIENT_SECRET}"
+  - "--set-env-vars=PROJECT_ID=${_PROJECT_ID}"
+  - "--set-env-vars=QUEUE_LOCATION=${_QUEUE_LOCATION}"
+  - "--set-env-vars=SITE_BASE=${_SITE_BASE}"
+  - "--set-env-vars=CLOUD_TASKS_SERVICE_ACCOUNT=${_CLOUD_TASKS_SERVICE_ACCOUNT}"
 options:
   # logging: CLOUD_LOGGING_ONLY
   defaultLogsBucketBehavior: REGIONAL_USER_OWNED_BUCKET
