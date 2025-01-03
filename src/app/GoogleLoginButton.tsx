@@ -96,6 +96,8 @@ export default function GoogleLoginButton({
                   "outline outline-red-600 outline-2 outline-offset-0",
               )}
               type="checkbox"
+              aria-invalid={typeof errors.acceptedPrivacyPolicy !== "undefined"}
+              aria-errormessage="acceptedPrivacyPolicy-error"
             />
             <span>
               By clicking Sign In With Google I have read and agree to the{" "}
@@ -103,7 +105,11 @@ export default function GoogleLoginButton({
             </span>
           </label>
           {errors.acceptedPrivacyPolicy && (
-            <p className="text-error text-size text-base mt-1">
+            <p
+              id="acceptedPrivacyPolicy-error"
+              role="alert"
+              className="text-error text-size text-base mt-1"
+            >
               You must accept the privacy policy before continuing
             </p>
           )}

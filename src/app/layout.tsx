@@ -3,6 +3,7 @@ import { loadUserInfo } from "./loadUserInfo";
 import Link from "next/link";
 import { Calendar, Clock } from "lucide-react";
 import { Footer } from "./Footer";
+import UserMenu from "./UserMenu";
 
 export default async function RootLayout({
   children,
@@ -23,35 +24,9 @@ export default async function RootLayout({
             </Link>
           </div>
           <div className="flex-none">
-            {userinfo.authenticated && (
-              <div className="dropdown dropdown-end">
-                <div
-                  tabIndex={0}
-                  role="button"
-                  className="btn btn-ghost btn-circle avatar"
-                >
-                  <div className="w-10 rounded-full">
-                    <img
-                      alt="Tailwind CSS Navbar component"
-                      src={userinfo.picture}
-                    />
-                  </div>
-                </div>
-                <ul
-                  tabIndex={0}
-                  className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow"
-                >
-                  <li>
-                    <Link href="/api/logout" prefetch={false}>
-                      Logout
-                    </Link>
-                  </li>
-                </ul>
-              </div>
-            )}
+            {userinfo.authenticated && <UserMenu userinfo={userinfo} />}
           </div>
         </div>
-        {/* <div className="grid justify-items-center mt-24">{children}</div> */}
         <main className="mt-10 mb-10">{children}</main>
         <Footer></Footer>
       </body>

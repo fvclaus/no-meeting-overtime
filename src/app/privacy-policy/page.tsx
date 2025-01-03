@@ -3,7 +3,7 @@ import "./style.css";
 import { SESSION_ID_NAME } from "@/shared/server_constants";
 import Link from "../Link";
 
-export default async function Page() {
+export default function Page() {
   return (
     <div className="flex min-h-svh flex-col items-center justify-center">
       <Title subtitle="Privacy Policy" />
