@@ -129,7 +129,7 @@ export async function setSessionKey<T extends keyof SessionData>(
   });
 }
 
-export async function setSession(session: SessionData): Promise<void> {
+export async function setSession(session: Partial<SessionData>): Promise<void> {
   const sessionId = await getSessionIdAndCreateIfMissing();
   await _set(sessionId, session);
 }
