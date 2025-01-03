@@ -150,9 +150,6 @@ describe("test", { timeout: 200_000 }, () => {
 
   // eslint-disable-next-line @typescript-eslint/no-floating-promises
   it("happy path", async () => {
-    await page.evaluate(() => {
-      localStorage.clear();
-    });
     await page.goto("http://localhost:3000");
     await signInIfNecessary();
     const shortMeetingEnd = addSeconds(Date.now(), 10);
