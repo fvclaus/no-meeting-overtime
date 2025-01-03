@@ -1,7 +1,9 @@
+/* eslint-disable no-await-in-loop */
 // TODO Just copied to avoid problems with other env variables
 export const REQUIRED_SCOPES = [
   "https://www.googleapis.com/auth/meetings.space.created",
 ];
+import { SESSION_ID_NAME } from "@/shared/server_constants";
 import {
   BrowserContext,
   chromium,
@@ -18,13 +20,19 @@ import {
 } from "date-fns";
 import { afterEach, beforeEach, describe, it } from "node:test";
 
-//google-chrome-stable --remote-debugging-port=9222
+// eslint-disable-next-line prefer-destructuring
+const GMAIL_USER = process.env.GMAIL_USER;
+
+// google-chrome-stable --remote-debugging-port=9222
 // eslint-disable-next-line @typescript-eslint/no-floating-promises
 describe("test", { timeout: 200_000 }, () => {
   // eslint-disable-next-line init-declarations
   let page: Page;
+  // eslint-disable-next-line init-declarations
   let context: BrowserContext;
+  // eslint-disable-next-line init-declarations
   let signInWithGoogleButton: Locator;
+  // eslint-disable-next-line init-declarations
   let createMeetingButton: Locator;
 
   async function revokeGoogleSignIn() {
@@ -41,18 +49,55 @@ describe("test", { timeout: 200_000 }, () => {
     }
   }
 
+  async function selectCorrectGmailAccount() {
+    const LOGIN_LINK_SELECTORS = "css=[data-identifier]";
+    await page.waitForSelector(LOGIN_LINK_SELECTORS);
+    const loginLinks = await page.$$(LOGIN_LINK_SELECTORS);
+    if (loginLinks.length > 1) {
+      if (GMAIL_USER === undefined) {
+        throw new Error(
+          "There are multiple Google accounts for selection. Must set GMAIL_USER to be able to pick the correct user.",
+        );
+      }
+      const userForLinks = [];
+      for (const loginLink of loginLinks) {
+        const userForLink = await loginLink.getAttribute("data-identifier");
+        if (userForLink === GMAIL_USER) {
+          await loginLink.click();
+          return;
+        }
+        userForLinks.push(userForLink);
+      }
+      throw new Error(`Did not find ${GMAIL_USER} in ${userForLinks}`);
+    } else if (loginLinks.length === 1) {
+      await loginLinks.at(0)?.click();
+    } else {
+      throw new Error("Did not find any login links");
+    }
+  }
+
   async function signInWithGoogle(scopes: string[] = REQUIRED_SCOPES) {
     const continueButton = page.getByRole("button", { name: "Continue" });
     await page.waitForURL("**");
-    // Select first account
-    await page.locator('css=[data-authuser="0"]').click();
+    await selectCorrectGmailAccount();
     await page.waitForURL("**");
 
     const notVerified = page.getByText(/given access/);
-    const additionalAccess = page.getByText(/wants additional access/);
-    const access = page.getByText(/wants access/);
+    const additionalAccess = page.getByRole("heading", {
+      name: /wants additional access/,
+    });
+    const access = page.getByRole("heading", { name: /wants access/ });
 
-    await expect(notVerified.or(additionalAccess).or(access)).toBeVisible();
+    try {
+      await expect(notVerified.or(additionalAccess).or(access)).toBeVisible();
+    } catch (e) {
+      if (page.url().includes("signin/challenge")) {
+        throw new Error(
+          "You must login in your Chrome browser (upper right) before starting the test, otherwise there could be an authentication prompt",
+        );
+      }
+      throw e;
+    }
 
     if (await notVerified.isVisible()) {
       await continueButton.click();
@@ -66,9 +111,7 @@ describe("test", { timeout: 200_000 }, () => {
     await expect(additionalAccess.or(access)).toBeVisible();
     for (const scope of scopes) {
       const locator = page.locator(`css=[data-value="${scope}"]`);
-      // eslint-disable-next-line no-await-in-loop
       if (await locator.isVisible()) {
-        // eslint-disable-next-line no-await-in-loop
         await locator.click();
       }
     }
@@ -76,7 +119,6 @@ describe("test", { timeout: 200_000 }, () => {
   }
 
   async function signInIfNecessary() {
-    await page.goto("http://localhost:3000");
     const getStartedButton = page.getByRole("button", { name: "Get started" });
     await expect(signInWithGoogleButton.or(getStartedButton)).toBeVisible();
     if (await signInWithGoogleButton.isVisible()) {
@@ -108,6 +150,10 @@ describe("test", { timeout: 200_000 }, () => {
 
   // eslint-disable-next-line @typescript-eslint/no-floating-promises
   it("happy path", async () => {
+    await page.evaluate(() => {
+      localStorage.clear();
+    });
+    await page.goto("http://localhost:3000");
     await signInIfNecessary();
     const shortMeetingEnd = addSeconds(Date.now(), 10);
 
@@ -152,7 +198,34 @@ describe("test", { timeout: 200_000 }, () => {
   });
 
   // eslint-disable-next-line @typescript-eslint/no-floating-promises
+  it("test accept privacy policy", async () => {
+    await context.clearCookies({ name: SESSION_ID_NAME });
+    await page.goto("http://localhost:3000");
+    await page.evaluate(() => {
+      localStorage.clear();
+    });
+    await page.reload();
+    const acceptPrivacyPolicyCheckbox = page.getByRole("checkbox", {
+      name: "By clicking Sign In With Google I have read and agree to",
+    });
+    await expect(acceptPrivacyPolicyCheckbox).toBeVisible();
+    await signInWithGoogleButton.click();
+    // TODO https://github.com/microsoft/playwright/issues/23377
+    await expect(
+      page.getByText("You must accept the privacy policy before continuing"),
+    ).toBeVisible();
+    await acceptPrivacyPolicyCheckbox.click();
+    await signInWithGoogleButton.click();
+    await signInWithGoogle();
+    await page.getByRole("button", { name: "User Menu" }).click();
+    await page.getByRole("menuitem", { name: "Logout" }).click();
+    await expect(signInWithGoogleButton).toBeVisible();
+    await expect(acceptPrivacyPolicyCheckbox).toBeChecked();
+  });
+
+  // eslint-disable-next-line @typescript-eslint/no-floating-promises
   it("should display login button after removing connection to app", async () => {
+    await page.goto("http://localhost:3000");
     await signInIfNecessary();
     await revokeGoogleSignIn();
     await page.goto("http://localhost:3000");
