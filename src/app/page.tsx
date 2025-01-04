@@ -1,11 +1,11 @@
-import { START_MEETING_URL } from "@/shared/server_constants";
 import { loadUserInfo } from "./loadUserInfo";
 import GoogleLoginButton from "./GoogleLoginButton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Clock, Calendar, ArrowRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { ArrowRight } from "lucide-react";
 import FAQSection from "./FAQSection";
 import { Title } from "@/components/ui/title";
+import Link from "./Link";
+import { START_MEETING_PATH } from "@/shared/constants";
 
 export default async function Page() {
   const userInfo = await loadUserInfo();
@@ -56,17 +56,14 @@ export default async function Page() {
               )}
               {userInfo.authenticated &&
                 userInfo.missingScopes.length === 0 && (
-                  <>
-                    <form action={START_MEETING_URL} method="get">
-                      <Button
-                        size="lg"
-                        className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-6 text-lg font-semibold shadow-lg transition-all hover:shadow-xl"
-                      >
-                        Get Started
-                        <ArrowRight className="ml-2 h-5 w-5" />
-                      </Button>
-                    </form>
-                  </>
+                  <Link
+                    href={START_MEETING_PATH}
+                    role="button"
+                    variant="button"
+                  >
+                    Get Started
+                    <ArrowRight className="inline ml-2 h-5 w-5" />
+                  </Link>
                 )}
             </div>
             <div className="md:w-1/2 max-w-sm w-full">

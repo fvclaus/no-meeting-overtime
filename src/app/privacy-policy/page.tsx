@@ -2,10 +2,11 @@ import { Title } from "@/components/ui/title";
 import "./style.css";
 import { SESSION_ID_NAME } from "@/shared/server_constants";
 import Link from "../Link";
+import { MEETINGS_URL } from "@/shared/constants";
 
 export default function Page() {
   return (
-    <div className="flex min-h-svh flex-col items-center justify-center">
+    <div className="flex flex-col items-center justify-center">
       <Title subtitle="Privacy Policy" />
       <div className="w-full bg-blue-50 py-16 text-gray-600">
         <article
@@ -86,7 +87,7 @@ export default function Page() {
           <section>
             <h2>How can I access/rectify/erase/restrict my data?</h2>
             <p>
-              You can <Link href="/my-data">access</Link> and{" "}
+              You can <Link href={MEETINGS_URL}>access</Link> and{" "}
               <Link href="/delete">delete</Link> your data at any time.
             </p>
           </section>

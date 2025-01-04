@@ -20,3 +20,13 @@ export interface Meeting {
   userId: string;
   uri: string;
 }
+
+type Prettify<T> = {
+  [K in keyof T]: T[K];
+} & {};
+
+export type MeetingAndCode = Prettify<
+  Meeting & {
+    meetingCode: string;
+  }
+>;

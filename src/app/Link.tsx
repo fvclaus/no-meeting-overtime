@@ -8,6 +8,8 @@ const buttonVariants = cva("", {
     variant: {
       default: "text-blue-600 hover:text-blue-800 underline",
       footer: "text-sm text-gray-500 hover:text-gray-900 transition-colors",
+      button:
+        "bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500",
     },
   },
   defaultVariants: {

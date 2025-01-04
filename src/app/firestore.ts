@@ -1,5 +1,5 @@
 import { db } from "@/shared/server_constants";
-import { Meeting } from "@/types";
+import { AuthenticatedUserInfo, Meeting, UserInfo } from "@/types";
 import { RouteParams } from "./api/meeting/[meetingCode]/route";
 
 // Don't need to unit test this. One E2E Test should be enough
@@ -13,6 +13,22 @@ export async function findMeeting(
     ...meeting,
     code: meetingCode,
   };
+}
+
+export async function findMeetings(
+  userId: string,
+): Promise<(Meeting & { meetingCode: string })[]> {
+  const meetings = await db
+    .collection("meeting")
+    .where("userId", "==", userId)
+    .get();
+  return meetings.docs.map((doc) => {
+    const data = doc.data() as Meeting;
+    return {
+      meetingCode: doc.id,
+      ...data,
+    };
+  });
 }
 
 export async function findUser(userId: string) {
