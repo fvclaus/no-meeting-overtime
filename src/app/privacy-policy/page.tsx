@@ -80,8 +80,8 @@ export default function Page() {
               >
                 official documentation
               </Link>{" "}
-              for more details. We will keep the data as long as you have an
-              account with us.
+              for more details. The data is kept as long as you have an account
+              with us.
             </p>
           </section>
           <section>
@@ -94,8 +94,8 @@ export default function Page() {
           <section>
             <h2>What cookies are used?</h2>
             <p>
-              We use a session cookie called "{SESSION_ID_NAME}" to authenticate
-              you to our backend.
+              A session cookie called "{SESSION_ID_NAME}" is used to
+              authenticate you as a user.
             </p>
           </section>
           <section>
