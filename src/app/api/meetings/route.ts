@@ -1,7 +1,6 @@
 import { findMeetings } from "@/app/firestore";
-import { loadUserInfo } from "@/app/loadUserInfo";
 import { getSession, isAuthorizedSession } from "@/app/session-store";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
   const sessionData = await getSession();
