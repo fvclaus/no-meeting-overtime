@@ -1,5 +1,9 @@
 import { Meeting } from "@/types";
-import { getCredentials, getSessionKey } from "@/app/session-store";
+import {
+  getCredentials,
+  getSession,
+  isAuthorizedSession,
+} from "@/app/session-store";
 import {
   CLOUD_TASKS_SERVICE_ACCOUNT,
   PROJECT_ID,
@@ -9,7 +13,7 @@ import {
 import { google } from "googleapis";
 import { CloudTasksClient } from "@google-cloud/tasks";
 
-import { differenceInSeconds, formatISO, parseISO } from "date-fns";
+import { differenceInSeconds, formatISO } from "date-fns";
 import { NextRequest, NextResponse } from "next/server";
 import { saveMeeting } from "../../firestore";
 import {
@@ -35,26 +39,20 @@ const RequestBodySchema = z.object({
   client = new CloudTasksClient();
 
 export async function POST(req: NextRequest) {
-  console.log(client.auth);
-
-  const body = await req.json(),
+  const body = (await req.json()) as unknown,
     result = RequestBodySchema.safeParse(body);
   if (result.error) {
     return NextResponse.json(result.error.errors, { status: 400 });
   }
 
-  const reqData = result.data,
-    oauthClient = await getCredentials();
+  const reqData = result.data;
+  const sessionData = await getSession();
 
-  if (oauthClient === undefined) {
-    return new NextResponse("No credentials in session", { status: 403 });
+  if (!isAuthorizedSession(sessionData)) {
+    return new NextResponse("User is not logged in", { status: 403 });
   }
 
-  const userId = await getSessionKey("userId");
-
-  if (userId === undefined) {
-    return new NextResponse("No userId in session", { status: 403 });
-  }
+  const oauthClient = getCredentials(sessionData.credentials);
 
   try {
     const space = await google.meet("v2").spaces.create({
@@ -64,7 +62,7 @@ export async function POST(req: NextRequest) {
         scheduledEndTime: formatISO(reqData.scheduledEndTime),
         name: space.data.name!,
         uri: space.data.meetingUri!,
-        userId,
+        userId: sessionData.userId,
       };
 
     console.log(`Created meeting ${space.data.meetingCode}`);
@@ -78,7 +76,7 @@ export async function POST(req: NextRequest) {
         task: {
           httpRequest: {
             httpMethod: "DELETE",
-            url: `${SITE_BASE_CLOUD_TASKS}/api/meeting/${space.data.meetingCode!}?userId=${userId}`,
+            url: `${SITE_BASE_CLOUD_TASKS}/api/meeting/${space.data.meetingCode!}?userId=${sessionData.userId}`,
             headers: {
               "Content-Type": "application/json",
             },

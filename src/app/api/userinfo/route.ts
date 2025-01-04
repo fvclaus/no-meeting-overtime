@@ -1,88 +1,70 @@
-import { UserInfo } from "@/types";
-import {
-  deleteSessionKey,
-  getCredentials,
-  getSession,
-  setOrThrowSessionKey,
-} from "@/app/session-store";
-import { google } from "googleapis";
-import { cookies } from "next/headers";
+import { AuthenticatedUserInfo, UnauthenticatedUserInfo } from "@/types";
+import { getSession, setSession } from "@/app/session-store";
 import { NextRequest, NextResponse } from "next/server";
+import { updateUserInfo } from "../updateUserInfo";
 
 export async function GET(req: NextRequest): Promise<Response> {
-  const userinfo: UserInfo = {
-    authenticated: false,
-    hasAcceptedPrivacyPolicy: false,
-  };
+  console.log("Loading user info");
 
   const sessionData = await getSession();
 
-  if (sessionData === undefined) {
-    return NextResponse.json(userinfo);
+  if (sessionData === undefined || !sessionData.hasAcceptedPrivacyPolicy) {
+    return NextResponse.json({
+      authenticated: false,
+      hasAcceptedPrivacyPolicy: false,
+    } as UnauthenticatedUserInfo);
   }
 
-  if (typeof sessionData.name === "string") {
-    userinfo.name = sessionData.name;
+  if ("state" in sessionData) {
+    // TODO error
+    throw new Error("Shouldn't be here");
   }
-  if (typeof sessionData.picture === "string") {
-    userinfo.picture = sessionData.picture;
-  }
-  userinfo.hasAcceptedPrivacyPolicy = sessionData.hasAcceptedPrivacyPolicy;
 
-  const oauth2Client = await getCredentials();
-  if (typeof oauth2Client !== "undefined") {
-    try {
-      // TODO How often do we need to actually load this endpoint to make sure that the user is still logged in.
-      // If (userinfo.name === undefined || userinfo.picture === undefined) {
-      const response = await google.oauth2("v2").userinfo.get({
-        auth: oauth2Client,
-      });
+  // TODO Return from session, if 'expired' is not expired.
 
-      if (response.data.name) {
-        // TODO Expire
-        // Expire()
-        await setOrThrowSessionKey(req, "name", response.data.name);
-        userinfo.name = response.data.name;
-      }
+  try {
+    const newUserInfo = await updateUserInfo(sessionData.credentials);
 
-      if (response.data.picture) {
-        await setOrThrowSessionKey(req, "picture", response.data.picture);
-        userinfo.picture = response.data.picture;
-      }
+    const newSessionData = {
+      ...sessionData,
+      ...newUserInfo,
+    };
 
-      // }
-      // TODO Missing refresh_token error handling
-      userinfo.authenticated = true;
-      // TODO Scope is only defined if we call the userinfo endpoint
-      userinfo.scope = oauth2Client.credentials.scope;
-    } catch (error) {
-      const headers = new Headers();
-      headers.set("Content-Type", "text/plain");
-      if (
-        error instanceof Error &&
-        "status" in error &&
-        typeof error.status === "number"
-      ) {
-        if (error.message === "invalid_grant" || error.status === 401) {
-          // TODO Drop refresh token
-          await deleteSessionKey(cookies(), "tokens");
-          return new NextResponse("Tokens expired or revoked", {
-            status: error.status,
-            headers,
-          });
-        }
+    await setSession(newSessionData);
 
-        console.log(error);
-        return new NextResponse("Unknown error", {
+    const userInfo: AuthenticatedUserInfo = {
+      authenticated: true,
+      hasAcceptedPrivacyPolicy: true,
+      name: newSessionData.name,
+      picture: newSessionData.picture,
+      scopes: newSessionData.credentials.scope,
+      id: newSessionData.userId,
+    };
+
+    return NextResponse.json(userInfo);
+  } catch (error) {
+    const headers = new Headers();
+    headers.set("Content-Type", "text/plain");
+    if (
+      error instanceof Error &&
+      "status" in error &&
+      typeof error.status === "number"
+    ) {
+      if (error.message === "invalid_grant" || error.status === 401) {
+        // TODO Reset to new sessions
+        await setSession({
+          hasAcceptedPrivacyPolicy: false,
+        });
+        return new NextResponse("Tokens expired or revoked", {
           status: error.status,
           headers,
         });
       }
-      // TODO Log this somehow
-      console.log(error);
-
-      return new NextResponse("Unknown error", { status: 500, headers });
     }
+    console.log(error);
+    return new NextResponse("Unknown error", {
+      status: 500,
+      headers,
+    });
   }
-  return NextResponse.json(userinfo);
 }

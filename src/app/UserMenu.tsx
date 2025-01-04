@@ -2,10 +2,12 @@
 
 import Link from "next/link";
 import clsx from "clsx";
-import { UserInfo } from "@/types";
-import { useState } from "react";
+import { AuthenticatedUserInfo, UserInfo } from "@/types";
+import { useEffect, useState } from "react";
 import React from "react";
 import { cn } from "@/lib/utils";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { MEETINGS_URL } from "@/shared/constants";
 
 type NextLinkArgs = Parameters<typeof Link>;
 
@@ -30,9 +32,18 @@ const userMenuLinkFactory = (setUserMenuVisible: (value: boolean) => void) =>
     },
   );
 
-export default function UserMenu({ userinfo }: { userinfo: UserInfo }) {
+export default function UserMenu({
+  userinfo,
+}: {
+  userinfo: AuthenticatedUserInfo;
+}) {
   const [isUserMenuVisible, setUserMenuVisible] = useState<boolean>(false);
   const UserMenuLink = userMenuLinkFactory(setUserMenuVisible);
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  useEffect(() => {
+    setUserMenuVisible(false);
+  }, [pathname, searchParams]);
 
   return (
     <div className="relative">
@@ -59,6 +70,9 @@ export default function UserMenu({ userinfo }: { userinfo: UserInfo }) {
           "absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none",
         )}
       >
+        <div className="py-1">
+          <UserMenuLink href={MEETINGS_URL}>My Meetings</UserMenuLink>
+        </div>
         <div className="py-1">
           <UserMenuLink href="/api/logout">Logout</UserMenuLink>
         </div>

@@ -1,7 +1,10 @@
 import crypto from "crypto";
-import { GET_TOKEN_API_URL, REQUIRED_SCOPES } from "@/shared/server_constants";
-import { createOauth2Client } from "@/shared/server_constants";
-import { setSessionKey } from "@/app/session-store";
+import {
+  GET_TOKEN_API_URL,
+  REQUIRED_SCOPES,
+  createOauth2Client,
+} from "@/shared/server_constants";
+import { setSession } from "@/app/session-store";
 import { NextRequest, NextResponse } from "next/server";
 
 // TODO Logout + Revoke?
@@ -14,10 +17,10 @@ export async function GET(req: NextRequest) {
   // Generate a secure random state value.
   const state = crypto.randomBytes(32).toString("hex");
 
-  await setSessionKey("hasAcceptedPrivacyPolicy", true);
-
-  // Store state in the session
-  await setSessionKey("state", state);
+  await setSession({
+    hasAcceptedPrivacyPolicy: true,
+    state,
+  });
 
   // Generate a url that asks permissions for the Drive activity scope
   const authorizationUrl = createOauth2Client().generateAuthUrl({

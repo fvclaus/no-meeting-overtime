@@ -13,5 +13,6 @@ export function isMeetingEndAfterOffset(meetingEnd: Date) {
   const earliestEndTime = addMinutes(new Date(), MEETING_END_MINUTES_OFFSET);
   return isAfter(meetingEnd, earliestEndTime);
 }
+export const MEETINGS_URL = "/meetings";
 export const REDIRECT_TO_AUTHORIZATION_API_URL = `/api/redirect-to-authorization`;
 export const HAS_ACCEPTED_PRIVACY_POLICY = "hasAcceptedPrivacyPolicy";

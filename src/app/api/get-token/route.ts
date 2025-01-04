@@ -1,13 +1,11 @@
+import { Credentials, getSession, setSession } from "@/app/session-store";
 import {
-  deleteSessionKey,
-  getSession,
-  getSessionKey,
-  setSession,
-  setSessionKey,
-} from "@/app/session-store";
-import { START_MEETING_URL } from "@/shared/server_constants";
-import { createOauth2Client, db } from "@/shared/server_constants";
+  START_MEETING_URL,
+  createOauth2Client,
+  db,
+} from "@/shared/server_constants";
 import { NextRequest, NextResponse } from "next/server";
+import { updateUserInfo } from "../updateUserInfo";
 
 export async function GET(req: NextRequest) {
   const error = req.nextUrl.searchParams.get("error");
@@ -19,8 +17,12 @@ export async function GET(req: NextRequest) {
 
   const session = await getSession();
 
-  if (session == null) {
+  if (session === undefined) {
     return new NextResponse("Could not find session", { status: 400 });
+  }
+
+  if (!("state" in session) || typeof session.state === "undefined") {
+    return new NextResponse("Could not find state in session", { status: 400 });
   }
 
   const state = req.nextUrl.searchParams.get("state");
@@ -33,8 +35,6 @@ export async function GET(req: NextRequest) {
     );
   }
 
-  await deleteSessionKey(req, "state");
-
   // Get access and refresh tokens (if access_type is offline)
   // TODO Type check
   const oauth2Client = createOauth2Client(),
@@ -42,31 +42,42 @@ export async function GET(req: NextRequest) {
   if (code == null) {
     return new NextResponse("No code transmitted", { status: 400 });
   }
-  const { tokens } = await oauth2Client.getToken(code);
+  const credentials = (await oauth2Client.getToken(code)).tokens as Credentials;
 
   // TODO Missing access token?
   const userInfoResponse = await oauth2Client.getTokenInfo(
-      tokens.access_token!,
+      credentials.access_token,
     ),
     // TODO Validate refresh token?
-
     doc = await db.collection("user").doc(userInfoResponse.sub!).get();
 
   try {
     const data = {} as any;
-    if (tokens.refresh_token) {
-      data.refresh_token = tokens.refresh_token;
+    if (credentials.refresh_token) {
+      data.refresh_token = credentials.refresh_token;
     }
-    doc.ref.set(data, { merge: true });
+    await doc.ref.set(data, { merge: true });
 
-    oauth2Client.setCredentials(tokens);
+    // TODO Need to get refresh_token from data if existing user.
+    oauth2Client.setCredentials(credentials);
   } catch (error) {
     // TODO Error handling when refresh_token leer ist?
     console.log(error);
   }
-  await setSession({
-    tokens: tokens as any,
-    userId: userInfoResponse.sub!,
-  });
+
+  try {
+    const userInfo = await updateUserInfo(credentials);
+    await setSession({
+      userId: userInfoResponse.sub!,
+      hasAcceptedPrivacyPolicy: true,
+      ...userInfo,
+    });
+  } catch (error2) {
+    console.log(error2);
+    throw new Error(
+      "This shouldn't happen. Token should be valid at this point.",
+    );
+  }
+
   return NextResponse.redirect(START_MEETING_URL);
 }

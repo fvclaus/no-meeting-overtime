@@ -1,4 +1,3 @@
-import { getSessionKey } from "@/app/session-store";
 import {
   CLOUD_TASKS_SERVICE_ACCOUNT,
   createOauth2Client,
@@ -6,6 +5,7 @@ import {
 import { google } from "googleapis";
 import { NextRequest, NextResponse } from "next/server";
 import { findMeeting, findUser } from "../../../firestore";
+import { getSession, isAuthorizedSession } from "@/app/session-store";
 
 export type RouteParams = Promise<{
   meetingCode: string;
@@ -16,12 +16,13 @@ export async function GET(
   { params }: { params: RouteParams },
 ) {
   const meeting = await findMeeting(params);
-  if (meeting == null) {
+  if (meeting === undefined) {
     return new NextResponse("Unauthenticated", { status: 403 });
   }
 
-  const userId = await getSessionKey("userId");
-  if (userId !== meeting.userId) {
+  const sessionData = await getSession();
+
+  if (!isAuthorizedSession(sessionData)) {
     return new NextResponse("Unauthenticated", { status: 403 });
   }
 
@@ -36,13 +37,13 @@ export async function DELETE(
   { params }: { params: RouteParams },
 ) {
   const taskName = req.headers.get("X-CLOUDTASKS-TASKNAME");
-  if (taskName == undefined) {
+  if (taskName === null) {
     return new NextResponse(`No X-CLOUDTASKS-TASKNAME header`, { status: 403 });
   }
 
   const oauth2Client = createOauth2Client(),
     idToken = req.headers.get("Authorization")?.replace("Bearer ", "");
-  if (idToken == null) {
+  if (idToken === undefined) {
     // TODO Structured logging?
     console.error(`[${taskName}]: Missing authorization header`);
     return new NextResponse("Missing Authorization Header", { status: 403 });
@@ -65,7 +66,7 @@ export async function DELETE(
 
   const userId = req.nextUrl.searchParams.get("userId");
 
-  if (userId == null) {
+  if (userId === null) {
     console.error(`[${taskName}]: Missing userId parameter`);
     return new NextResponse("Missing userId parameter", { status: 400 });
   }
@@ -73,7 +74,7 @@ export async function DELETE(
   const userDoc = await findUser(userId),
     user = userDoc.data();
 
-  if (!userDoc.exists || user == undefined) {
+  if (!userDoc.exists || user === undefined) {
     console.error(`[${taskName}]: Did not find user ${userId}`);
     return new NextResponse(undefined, { status: 204 });
   }
@@ -81,7 +82,7 @@ export async function DELETE(
   oauth2Client.setCredentials({ refresh_token: user.refresh_token });
 
   const meeting = await findMeeting(params);
-  if (meeting == undefined) {
+  if (meeting === undefined) {
     console.log(`[${taskName}]: Did not find meeting`);
     return new NextResponse(undefined, { status: 204 });
   }

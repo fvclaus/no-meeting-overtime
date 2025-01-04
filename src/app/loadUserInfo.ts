@@ -1,15 +1,16 @@
-import {
-  REQUIRED_SCOPES,
-  SITE_BASE,
-  getMissingScopes,
-} from "@/shared/server_constants";
+import { SITE_BASE, getMissingScopes } from "@/shared/server_constants";
 import { cookies } from "next/headers";
-import { UserInfo } from "../types";
+import {
+  AuthenticatedUserInfo,
+  UnauthenticatedUserInfo,
+  UserInfo,
+} from "../types";
 
 export async function loadUserInfo(): Promise<
-  UserInfo & {
-    missingScopes: string[];
-  }
+  | (AuthenticatedUserInfo & {
+      missingScopes: string[];
+    })
+  | UnauthenticatedUserInfo
 > {
   const userInfoRequest = await fetch(`${SITE_BASE}/api/userinfo`, {
     headers: { Cookie: cookies().toString() },
@@ -17,15 +18,16 @@ export async function loadUserInfo(): Promise<
   if (userInfoRequest.status !== 200) {
     return {
       authenticated: false,
-      missingScopes: REQUIRED_SCOPES,
       hasAcceptedPrivacyPolicy: false,
     };
   }
   const userInfo = (await userInfoRequest.json()) as UserInfo;
-  const missingScopes =
-    userInfo.scope !== undefined ? getMissingScopes(userInfo.scope) : [];
-  return {
-    ...userInfo,
-    missingScopes,
-  };
+  if (userInfo.authenticated) {
+    const missingScopes = getMissingScopes(userInfo.scopes);
+    return {
+      ...userInfo,
+      missingScopes,
+    };
+  }
+  return userInfo;
 }
