@@ -25,6 +25,7 @@ export default async function Page({
   if (meeting == null) {
     return (
       <div className="flex flex-col w-full max-w-screen-sm">
+        {/* TODO Replace with alert component */}
         <div role="alert" className="alert alert-error w-full">
           <span>Could not find meeting</span>
         </div>

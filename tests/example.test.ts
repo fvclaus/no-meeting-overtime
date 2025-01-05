@@ -3,7 +3,7 @@
 export const REQUIRED_SCOPES = [
   "https://www.googleapis.com/auth/meetings.space.created",
 ];
-import { SESSION_ID_NAME } from "@/shared/server_constants";
+import { db, SESSION_ID_NAME } from "@/shared/server_constants";
 import {
   BrowserContext,
   chromium,
@@ -12,6 +12,7 @@ import {
   Page,
 } from "@playwright/test";
 import {
+  addMinutes,
   addSeconds,
   differenceInSeconds,
   format,
@@ -34,6 +35,8 @@ describe("test", { timeout: 200_000 }, () => {
   let signInWithGoogleButton: Locator;
   // eslint-disable-next-line init-declarations
   let createMeetingButton: Locator;
+  // eslint-disable-next-line init-declarations
+  let userMenuButton: Locator;
 
   async function revokeGoogleSignIn() {
     await page.goto("https://myaccount.google.com/connections");
@@ -140,6 +143,7 @@ describe("test", { timeout: 200_000 }, () => {
       name: "Sign in with Google",
     });
     createMeetingButton = page.getByRole("button", { name: "Create Meeting" });
+    userMenuButton = page.getByRole("button", { name: "User Menu" });
   });
 
   afterEach(async () => {
@@ -152,7 +156,7 @@ describe("test", { timeout: 200_000 }, () => {
   it("happy path", async () => {
     await page.goto("http://localhost:3000");
     await signInIfNecessary();
-    const shortMeetingEnd = addSeconds(Date.now(), 10);
+    const shortMeetingEnd = addSeconds(Date.now(), 15);
 
     const response = await page
       .context()
@@ -167,14 +171,6 @@ describe("test", { timeout: 200_000 }, () => {
     expect(response.status()).toEqual(200);
     const body = (await response.json()) as { meetingCode: string };
     await page.goto(`http://localhost:3000/meeting/${body.meetingCode}`);
-    // const meetingEnd = roundToNearestMinutes(addSeconds(Date.now(), 65), {
-    //   roundingMethod: "ceil",
-    // });
-    // await page
-    //   .getByLabel("When should the meeting end?")
-    //   .fill(format(meetingEnd, "HH:mm"));
-
-    // await createMeetingButton.click();
     const successText = page.getByText(/Meeting with code .* created/);
     await expect(successText).toBeVisible({ timeout: 45_000 });
     const pagePromise = page
@@ -214,7 +210,7 @@ describe("test", { timeout: 200_000 }, () => {
     await acceptPrivacyPolicyCheckbox.click();
     await signInWithGoogleButton.click();
     await signInWithGoogle();
-    await page.getByRole("button", { name: "User Menu" }).click();
+    await userMenuButton.click();
     await page.getByRole("menuitem", { name: "Logout" }).click();
     await expect(signInWithGoogleButton).toBeVisible();
     await expect(acceptPrivacyPolicyCheckbox).toBeChecked();
@@ -241,5 +237,36 @@ describe("test", { timeout: 200_000 }, () => {
     // There is no selection, because it is only a single permission
     await signInWithGoogle();
     await expect(createMeetingButton).toBeVisible();
+  });
+
+  // eslint-disable-next-line @typescript-eslint/no-floating-promises
+  it("should show created meetings and delete account", async () => {
+    await page.goto("http://localhost:3000");
+    await signInIfNecessary();
+    const meetingEnd = roundToNearestMinutes(addMinutes(Date.now(), 20), {
+      roundingMethod: "ceil",
+    });
+    await page
+      .getByLabel("When should the meeting end?")
+      .fill(format(meetingEnd, "HH:mm"));
+
+    await createMeetingButton.click();
+    const successText = page.getByText(/Meeting with code .* created/);
+    await expect(successText).toBeVisible({ timeout: 45_000 });
+    const url = page.url();
+    const meetingCode = url.split("/").pop();
+    await userMenuButton.click();
+    await page.getByRole("menuitem", { name: "My Meetings" }).click();
+    await expect(page.getByRole("cell", { name: meetingCode })).toBeVisible();
+    await userMenuButton.click();
+    let meetingDoc = await db.doc(`meeting/${meetingCode}`).get();
+    expect(meetingDoc.exists).toBeTruthy();
+    await page.getByRole("menuitem", { name: "Settings" }).click();
+    await page.getByRole("button", { name: "Delete Data" }).click();
+    await page.getByRole("button", { name: "Delete Everything" }).click();
+
+    await expect(signInWithGoogleButton).toBeVisible();
+    meetingDoc = await db.doc(`meeting/${meetingCode}`).get();
+    expect(meetingDoc.exists).toBeFalsy();
   });
 });

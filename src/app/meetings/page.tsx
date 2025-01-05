@@ -7,8 +7,8 @@ import { cookies } from "next/headers";
 import { Meeting } from "@/types";
 import ViewMeetings from "./components/view-meetings";
 
+// TODO Duplication
 export default async function Page() {
-  // TODO Duplication
   const userInfo = await loadUserInfo();
 
   if (!userInfo.authenticated || userInfo.missingScopes.length > 0) {

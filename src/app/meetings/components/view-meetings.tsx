@@ -59,40 +59,52 @@ export default function ViewMeetings({
             variant="button"
             className="ml-auto"
           >
+            <Plus className="inline mr-2 h-5 w-5" />
             Create New Meeting
-            <Plus className="inline ml-2 h-5 w-5" />
           </Link>
           <section className="w-full ">
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="text-lg">Scheduled End Time</TableHead>
-                  <TableHead className="text-lg">Meeting Code</TableHead>
+                  <TableHead className="text-xl font-semibold text-gray-900">
+                    Scheduled End Time
+                  </TableHead>
+                  <TableHead className="text-xl font-semibold text-gray-900">
+                    Meeting Code
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {meetingsView.map((meeting) => (
+                {meetings.length === 0 && (
                   <TableRow>
-                    <TableCell className="font-medium">
-                      {meeting.formattedScheduledEndTime ? (
-                        <span className="text-base">
-                          {meeting.formattedScheduledEndTime}
-                        </span>
-                      ) : (
-                        <Skeleton className="h-4 w-[100px]" />
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      <Link
-                        href={meeting.uri}
-                        target="_blank"
-                        className="text-base"
-                      >
-                        {meeting.meetingCode}
-                      </Link>
+                    <TableCell colSpan={3} className="h-24 text-center">
+                      No meetings created yet
                     </TableCell>
                   </TableRow>
-                ))}
+                )}
+                {meetings.length > 0 &&
+                  meetingsView.map((meeting) => (
+                    <TableRow>
+                      <TableCell className="font-medium">
+                        {meeting.formattedScheduledEndTime ? (
+                          <span className="text-base">
+                            {meeting.formattedScheduledEndTime}
+                          </span>
+                        ) : (
+                          <Skeleton className="h-4 w-[100px]" />
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        <Link
+                          href={meeting.uri}
+                          target="_blank"
+                          className="text-base"
+                        >
+                          {meeting.meetingCode}
+                        </Link>
+                      </TableCell>
+                    </TableRow>
+                  ))}
               </TableBody>
             </Table>
           </section>

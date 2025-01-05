@@ -2,7 +2,7 @@ import { Title } from "@/components/ui/title";
 import "./style.css";
 import { SESSION_ID_NAME } from "@/shared/server_constants";
 import Link from "../Link";
-import { MEETINGS_URL } from "@/shared/constants";
+import { MEETINGS_URL, SETTINGS_URL } from "@/shared/constants";
 
 export default function Page() {
   return (
@@ -88,7 +88,7 @@ export default function Page() {
             <h2>How can I access/rectify/erase/restrict my data?</h2>
             <p>
               You can <Link href={MEETINGS_URL}>access</Link> and{" "}
-              <Link href="/delete">delete</Link> your data at any time.
+              <Link href={SETTINGS_URL}>delete</Link> your data at any time.
             </p>
           </section>
           <section>

@@ -3,11 +3,10 @@
 import Link from "next/link";
 import clsx from "clsx";
 import { AuthenticatedUserInfo, UserInfo } from "@/types";
-import { useEffect, useState } from "react";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { MEETINGS_URL } from "@/shared/constants";
+import { LOGOUT_URL, MEETINGS_URL, SETTINGS_URL } from "@/shared/constants";
 
 type NextLinkArgs = Parameters<typeof Link>;
 
@@ -58,6 +57,7 @@ export default function UserMenu({
         }}
       >
         <div className="w-10 rounded-full">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img alt="Your profile picture" src={userinfo.picture} />
         </div>
       </button>
@@ -74,7 +74,10 @@ export default function UserMenu({
           <UserMenuLink href={MEETINGS_URL}>My Meetings</UserMenuLink>
         </div>
         <div className="py-1">
-          <UserMenuLink href="/api/logout">Logout</UserMenuLink>
+          <UserMenuLink href={LOGOUT_URL}>Logout</UserMenuLink>
+        </div>
+        <div className="py-1">
+          <UserMenuLink href={SETTINGS_URL}>Settings</UserMenuLink>
         </div>
       </div>
     </div>

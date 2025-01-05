@@ -16,3 +16,5 @@ export function isMeetingEndAfterOffset(meetingEnd: Date) {
 export const MEETINGS_URL = "/meetings";
 export const REDIRECT_TO_AUTHORIZATION_API_URL = `/api/redirect-to-authorization`;
 export const HAS_ACCEPTED_PRIVACY_POLICY = "hasAcceptedPrivacyPolicy";
+export const SETTINGS_URL = "/settings";
+export const LOGOUT_URL = "/api/logout";
