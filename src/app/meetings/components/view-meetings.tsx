@@ -1,19 +1,17 @@
 "use client";
 
-import { formatEndTime } from "@/app/formattedEndTime";
-import { Meeting, MeetingAndCode } from "@/types";
+import { MeetingAndCode } from "@/types";
 import { Title } from "@/components/ui/title";
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
 
-import { ArrowRight, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import Link from "@/app/Link";
 import { START_MEETING_PATH } from "@/shared/constants";
 import { useEffect, useState } from "react";
@@ -50,7 +48,7 @@ export default function ViewMeetings({
 
   return (
     <div className="flex flex-col items-center justify-center">
-      <Title subtitle="My Meetings" />
+      <Title subtitle="My MeetingsFoo" />
       <div className="w-full bg-blue-50 py-16 text-gray-600 flex flex-col items-center">
         <div className="px-4 max-w-4xl w-full flex flex-col">
           <Link

@@ -66,6 +66,12 @@
               "<node_internals>/**",
               "${workspaceFolder}/node_modules/**",
             ]
-          }
+          },
+          {
+            "name": "Run component tests",
+            "type": "node-terminal",
+            "request": "launch",
+            "command": "npm run test-ct -- --debug",
+          },
     ]
 }

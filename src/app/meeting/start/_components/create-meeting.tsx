@@ -32,7 +32,7 @@ export default function CreateMeeting() {
 
   async function createMeeting(data: FormValues) {
     setError(undefined);
-    const response = await fetch(`/api/meeting/`, {
+    const response = await fetch(`/api/user/`, {
       method: "POST",
       body: JSON.stringify({ scheduledEndTime: formatISO(data.endTime) }),
       headers: {

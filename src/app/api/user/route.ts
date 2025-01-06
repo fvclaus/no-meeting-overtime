@@ -1,10 +1,11 @@
 "use server";
 
 import { db } from "@/shared/server_constants";
-import { findMeetings } from "../firestore";
-import { getSession, isAuthorizedSession } from "../session-store";
+import { findMeetings } from "../../firestore";
+import { getSession, isAuthorizedSession } from "../../session-store";
+import { NextResponse } from "next/server";
 
-export async function deleteAccount() {
+export async function DELETE() {
   const sessionData = await getSession();
   if (!isAuthorizedSession(sessionData)) {
     throw new Error("Unauthorized");
@@ -18,4 +19,5 @@ export async function deleteAccount() {
   });
   batch.delete(db.doc(`user/${sessionData.userId}`));
   await batch.commit();
+  return new NextResponse(null, { status: 204 });
 }

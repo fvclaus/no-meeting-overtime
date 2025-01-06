@@ -1,31 +1,36 @@
 "use client";
 
 import { Title } from "@/components/ui/title";
-import { Link, Loader2, Trash2 } from "lucide-react";
+import { Loader2, Trash2 } from "lucide-react";
 import { useState } from "react";
-import { deleteAccount } from "../deleteAccount";
 import { LOGOUT_URL } from "@/shared/constants";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 export function Settings() {
-  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [isConfirmDialogVisible, setShowConfirmDialog] = useState(false);
   const [isDeleting, setDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState<string | undefined>(undefined);
 
-  const handleDeleteData = () => {
+  const handleDeleteData = async () => {
     setDeleting(true);
 
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    deleteAccount()
-      .catch((error: unknown) => {
-        setDeleting(false);
-        setDeleteError(`${error}`);
-        // TODO Error handling
-      })
-      .then(() => {
-        window.location.href = LOGOUT_URL;
-      });
+    const response = await fetch(`/api/user`, {
+      method: "DELETE",
+    });
+    setDeleting(false);
+    if (response.ok) {
+      setDeleteError(undefined);
+      window.location.href = LOGOUT_URL;
+    } else {
+      setDeleteError(await response.text());
+    }
   };
+
+  const toggleDialogVisibility = () => {
+    setDeleteError(undefined);
+    setShowConfirmDialog(!isConfirmDialogVisible);
+  };
+
   return (
     <div className="flex flex-col items-center justify-center">
       <Title subtitle="My Meetings" />
@@ -47,24 +52,30 @@ export function Settings() {
                   </p>
                 </div>
                 <button
-                  onClick={() => {
-                    setShowConfirmDialog(true);
-                  }}
+                  onClick={toggleDialogVisibility}
                   className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors flex items-center gap-2"
+                  aria-haspopup={isConfirmDialogVisible}
+                  aria-controls="delete-user-dialog"
+                  id="delete-user-dialog-button"
                 >
                   <Trash2 size={18} />
                   Delete Data
                 </button>
               </div>
-              {showConfirmDialog && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+              {isConfirmDialogVisible && (
+                <div
+                  className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4"
+                  aria-labelledby="delete-user-dialog-button"
+                  role="dialog"
+                  id="delete-user-dialog"
+                >
                   <div className="bg-white rounded-lg p-6 max-w-md w-full">
                     <h3 className="text-xl font-semibold text-gray-900 mb-4">
                       Confirm Deletion
                     </h3>
                     {deleteError && (
                       <Alert>
-                        <AlertTitle>Problem while creating meeting</AlertTitle>
+                        <AlertTitle>Could not delete your account</AlertTitle>
                         <AlertDescription>{deleteError}</AlertDescription>
                       </Alert>
                     )}
@@ -75,20 +86,24 @@ export function Settings() {
                     <div className="flex justify-end gap-4">
                       <button
                         disabled={isDeleting}
-                        onClick={() => {
-                          setShowConfirmDialog(false);
-                        }}
+                        onClick={toggleDialogVisibility}
                         className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-colors disabled:opacity-50"
                       >
                         Cancel
                       </button>
                       <button
                         disabled={isDeleting}
+                        // eslint-disable-next-line @typescript-eslint/no-misused-promises
                         onClick={handleDeleteData}
                         className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors disabled:opacity-50 flex items-center gap-2"
                       >
                         {isDeleting ? (
-                          <Loader2 className="animate-spin" size={18} />
+                          <Loader2
+                            role="status"
+                            aria-label="loading"
+                            className="animate-spin"
+                            size={18}
+                          />
                         ) : null}
                         Delete Everything
                       </button>

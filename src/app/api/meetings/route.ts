@@ -1,8 +1,8 @@
 import { findMeetings } from "@/app/firestore";
 import { getSession, isAuthorizedSession } from "@/app/session-store";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
-export async function GET(req: NextRequest) {
+export async function GET() {
   const sessionData = await getSession();
   if (!isAuthorizedSession(sessionData)) {
     return new NextResponse("Unauthorized", { status: 403 });
