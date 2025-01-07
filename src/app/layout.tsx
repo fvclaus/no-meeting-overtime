@@ -14,6 +14,10 @@ export default async function RootLayout({
 
   return (
     <html lang="en">
+      <head>
+        <title>No Meeting Overtime</title>
+        <meta property="og:title" content="No Meeting Overtime" key="title" />
+      </head>
       <body className="flex-row">
         <div className="navbar bg-white border-b border-gray-100">
           <div className="flex-1">
