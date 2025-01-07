@@ -74,10 +74,11 @@ export default function UserMenu({
           <UserMenuLink href={MEETINGS_URL}>My Meetings</UserMenuLink>
         </div>
         <div className="py-1">
-          <UserMenuLink href={LOGOUT_URL}>Logout</UserMenuLink>
-        </div>
-        <div className="py-1">
           <UserMenuLink href={SETTINGS_URL}>Settings</UserMenuLink>
+        </div>
+        {/* TODO Add Icons? */}
+        <div className="py-1">
+          <UserMenuLink href={LOGOUT_URL}>Logout</UserMenuLink>
         </div>
       </div>
     </div>
