@@ -48,7 +48,7 @@ export default function ViewMeetings({
 
   return (
     <div className="flex flex-col items-center justify-center">
-      <Title subtitle="My MeetingsFoo" />
+      <Title subtitle="My Meetings" />
       <div className="w-full bg-blue-50 py-16 text-gray-600 flex flex-col items-center">
         <div className="px-4 max-w-4xl w-full flex flex-col">
           <Link

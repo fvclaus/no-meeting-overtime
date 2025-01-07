@@ -1,3 +1,4 @@
+# TODO Add test + lint to pipeline
 # TODO Make region dynamic
 steps:
 # Caching is currently broken:
