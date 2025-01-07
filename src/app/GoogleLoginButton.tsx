@@ -2,10 +2,11 @@
 
 import {
   HAS_ACCEPTED_PRIVACY_POLICY,
+  PRIVACY_POLICY_URL,
   REDIRECT_TO_AUTHORIZATION_API_URL,
 } from "@/shared/constants";
 import Link from "./Link";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import clsx from "clsx";
 
@@ -101,7 +102,7 @@ export default function GoogleLoginButton({
             />
             <span>
               By clicking Sign In With Google I have read and agree to the{" "}
-              <Link href="/privacy-policy">privacy policy</Link>
+              <Link href={PRIVACY_POLICY_URL}>privacy policy</Link>
             </span>
           </label>
           {errors.acceptedPrivacyPolicy && (

@@ -87,5 +87,3 @@ test.describe("Settings", () => {
     await expect(deleteDialog).toHaveScreenshot();
   });
 });
-
-// TODO Cancel button should close view

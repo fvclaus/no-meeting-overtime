@@ -9,7 +9,7 @@ const buttonVariants = cva("", {
       default: "text-blue-600 hover:text-blue-800 underline",
       footer: "text-sm text-gray-500 hover:text-gray-900 transition-colors",
       button:
-        "bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500",
+        "block text-center bg-blue-600 text-white px-6 py-3 rounded-md text-base font-semibold hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500",
     },
   },
   defaultVariants: {
@@ -19,7 +19,7 @@ const buttonVariants = cva("", {
 
 type NextLinkArgs = Parameters<typeof NextLink>;
 
-const LinkFoo = React.forwardRef<
+const Link = React.forwardRef<
   HTMLAnchorElement,
   NextLinkArgs[0] & VariantProps<typeof buttonVariants>
 >(({ className, variant, ...props }, ref) => {
@@ -33,19 +33,4 @@ const LinkFoo = React.forwardRef<
   );
 });
 
-const Link: (...args: NextLinkArgs) => React.JSX.Element = (props) => {
-  // TODO
-  //   const defaultProps: Partial<typeof props> = {
-  //     prefetch: false,
-  //   };
-  //   const mergedProps = { ...defaultProps, ...props };
-  return (
-    <NextLink
-      prefetch={false}
-      className="text-blue-600 hover:text-blue-800 underline"
-      {...props}
-    ></NextLink>
-  );
-};
-
-export default LinkFoo;
+export default Link;
