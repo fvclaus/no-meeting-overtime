@@ -7,11 +7,11 @@ import { MEETINGS_URL, SETTINGS_URL } from "@/shared/constants";
 export default function Page() {
   return (
     <div className="flex flex-col items-center justify-center">
-      <Title subtitle="Privacy Policy" />
+      <Title title="Privacy Policy" />
       <div className="w-full bg-blue-50 py-16 text-gray-600">
         <article
           id="privacy-policy"
-          className="mx-auto rounded-lg w-full max-w-screen-lg"
+          className="mx-auto rounded-lg w-full max-w-screen-lg bg-white rounded-2xl shadow-xl p-8"
         >
           <p>
             This website is a hobby project to learn some new technologies. It

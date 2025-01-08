@@ -2,11 +2,11 @@
 
 import { differenceInSeconds } from "date-fns";
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import { Meeting } from "@/types";
 import { START_MEETING_PATH } from "@/shared/constants";
 import { Calendar, Clock } from "lucide-react";
 import FAQSection from "@/app/FAQSection";
+import Link from "@/app/Link";
 
 export type MeetingData = Pick<Meeting, "scheduledEndTime"> &
   Pick<Meeting, "uri"> & { code: string };
@@ -80,41 +80,31 @@ export function JoinMeeting({ meeting }: { meeting: MeetingData }) {
 
         <div className="w-full bg-blue-50 py-16">
           <div className="px-4 flex flex-col items-center">
-            <p>
-              Meeting with code{" "}
-              <span className="font-bold">{meeting.code}</span> created. It will
-              end{" "}
-              {timeRemaining > 0 && (
-                <>
-                  in{" "}
-                  {/* https://legacy.reactjs.org/docs/dom-elements.html#suppresshydrationwarning */}
-                  <span className="font-bold" suppressHydrationWarning>
-                    {formatTimeRemaining(timeRemaining)} at {endTimeFormatted}
-                  </span>
-                </>
-              )}
-              {timeRemaining <= 0 && <span className="font-bold">now</span>}
-            </p>
-            <div className="flex flex-col lg:flex-row mt-2">
-              <div className="card grid flex-grow place-items-center">
-                <Link
-                  className="btn btn-secondary"
-                  href={START_MEETING_PATH}
-                  prefetch={false}
-                >
-                  Create another
-                </Link>
-              </div>
-              <div className="divider lg:divider-horizontal">OR</div>
-              <div className="card grid flex-grow place-items-center">
-                <Link
-                  target="_blank"
-                  className="btn btn-primary"
-                  href={meeting.uri}
-                  prefetch={false}
-                >
-                  Join now
-                </Link>
+            <div className="bg-white rounded-2xl shadow-xl p-8">
+              <p>
+                Meeting with code{" "}
+                <span className="font-bold">{meeting.code}</span> created. It
+                will end{" "}
+                {timeRemaining > 0 && (
+                  <>
+                    in{" "}
+                    {/* https://legacy.reactjs.org/docs/dom-elements.html#suppresshydrationwarning */}
+                    <span className="font-bold" suppressHydrationWarning>
+                      {formatTimeRemaining(timeRemaining)} at {endTimeFormatted}
+                    </span>
+                  </>
+                )}
+                {timeRemaining <= 0 && <span className="font-bold">now</span>}
+              </p>
+              <div className="flex flex-col lg:flex-row mt-2">
+                <div className="grid flex-grow place-items-center">
+                  <Link href={START_MEETING_PATH}>Create another</Link>
+                </div>
+                <div className="grid flex-grow place-items-center">
+                  <Link target="_blank" variant="button" href={meeting.uri}>
+                    Join now
+                  </Link>
+                </div>
               </div>
             </div>
           </div>

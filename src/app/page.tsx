@@ -12,10 +12,16 @@ export default async function Page() {
 
   return (
     <>
-      <div className="flex min-h-svh flex-col items-center justify-center">
+      <div className="flex flex-col items-center justify-center mb-10">
         <Title
-          title="Take Control of Your Time."
-          subtitle="End Meetings on Schedule"
+          title={
+            <>
+              Take Control of Your Time
+              <span className="block text-blue-600">
+                End Meetings On Schedule
+              </span>
+            </>
+          }
         />
 
         <div className="w-full bg-blue-50 py-16">

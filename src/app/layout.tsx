@@ -31,7 +31,7 @@ export default async function RootLayout({
             {userinfo.authenticated && <UserMenu userinfo={userinfo} />}
           </div>
         </div>
-        <main className="mt-10 mb-10">{children}</main>
+        <main className="mt-10">{children}</main>
         <Footer></Footer>
       </body>
     </html>

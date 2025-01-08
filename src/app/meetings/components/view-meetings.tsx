@@ -48,9 +48,9 @@ export default function ViewMeetings({
 
   return (
     <div className="flex flex-col items-center justify-center">
-      <Title subtitle="My Meetings" />
+      <Title title="My Meetings" />
       <div className="w-full bg-blue-50 py-16 text-gray-600 flex flex-col items-center">
-        <div className="px-4 max-w-4xl w-full flex flex-col">
+        <div className="px-4 max-w-screen-lg w-full flex flex-col bg-white rounded-2xl shadow-xl p-8">
           <Link
             href={START_MEETING_PATH}
             role="button"

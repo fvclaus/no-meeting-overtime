@@ -6,8 +6,8 @@ export function Title({
   subtitle,
   icons = [Clock, Calendar],
 }: {
-  title?: string;
-  subtitle?: string;
+  title: string | React.JSX.Element;
+  subtitle?: string | React.JSX.Element;
   icons?: ((props: { className: string }) => ReactNode)[];
 }) {
   return (
@@ -22,8 +22,12 @@ export function Title({
         </div>
         <h1 className="mb-4 text-4xl font-bold tracking-tight text-gray-800 sm:text-5xl">
           {title}
-          {subtitle && <span className="block text-blue-600">{subtitle}</span>}
         </h1>
+        {subtitle && typeof subtitle === "string" ? (
+          <p className="text-lg text-gray-600">{subtitle}</p>
+        ) : (
+          subtitle
+        )}
       </div>
     </>
   );

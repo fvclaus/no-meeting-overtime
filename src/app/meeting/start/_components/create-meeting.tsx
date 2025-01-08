@@ -1,19 +1,19 @@
 "use client";
 
-import { meet_v2 } from "googleapis";
 import { useForm } from "react-hook-form";
-import { addMinutes, formatISO, isAfter, set } from "date-fns";
+import { formatISO, set } from "date-fns";
 import { useState } from "react";
 import { TZDate } from "@date-fns/tz";
 import { useRouter } from "next/navigation";
 import { clsx } from "clsx";
-import { AlertCircle, Calendar, Clock } from "lucide-react";
+import { Calendar, Clock } from "lucide-react";
 import FAQSection from "@/app/FAQSection";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
   isMeetingEndAfterOffset,
   MEETING_END_MINUTES_OFFSET,
 } from "@/shared/constants";
+import { Title } from "@/components/ui/title";
 
 type FormValues = {
   endTime: string;
@@ -32,7 +32,7 @@ export default function CreateMeeting() {
 
   async function createMeeting(data: FormValues) {
     setError(undefined);
-    const response = await fetch(`/api/user/`, {
+    const response = await fetch(`/api/meeting/`, {
       method: "POST",
       body: JSON.stringify({ scheduledEndTime: formatISO(data.endTime) }),
       headers: {
@@ -54,22 +54,8 @@ export default function CreateMeeting() {
 
   return (
     <>
-      <div className="flex flex-col items-center justify-center">
-        <div className="w-full max-w-4xl text-center px-4 mb-8 mt-10">
-          <div className="flex justify-center space-x-6 mb-8">
-            <div className="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center transition-colors hover:bg-blue-100">
-              <Clock className="h-6 w-6 text-blue-600" />
-            </div>
-            <div className="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center transition-colors hover:bg-blue-100">
-              <Calendar className="h-6 w-6 text-blue-600" />
-            </div>
-          </div>
-          <h1 className="mb-4 text-4xl font-bold tracking-tight text-gray-800 sm:text-5xl">
-            <span className="block text-blue-600">
-              End Your Meeting on Schedule
-            </span>
-          </h1>
-        </div>
+      <div className="flex flex-col items-center justify-center mb-10">
+        <Title title="Start a meeting" />
 
         <div className="w-full bg-blue-50 py-16">
           <div className="px-4 flex flex-col items-center">
@@ -100,13 +86,12 @@ export default function CreateMeeting() {
                   {...register("endTime", {
                     required: true,
                     setValueAs(value: string | undefined) {
-                      console.log(`Setting value from ${value}`);
-                      if (value == undefined) {
+                      if (value === undefined) {
                         return value;
                       }
                       const [hours, minutes] = value
                           .split(":")
-                          .map((s) => parseInt(s)),
+                          .map((s) => parseInt(s, 10)),
                         endTime = set(new Date(), {
                           hours,
                           minutes,
@@ -122,6 +107,8 @@ export default function CreateMeeting() {
                           isMeetingEndAfterOffset(v) ||
                           `Meeting must be at least ${MEETING_END_MINUTES_OFFSET} minutes long.`
                         );
+                        // TODO Wrong typing?
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
                       }) as any,
                     },
                   })}
@@ -132,6 +119,7 @@ export default function CreateMeeting() {
                   {errors.endTime.message}
                 </p>
               )}
+              {/* TODO CTA button */}
               <button
                 className="btn w-full mt-6 w-full bg-blue-600 hover:bg-blue-700 text-white"
                 type="submit"

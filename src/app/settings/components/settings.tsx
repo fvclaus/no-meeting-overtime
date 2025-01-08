@@ -33,11 +33,11 @@ export function Settings() {
 
   return (
     <div className="flex flex-col items-center justify-center">
-      <Title subtitle="My Meetings" />
+      <Title title="Settings" />
       <div className="w-full bg-blue-50 py-16 text-gray-600 flex flex-col items-center">
-        <div className="px-4 max-w-4xl w-full flex flex-col">
+        <div className="px-4 max-w-screen-lg w-full flex flex-col bg-white rounded-2xl shadow-xl p-8">
           <section className="w-full ">
-            <div className="border-b border-gray-200 pb-6">
+            <div className=" pb-6">
               <h2 className="text-xl font-semibold text-gray-900 mb-4">
                 Data Management
               </h2>
