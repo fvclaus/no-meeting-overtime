@@ -1,23 +1,24 @@
 import { AuthenticatedUserInfo, UnauthenticatedUserInfo } from "@/types";
 import { getSession, setSession } from "@/app/session-store";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { updateUserInfo } from "../updateUserInfo";
+import { Logger } from "@/log";
 
-export async function GET(req: NextRequest): Promise<Response> {
-  console.log("Loading user info");
+const logger = new Logger("userinfo");
 
+// TODO Type responses
+export async function GET(): Promise<Response> {
   const sessionData = await getSession();
 
-  if (sessionData === undefined || !sessionData.hasAcceptedPrivacyPolicy) {
+  if (
+    sessionData === undefined ||
+    !sessionData.hasAcceptedPrivacyPolicy ||
+    "state" in sessionData
+  ) {
     return NextResponse.json({
       authenticated: false,
       hasAcceptedPrivacyPolicy: false,
     } as UnauthenticatedUserInfo);
-  }
-
-  if ("state" in sessionData) {
-    // TODO error
-    throw new Error("Shouldn't be here");
   }
 
   // TODO Return from session, if 'expired' is not expired.
@@ -55,13 +56,16 @@ export async function GET(req: NextRequest): Promise<Response> {
         await setSession({
           hasAcceptedPrivacyPolicy: false,
         });
+        logger.debug("Tokens expired or revoked", {
+          userId: sessionData.userId,
+        });
         return new NextResponse("Tokens expired or revoked", {
           status: error.status,
           headers,
         });
       }
     }
-    console.log(error);
+    logger.error(error, { userId: sessionData.userId });
     return new NextResponse("Unknown error", {
       status: 500,
       headers,

@@ -5,7 +5,14 @@ import {
 import { google } from "googleapis";
 import { NextRequest, NextResponse } from "next/server";
 import { findMeeting, findUser } from "../../../firestore";
-import { getSession, isAuthorizedSession } from "@/app/session-store";
+import {
+  Credentials,
+  getSession,
+  isAuthorizedSession,
+} from "@/app/session-store";
+import { Logger } from "@/log";
+
+const logger = new Logger("meeting/[meetingCode]");
 
 export type RouteParams = Promise<{
   meetingCode: string;
@@ -36,16 +43,20 @@ export async function DELETE(
   req: NextRequest,
   { params }: { params: RouteParams },
 ) {
+  const { meetingCode } = await params;
   const taskName = req.headers.get("X-CLOUDTASKS-TASKNAME");
   if (taskName === null) {
+    logger.error("No X-CLOUDTASKS-TASKNAME header", { meetingCode });
     return new NextResponse(`No X-CLOUDTASKS-TASKNAME header`, { status: 403 });
   }
 
   const oauth2Client = createOauth2Client(),
     idToken = req.headers.get("Authorization")?.replace("Bearer ", "");
   if (idToken === undefined) {
-    // TODO Structured logging?
-    console.error(`[${taskName}]: Missing authorization header`);
+    logger.error(`[${taskName}]: Missing authorization header`, {
+      taskName,
+      meetingCode,
+    });
     return new NextResponse("Missing Authorization Header", { status: 403 });
   }
   try {
@@ -54,20 +65,24 @@ export async function DELETE(
       idToken,
     });
     if (CLOUD_TASKS_SERVICE_ACCOUNT !== login.getPayload()?.email) {
-      console.error(
+      logger.error(
         `[${taskName}]: OIDC token has the wrong mail: ${login.getPayload()?.email} instead of ${CLOUD_TASKS_SERVICE_ACCOUNT}`,
+        { taskName, meetingCode },
       );
       return new NextResponse("Unexpected service account", { status: 403 });
     }
-  } catch (e) {
-    console.error(`[${taskName}]: OIDC signature validation failed`);
+  } catch (error) {
+    logger.error(error, { taskName, meetingCode });
     return new NextResponse("Invalid OIDC token", { status: 403 });
   }
 
   const userId = req.nextUrl.searchParams.get("userId");
 
   if (userId === null) {
-    console.error(`[${taskName}]: Missing userId parameter`);
+    logger.error(`[${taskName}]: Missing userId parameter`, {
+      taskName,
+      meetingCode,
+    });
     return new NextResponse("Missing userId parameter", { status: 400 });
   }
 
@@ -75,15 +90,24 @@ export async function DELETE(
     user = userDoc.data();
 
   if (!userDoc.exists || user === undefined) {
-    console.error(`[${taskName}]: Did not find user ${userId}`);
+    logger.error(`[${taskName}]: Did not find user ${userId}`, {
+      taskName,
+      meetingCode,
+    });
     return new NextResponse(undefined, { status: 204 });
   }
 
-  oauth2Client.setCredentials({ refresh_token: user.refresh_token });
+  oauth2Client.setCredentials({
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, camelcase
+    refresh_token: user.refresh_token,
+  } as Partial<Credentials>);
 
   const meeting = await findMeeting(params);
   if (meeting === undefined) {
-    console.log(`[${taskName}]: Did not find meeting`);
+    logger.error(`[${taskName}]: Did not find meeting`, {
+      taskName,
+      meetingCode,
+    });
     return new NextResponse(undefined, { status: 204 });
   }
 
@@ -92,7 +116,10 @@ export async function DELETE(
       name: meeting.name,
       auth: oauth2Client,
     });
-    console.log(`[${taskName}]: Ended meeting ${meeting.code}`);
+    logger.info(`[${taskName}]: Ended meeting ${meeting.code}`, {
+      meetingCode,
+      taskName,
+    });
     // TODO Maybe make meetings subcollection of User?
     // TODO Keep or delete meeting?
     return new NextResponse(undefined, { status: response.status });
@@ -100,7 +127,7 @@ export async function DELETE(
     // TODO How to handle 'There is no active conference for the given space.'?
     if (
       typeof e === "object" &&
-      e != null &&
+      e !== null &&
       "status" in e &&
       typeof e.status === "number"
     ) {
@@ -109,10 +136,10 @@ export async function DELETE(
         // Deleted or permission denied
         return new NextResponse(undefined, { status: 204 });
       }
-      console.error(`[${taskName}]`, e);
+      logger.error(e, { meetingCode, taskName });
       return new NextResponse(undefined, { status });
     }
-    console.error(`[${taskName}]`, e);
+    logger.error(e, { meetingCode, taskName });
     return new NextResponse(undefined, { status: 500 });
   }
 }

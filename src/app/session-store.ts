@@ -5,9 +5,9 @@ import {
   createOauth2Client,
   db,
 } from "../shared/server_constants";
-import { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
-import { FieldValue } from "@google-cloud/firestore";
-import { NextRequest } from "next/server";
+import { Logger } from "@/log";
+
+const logger = new Logger("session");
 
 type SessionId = string;
 
@@ -72,6 +72,7 @@ async function createNewSession(
   data: NewSession,
 ): Promise<void> {
   await db.collection("session").doc(sessionId).set(data);
+  logger.debug(`Session ${sessionId} created`, { sessionId });
 }
 
 async function _set(sessionId: string, data: SessionData): Promise<void> {
@@ -116,10 +117,9 @@ export async function deleteSession(): Promise<void> {
     try {
       await db.collection("session").doc(sessionId).delete();
     } catch (e) {
-      console.error(
-        `Something went wrong when deleting session ${sessionId}: ${e}`,
-      );
+      logger.error(e, { sessionId });
     }
+    logger.debug(`Session ${sessionId} deleted`, { sessionId });
     const cookieStore = cookies();
     cookieStore.delete(SESSION_ID_NAME);
   }

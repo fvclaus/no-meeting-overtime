@@ -21,6 +21,9 @@ import {
   MEETING_END_MINUTES_OFFSET,
 } from "@/shared/constants";
 import { z } from "zod";
+import { Logger } from "@/log";
+
+const logger = new Logger("meeting");
 
 const RequestBodySchema = z.object({
     scheduledEndTime: z
@@ -60,12 +63,18 @@ export async function POST(req: NextRequest) {
       }),
       meeting: Meeting = {
         scheduledEndTime: formatISO(reqData.scheduledEndTime),
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         name: space.data.name!,
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         uri: space.data.meetingUri!,
         userId: sessionData.userId,
       };
 
-    console.log(`Created meeting ${space.data.meetingCode}`);
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const meetingCode = space.data.meetingCode!;
+    logger.info(`Created meeting ${meetingCode}`, {
+      meetingCode,
+    });
     const secondsToEnd = Math.max(
         0,
         differenceInSeconds(reqData.scheduledEndTime, Date.now()),
@@ -76,7 +85,7 @@ export async function POST(req: NextRequest) {
         task: {
           httpRequest: {
             httpMethod: "DELETE",
-            url: `${SITE_BASE_CLOUD_TASKS}/api/meeting/${space.data.meetingCode!}?userId=${sessionData.userId}`,
+            url: `${SITE_BASE_CLOUD_TASKS}/api/meeting/${meetingCode}?userId=${sessionData.userId}`,
             headers: {
               "Content-Type": "application/json",
             },
@@ -89,15 +98,21 @@ export async function POST(req: NextRequest) {
           },
         },
       });
-    console.log(
-      `Created task with name ${response.name} to end meeting ${space.data.meetingCode} in ${secondsToEnd}s`,
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const taskName = response.name!;
+    logger.debug(
+      `Created task with name ${taskName} to end meeting ${meetingCode} in ${secondsToEnd}s`,
+      {
+        meetingCode,
+        taskName,
+      },
     );
-    await saveMeeting(space.data.meetingCode!, meeting);
+    await saveMeeting(meetingCode, meeting);
     return NextResponse.json({
-      meetingCode: space.data.meetingCode,
+      meetingCode,
     });
   } catch (e) {
-    console.error(e);
+    logger.error(e);
     return new NextResponse(
       `Creation of meeting failed: ${e instanceof Error ? e.message : e}`,
       { status: 500 },

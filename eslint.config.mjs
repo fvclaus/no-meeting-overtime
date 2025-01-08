@@ -69,6 +69,7 @@ export default tseslint.config(
       "max-lines": "off",
       "no-ternary": "off",
       "no-underscore-dangle": "off",
+      "no-nested-ternary": "off"
     },
   },
 
