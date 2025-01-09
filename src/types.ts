@@ -30,3 +30,7 @@ export type MeetingAndCode = Prettify<
     meetingCode: string;
   }
 >;
+
+export type User = {
+  refresh_token: string;
+};

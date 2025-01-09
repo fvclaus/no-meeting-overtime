@@ -7,6 +7,7 @@ import {
 import { NextRequest, NextResponse } from "next/server";
 import { updateUserInfo } from "../updateUserInfo";
 import { Logger } from "@/log";
+import { User } from "@/types";
 
 const logger = new Logger("get-token");
 
@@ -48,20 +49,9 @@ export async function GET(req: NextRequest) {
   }
   const credentials = (await oauth2Client.getToken(code)).tokens as Credentials;
 
-  // TODO Missing access token?
   const userInfoResponse = await oauth2Client.getTokenInfo(
-      credentials.access_token,
-    ),
-    // TODO Validate refresh token?
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    doc = await db.collection("user").doc(userInfoResponse.sub!).get();
-
-  const data = {} as any;
-  if (credentials.refresh_token) {
-    data.refresh_token = credentials.refresh_token;
-  }
-  await doc.ref.set(data, { merge: true });
-
+    credentials.access_token,
+  );
   // TODO Need to get refresh_token from data if existing user.
   oauth2Client.setCredentials(credentials);
 
@@ -69,13 +59,40 @@ export async function GET(req: NextRequest) {
     const userInfo = await updateUserInfo(credentials);
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const userId = userInfoResponse.sub!;
+    logger.info(`User ${userId} authenticated successfully`, { userId });
+
+    // Fetch or update refresh_token
+    const userDoc = await db.collection("user").doc(userId).get();
+
+    if (credentials.refresh_token) {
+      logger.info(`Updating refresh_token for user ${userId} `, { userId });
+      await userDoc.ref.set(
+        { refresh_token: credentials.refresh_token } as User,
+        { merge: true },
+      );
+    } else {
+      if (!userDoc.exists) {
+        logger.error(`Did not receive refresh_token for user ${userId}`, {
+          userId,
+        });
+        return new NextResponse("An unexpected error occurred", {
+          status: 500,
+        });
+      }
+
+      logger.info(`Returning user ${userId}. Getting refresh_token`, {
+        userId,
+      });
+      credentials.refresh_token = (userDoc.data() as User).refresh_token;
+    }
+
     await setSession({
       // TODO Observation google-apis have horrible typing
       userId,
       hasAcceptedPrivacyPolicy: true,
+      credentials,
       ...userInfo,
     });
-    logger.info(`User ${userId} authenticated successfully`, { userId });
   } catch (error) {
     logger.error(error, { additional: credentials });
     throw new Error(

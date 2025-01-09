@@ -100,7 +100,7 @@ export async function POST(req: NextRequest) {
       });
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const taskName = response.name!;
-    logger.debug(
+    logger.info(
       `Created task with name ${taskName} to end meeting ${meetingCode} in ${secondsToEnd}s`,
       {
         meetingCode,

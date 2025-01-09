@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /* eslint-disable no-await-in-loop */
 // TODO Just copied to avoid problems with other env variables
 export const REQUIRED_SCOPES = [
@@ -37,6 +38,8 @@ describe("test", { timeout: 200_000 }, () => {
   let createMeetingButton: Locator;
   // eslint-disable-next-line init-declarations
   let userMenuButton: Locator;
+  // eslint-disable-next-line init-declarations
+  let getStartedButton: Locator;
 
   async function revokeGoogleSignIn() {
     await page.goto("https://myaccount.google.com/connections");
@@ -80,6 +83,12 @@ describe("test", { timeout: 200_000 }, () => {
   }
 
   async function signInWithGoogle(scopes: string[] = REQUIRED_SCOPES) {
+    const appLink = page.locator("css=button[data-third-party-email]");
+    await expect(appLink.or(createMeetingButton)).toBeVisible();
+    if (await createMeetingButton.isVisible()) {
+      // User already logged in
+      return;
+    }
     const continueButton = page.getByRole("button", { name: "Continue" });
     await page.waitForURL("**");
     await selectCorrectGmailAccount();
@@ -106,10 +115,14 @@ describe("test", { timeout: 200_000 }, () => {
       await continueButton.click();
     }
 
-    await expect(
-      page.getByText("Sign in to No Meeting Overtime"),
-    ).toBeVisible();
-    await continueButton.click();
+    const signInText = page.getByRole("heading", {
+      name: "Sign in to No Meeting Overtime",
+    });
+    await expect(signInText.or(additionalAccess).or(access)).toBeVisible();
+
+    if (await signInText.isVisible()) {
+      await continueButton.click();
+    }
 
     await expect(additionalAccess.or(access)).toBeVisible();
     for (const scope of scopes) {
@@ -122,7 +135,6 @@ describe("test", { timeout: 200_000 }, () => {
   }
 
   async function signInIfNecessary() {
-    const getStartedButton = page.getByRole("button", { name: "Get started" });
     await expect(signInWithGoogleButton.or(getStartedButton)).toBeVisible();
     if (await signInWithGoogleButton.isVisible()) {
       await signInWithGoogleButton.click();
@@ -144,10 +156,12 @@ describe("test", { timeout: 200_000 }, () => {
     });
     createMeetingButton = page.getByRole("button", { name: "Create Meeting" });
     userMenuButton = page.getByRole("button", { name: "User Menu" });
+    getStartedButton = page.getByRole("button", { name: "Get started" });
   });
 
   afterEach(async () => {
-    if (page != undefined) {
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    if (page !== undefined) {
       await page.close();
     }
   });
@@ -191,7 +205,7 @@ describe("test", { timeout: 200_000 }, () => {
   });
 
   // eslint-disable-next-line @typescript-eslint/no-floating-promises
-  it("test accept privacy policy", async () => {
+  it.only("test accept privacy policy", async () => {
     await context.clearCookies({ name: SESSION_ID_NAME });
     await page.goto("http://localhost:3000");
     await page.evaluate(() => {

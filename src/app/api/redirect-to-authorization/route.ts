@@ -5,7 +5,7 @@ import {
   createOauth2Client,
 } from "@/shared/server_constants";
 import { setSession } from "@/app/session-store";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
 // TODO Logout + Revoke?
 
@@ -13,7 +13,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 const scopes = ["email", "profile", "openid", ...REQUIRED_SCOPES];
 
-export async function GET(req: NextRequest) {
+export async function GET() {
   // Generate a secure random state value.
   const state = crypto.randomBytes(32).toString("hex");
 
@@ -31,10 +31,9 @@ export async function GET(req: NextRequest) {
     scope: scopes,
     // Enable incremental authorization. Recommended as a best practice.
     include_granted_scopes: true,
+    // prompt: "consent",
     // Include the state parameter to reduce the risk of CSRF attacks.
     state,
-    // TODO Remove when missing refresh_token handling is fixed
-    prompt: "consent",
     redirect_uri: GET_TOKEN_API_URL,
   });
   return NextResponse.redirect(authorizationUrl);

@@ -17,7 +17,8 @@ export async function DELETE() {
   meetings.forEach((meeting) => {
     batch.delete(db.doc(`meeting/${meeting.meetingCode}`));
   });
-  batch.delete(db.doc(`user/${sessionData.userId}`));
+  // We cannot delete the user itself, because we will not receive another token, because the app is still linked with that specific account
+  // TODO Investigate this further
   await batch.commit();
   return new NextResponse(null, { status: 204 });
 }

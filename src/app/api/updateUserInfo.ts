@@ -4,7 +4,7 @@ import { google } from "googleapis";
 
 export async function updateUserInfo(
   credentials: Credentials,
-): Promise<{ name: string; picture: string; credentials: Credentials }> {
+): Promise<{ name: string; picture: string }> {
   const oauth2Client = createOauth2Client();
   oauth2Client.setCredentials(credentials);
 
@@ -18,6 +18,5 @@ export async function updateUserInfo(
   return {
     name,
     picture,
-    credentials: oauth2Client.credentials as Credentials,
   };
 }

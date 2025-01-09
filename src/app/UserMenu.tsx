@@ -80,6 +80,7 @@ export default function UserMenu({
         <div className="py-1">
           <UserMenuLink href={LOGOUT_URL}>Logout</UserMenuLink>
         </div>
+        {/* Add Switch Account options */}
       </div>
     </div>
   );
