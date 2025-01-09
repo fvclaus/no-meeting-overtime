@@ -23,7 +23,7 @@ export type LogEntry = {
 };
 
 export function log(msg: unknown, entry: Omit<LogEntry, "message">) {
-  const globalLogFields = {};
+  const globalLogFields: Record<string, string> = {};
 
   // Add log correlation to nest all log messages beneath request log in Log Viewer.
   // (This only works for HTTP-based invocations where `req` is defined.)
