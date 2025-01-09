@@ -67,12 +67,15 @@ export async function GET(req: NextRequest) {
 
   try {
     const userInfo = await updateUserInfo(credentials);
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const userId = userInfoResponse.sub!;
     await setSession({
       // TODO Observation google-apis have horrible typing
-      userId: userInfoResponse.sub!,
+      userId,
       hasAcceptedPrivacyPolicy: true,
       ...userInfo,
     });
+    logger.info(`User ${userId} authenticated successfully`, { userId });
   } catch (error) {
     logger.error(error, { additional: credentials });
     throw new Error(

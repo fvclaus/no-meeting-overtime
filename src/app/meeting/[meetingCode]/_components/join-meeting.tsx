@@ -7,6 +7,7 @@ import { START_MEETING_PATH } from "@/shared/constants";
 import { Calendar, Clock } from "lucide-react";
 import FAQSection from "@/app/FAQSection";
 import Link from "@/app/Link";
+import { cn } from "@/lib/utils";
 
 export type MeetingData = Pick<Meeting, "scheduledEndTime"> &
   Pick<Meeting, "uri"> & { code: string };
@@ -29,8 +30,8 @@ export function JoinMeeting({ meeting }: { meeting: MeetingData }) {
   const [timeRemaining, setTimeRemaining] = useState<number>(
       differenceInSeconds(meeting.scheduledEndTime, new Date()),
     ),
-    formatTimeRemaining = (timeRemaining: number): string => {
-      let remaining = timeRemaining;
+    formatTimeRemaining = (time: number): string => {
+      let remaining = time;
       const hours = Math.floor(remaining / (60 * 60));
       remaining -= hours * 60 * 60;
       const minutes = Math.floor(remaining / 60);
@@ -43,21 +44,19 @@ export function JoinMeeting({ meeting }: { meeting: MeetingData }) {
 
   useEffect(() => {
     const timerInterval = setInterval(() => {
-      if (meeting.scheduledEndTime !== undefined) {
-        const diff = differenceInSeconds(meeting.scheduledEndTime, new Date());
+      const diff = differenceInSeconds(meeting.scheduledEndTime, new Date());
 
-        if (diff <= 0) {
-          setTimeRemaining(0);
-          clearInterval(timerInterval);
-        } else {
-          setTimeRemaining(diff);
-        }
+      if (diff <= 0) {
+        setTimeRemaining(0);
+        clearInterval(timerInterval);
+      } else {
+        setTimeRemaining(diff);
       }
     }, 1000);
 
     // Cleanup the interval when the component unmounts
     return () => {
-      timerInterval !== undefined && clearInterval(timerInterval);
+      clearInterval(timerInterval);
     };
   }, [meeting]);
 
@@ -83,24 +82,35 @@ export function JoinMeeting({ meeting }: { meeting: MeetingData }) {
             <div className="bg-white rounded-2xl shadow-xl p-8">
               <p>
                 Meeting with code{" "}
-                <span className="font-bold">{meeting.code}</span> created. It
-                will end{" "}
+                <span className="font-bold">{meeting.code}</span> created.{" "}
                 {timeRemaining > 0 && (
                   <>
-                    in{" "}
+                    It will end in{" "}
                     {/* https://legacy.reactjs.org/docs/dom-elements.html#suppresshydrationwarning */}
                     <span className="font-bold" suppressHydrationWarning>
                       {formatTimeRemaining(timeRemaining)} at {endTimeFormatted}
                     </span>
                   </>
                 )}
-                {timeRemaining <= 0 && <span className="font-bold">now</span>}
+                {timeRemaining === 0 && (
+                  <>
+                    We tried to end the meeting at{" "}
+                    <span className="font-bold" suppressHydrationWarning>
+                      {endTimeFormatted}
+                    </span>
+                    .
+                  </>
+                )}
               </p>
               <div className="flex flex-col lg:flex-row mt-2">
                 <div className="grid flex-grow place-items-center">
                   <Link href={START_MEETING_PATH}>Create another</Link>
                 </div>
-                <div className="grid flex-grow place-items-center">
+                <div
+                  className={cn("grid flex-grow place-items-center", {
+                    invisible: timeRemaining === 0,
+                  })}
+                >
                   <Link target="_blank" variant="button" href={meeting.uri}>
                     Join now
                   </Link>
