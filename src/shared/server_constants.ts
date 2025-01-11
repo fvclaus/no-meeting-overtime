@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { google } from "googleapis";
 import { START_MEETING_PATH } from "./constants";
 import { Firestore } from "@google-cloud/firestore";
