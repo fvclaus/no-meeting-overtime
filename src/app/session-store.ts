@@ -1,10 +1,6 @@
 import { cookies } from "next/headers";
-import {
-  SESSION_ID_NAME,
-  SITE_BASE,
-  createOauth2Client,
-  db,
-} from "../shared/server_constants";
+import { SITE_BASE, createOauth2Client, db } from "../shared/server_constants";
+import { SESSION_ID_NAME } from "@/shared/constants";
 import { Logger } from "@/log";
 
 const logger = new Logger("session");

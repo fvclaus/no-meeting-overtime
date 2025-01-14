@@ -2,6 +2,8 @@ import { headers } from "next/headers";
 import { PROJECT_ID } from "./shared/server_constants";
 import { SessionData } from "./app/session-store";
 
+const USE_STRUCTURED_LOGGING = process.env.USE_STRUCTURED_LOGGING === "true";
+
 export type LogEntry = {
   severity:
     | "DEBUG"
@@ -22,32 +24,64 @@ export type LogEntry = {
   additional?: unknown;
 };
 
-export function log(msg: unknown, entry: Omit<LogEntry, "message">) {
-  const globalLogFields: Record<string, string> = {};
+export const log = USE_STRUCTURED_LOGGING
+  ? (msg: unknown, entry: Omit<LogEntry, "message">) => {
+      const globalLogFields: Record<string, string> = {};
 
-  // Add log correlation to nest all log messages beneath request log in Log Viewer.
-  // (This only works for HTTP-based invocations where `req` is defined.)
-  const traceHeader = headers().get("X-Cloud-Trace-Context");
-  if (traceHeader) {
-    const [trace] = traceHeader.split("/");
-    globalLogFields["logging.googleapis.com/trace"] =
-      `projects/${PROJECT_ID}/traces/${trace}`;
-  }
+      // Add log correlation to nest all log messages beneath request log in Log Viewer.
+      // (This only works for HTTP-based invocations where `req` is defined.)
+      const traceHeader = headers().get("X-Cloud-Trace-Context");
+      if (traceHeader) {
+        const [trace] = traceHeader.split("/");
+        globalLogFields["logging.googleapis.com/trace"] =
+          `projects/${PROJECT_ID}/traces/${trace}`;
+      }
 
-  const completeLogEntry: LogEntry = {
-    message:
-      msg instanceof Error
-        ? msg.stack
-          ? msg.stack
-          : msg.message
-        : String(msg),
-    ...entry,
-  };
+      const completeLogEntry: LogEntry = {
+        message:
+          msg instanceof Error
+            ? msg.stack
+              ? msg.stack
+              : msg.message
+            : String(msg),
+        ...entry,
+      };
 
-  // Serialize to a JSON string and output.
-  // eslint-disable-next-line no-console
-  console.log(JSON.stringify({ ...completeLogEntry, ...globalLogFields }));
-}
+      // Serialize to a JSON string and output.
+      // eslint-disable-next-line no-console
+      console.log(JSON.stringify({ ...completeLogEntry, ...globalLogFields }));
+    }
+  : (msg: unknown, entry: Omit<LogEntry, "message">) => {
+      switch (entry.severity) {
+        case "DEBUG": {
+          // eslint-disable-next-line no-console
+          console.debug(msg);
+          break;
+        }
+        case "INFO":
+        case "NOTICE": {
+          // eslint-disable-next-line no-console
+          console.info(msg);
+          break;
+        }
+        case "WARNING": {
+          // eslint-disable-next-line no-console
+          console.warn(msg);
+          break;
+        }
+        case "CRITICAL":
+        case "EMERGENCY":
+        case "ALERT":
+        case "ERROR": {
+          // eslint-disable-next-line no-console
+          console.error(msg);
+          break;
+        }
+        default: {
+          throw new Error(`Unknown severity ${entry.severity}`);
+        }
+      }
+    };
 
 export function logDebug(
   msg: string,

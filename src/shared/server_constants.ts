@@ -82,4 +82,3 @@ export const db = new Firestore({
   keyFilename: KEY_FILE,
   databaseId: "meetings",
 });
-export const SESSION_ID_NAME = "session-id";
