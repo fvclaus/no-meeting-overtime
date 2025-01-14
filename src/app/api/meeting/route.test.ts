@@ -1,12 +1,16 @@
+/* eslint-disable new-cap */
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import * as handler from "./route";
-import { getCredentials, getSessionKey } from "@/app/session-store";
 import { google } from "googleapis";
 import { NextRequest, NextResponse } from "next/server";
 import { add, formatISO } from "date-fns";
-import { ZodIssue } from "zod";
 import { saveMeeting } from "@/app/firestore";
 import { CloudTasksClient } from "@google-cloud/tasks";
+import { ZodIssue } from "zod";
+import {
+  mockAuthenticatedSession,
+  mockUnauthorizedSession,
+} from "@/app/session-store.mock";
 
 describe("/api/meeting/[meetingCode]", () => {
   beforeEach(() => {
@@ -16,14 +20,27 @@ describe("/api/meeting/[meetingCode]", () => {
     vi.mock("googleapis");
     vi.mock("@google-cloud/tasks", () => {
       // This is necessary, but I don't understand why the mocking in the test doesn't work without it.
+      // eslint-disable-next-line no-shadow
       const CloudTasksClient = vi.fn();
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       CloudTasksClient.prototype.createTask = vi.fn(() =>
         Promise.resolve([{ name: "task123" }]),
       );
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       CloudTasksClient.prototype.queuePath = vi.fn(() => "queuePath");
       return { CloudTasksClient };
     });
+    mockAuthenticatedSession();
   });
+
+  async function expectBadRequest(
+    response: NextResponse,
+    error: Partial<ZodIssue>,
+  ) {
+    expect(response.status).toBe(400);
+    const errors = (await response.json()) as string[];
+    expect(errors[0]).toEqual(expect.objectContaining(error));
+  }
 
   describe("POST", () => {
     it("should return 400 for invalid request body", async () => {
@@ -64,7 +81,8 @@ describe("/api/meeting/[meetingCode]", () => {
       });
     });
 
-    it("should return 403 if no credentials in session", async () => {
+    it("should return 403 if user is not logged in", async () => {
+      mockUnauthorizedSession();
       const req = new NextRequest("http://localhost/api/meeting", {
           method: "POST",
           body: JSON.stringify({
@@ -73,26 +91,10 @@ describe("/api/meeting/[meetingCode]", () => {
         }),
         response = await handler.POST(req);
       expect(response.status).toBe(403);
-      expect(await response.text()).toBe("No credentials in session");
-    });
-
-    it("should return 403 if no userId in session", async () => {
-      vi.mocked(getCredentials).mockResolvedValue({} as any);
-
-      const req = new NextRequest("http://localhost/api/meeting", {
-          method: "POST",
-          body: JSON.stringify({
-            scheduledEndTime: formatISO(add(new Date(), { minutes: 10 })),
-          }),
-        }),
-        response = await handler.POST(req);
-      expect(response.status).toBe(403);
-      expect(await response.text()).toBe("No userId in session");
+      expect(await response.text()).toBe("User is not logged in");
     });
 
     it("should return 500 if meeting creation fails", async () => {
-      vi.mocked(getCredentials).mockResolvedValue({} as any);
-      vi.mocked(getSessionKey).mockResolvedValue("userId");
       vi.mocked(google.meet).mockReturnValue({
         spaces: {
           create: vi.fn().mockRejectedValue(new Error("Google API error")),
@@ -113,8 +115,6 @@ describe("/api/meeting/[meetingCode]", () => {
     });
 
     it("should create a meeting and return the meeting data", async () => {
-      vi.mocked(getCredentials).mockResolvedValue({} as any);
-      vi.mocked(getSessionKey).mockResolvedValue("userId");
       vi.mocked(google.meet).mockReturnValue({
         spaces: {
           create: vi.fn().mockResolvedValue({
@@ -144,20 +144,9 @@ describe("/api/meeting/[meetingCode]", () => {
       expect(response.status).toBe(200);
       const data = await response.json();
       expect(data).toEqual({
-        name: "Test Meeting",
-        meetingUri: "https://meet.google.com/test-meeting",
         meetingCode: "meeting123",
       });
       expect(vi.mocked(saveMeeting)).toHaveBeenCalledOnce();
     });
   });
 });
-
-async function expectBadRequest(
-  response: NextResponse,
-  error: Partial<ZodIssue>,
-) {
-  expect(response.status).toBe(400);
-  const errors = await response.json();
-  expect(errors[0]).toEqual(expect.objectContaining(error));
-}

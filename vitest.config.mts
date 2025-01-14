@@ -4,8 +4,11 @@ import tsconfigPaths from "vite-tsconfig-paths";
 
 export default defineConfig({
   plugins: [tsconfigPaths(), react()],
+  
   test: {
     environment: "jsdom",
+    include: ["**/*.test.ts"],
+    exclude: ["**/*.component.test.ts", "**/e2e.test.ts"],
     env: {
       CLIENT_ID: "VITEST_CLIENT_ID",
       CLIENT_SECRET: "VITEST_CLIENT_SECRET",

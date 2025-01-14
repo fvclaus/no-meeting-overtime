@@ -4,7 +4,8 @@
 export const REQUIRED_SCOPES = [
   "https://www.googleapis.com/auth/meetings.space.created",
 ];
-import { db, SESSION_ID_NAME } from "@/shared/server_constants";
+import { db } from "@/shared/server_constants";
+import { SESSION_ID_NAME } from "@/shared/constants";
 import {
   BrowserContext,
   chromium,

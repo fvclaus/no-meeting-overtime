@@ -20,3 +20,4 @@ export const SETTINGS_URL = "/settings";
 export const LOGOUT_URL = "/api/logout";
 export const PRIVACY_POLICY_URL = "/privacy-policy";
 export const REPORT_ISSUE_URL = "/report-issue";
+export const SESSION_ID_NAME = "session-id";

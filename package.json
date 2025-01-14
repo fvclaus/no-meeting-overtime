@@ -7,7 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test-ct": "playwright test -c playwright-ct.config.ts"
+    "test:unit": "vitest run",
+    "test:ct": "playwright test -c playwright-ct.config.ts",
+    "test:ct:update-snapshots": "pnpm run test-ct --update-snapshots"
   },
   "dependencies": {
     "@date-fns/tz": "^1.2.0",

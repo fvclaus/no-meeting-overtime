@@ -22,14 +22,22 @@ export async function GET(
   req: NextRequest,
   { params }: { params: RouteParams },
 ) {
+  const sessionData = await getSession();
+
+  if (!isAuthorizedSession(sessionData)) {
+    return new NextResponse("Unauthenticated", { status: 403 });
+  }
+
   const meeting = await findMeeting(params);
   if (meeting === undefined) {
     return new NextResponse("Unauthenticated", { status: 403 });
   }
 
-  const sessionData = await getSession();
-
-  if (!isAuthorizedSession(sessionData)) {
+  if (sessionData.userId !== meeting.userId) {
+    logger.error(
+      `User ${sessionData.userId} tried to access meeting ${meeting.code} of other user`,
+      { userId: sessionData.userId, meetingCode: meeting.code },
+    );
     return new NextResponse("Unauthenticated", { status: 403 });
   }
 
@@ -98,7 +106,7 @@ export async function DELETE(
   }
 
   oauth2Client.setCredentials({
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, camelcase
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     refresh_token: user.refresh_token,
   } as Partial<Credentials>);
 

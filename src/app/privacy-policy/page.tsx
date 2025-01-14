@@ -1,13 +1,21 @@
 import { Title } from "@/components/ui/title";
 import "./style.css";
-import { SESSION_ID_NAME } from "@/shared/server_constants";
 import Link from "../Link";
-import { MEETINGS_URL, SETTINGS_URL } from "@/shared/constants";
+import {
+  SESSION_ID_NAME,
+  MEETINGS_URL,
+  SETTINGS_URL,
+} from "@/shared/constants";
+import { Shield } from "lucide-react";
 
 export default function Page() {
   return (
     <div className="flex flex-col items-center justify-center">
-      <Title title="Privacy Policy" />
+      <Title
+        title="Privacy Policy"
+        subtitle="Information on data collection, usage, and protection practices"
+        icons={[Shield]}
+      />
       <div className="w-full bg-blue-50 py-16 text-gray-600">
         <article
           id="privacy-policy"
@@ -80,8 +88,21 @@ export default function Page() {
               >
                 official documentation
               </Link>{" "}
-              for more details. The data is kept as long as you have an account
-              with us.
+              for more details. Google Cloud Firestore encrypts data both{" "}
+              <Link
+                href="https://firebase.google.com/support/privacy#data_encryption"
+                target="_blank"
+              >
+                in transit and at rest
+              </Link>
+              . The data is kept as long as you have an account with us.
+            </p>
+          </section>
+          <section>
+            <h2>Is my data transferred or disclosed to third parties?</h2>
+            <p>
+              No, your data is not transferred or disclosed to third parties for
+              purposes other than the ones provided.
             </p>
           </section>
           <section>
@@ -102,7 +123,7 @@ export default function Page() {
             <h2>Changes to the privacy policy</h2>
             <p>
               The privacy policy is kept under regular review. This privacy
-              policy was last updated on 01 January 2025.
+              policy was last updated on 14 January 2025.
             </p>
           </section>
         </article>

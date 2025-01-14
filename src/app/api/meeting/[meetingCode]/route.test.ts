@@ -1,9 +1,14 @@
+/* eslint-disable new-cap */
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import * as handler from "./route";
 import { findMeeting, findUser } from "../../../firestore";
-import { getSessionKey } from "@/app/session-store";
+import { getSession } from "@/app/session-store";
 import { google } from "googleapis";
 import { NextRequest, NextResponse } from "next/server";
+import {
+  authenticatedSession,
+  mockAuthenticatedSession,
+} from "@/app/session-store.mock";
 
 describe("/api/meeting/[meetingCode]", () => {
   beforeEach(() => {
@@ -18,7 +23,7 @@ describe("/api/meeting/[meetingCode]", () => {
           return {
             code: meetingCode,
             uri: meetingCode,
-            userId: `${meetingCode}_userId`,
+            userId: authenticatedSession.userId,
             name: "name",
             scheduledEndTime: "scheduledEndTime",
           };
@@ -32,16 +37,16 @@ describe("/api/meeting/[meetingCode]", () => {
       }
     };
     vi.mocked(findMeeting).mockImplementation(findMeetingMock);
+    mockAuthenticatedSession();
   });
 
   describe("GET", () => {
     it("should return meeting details for a valid meeting code", async () => {
-      vi.mocked(getSessionKey).mockResolvedValue("existingMeeting_userId");
-      const response = await handler.GET(null as any, {
+      const response = await handler.GET({} as NextRequest, {
         params: Promise.resolve({ meetingCode: "existingMeeting" }),
       });
       expect(response.status).toBe(200);
-      const data = await response.json();
+      const data = (await response.json()) as unknown;
       expect(data).toEqual({
         uri: "existingMeeting",
         scheduledEndTime: "scheduledEndTime",
@@ -49,19 +54,19 @@ describe("/api/meeting/[meetingCode]", () => {
     });
 
     it("should return 403 for an invalid meeting code", async () => {
-      const response = await handler.GET(null as any, {
+      const response = await handler.GET({} as NextRequest, {
         params: Promise.resolve({ meetingCode: "missingMeeting" }),
       });
-      expect(vi.mocked(getSessionKey)).toHaveBeenCalledTimes(0);
       expect(response.status).toBe(403);
     });
 
     it("should return 403 for a meeting code that belongs to other person", async () => {
-      vi.mocked(getSessionKey).mockResolvedValue("otherUser");
-      const response = await handler.GET(null as any, {
+      mockAuthenticatedSession({ userId: "otherUser" });
+      const response = await handler.GET({} as NextRequest, {
         params: Promise.resolve({ meetingCode: "existingMeeting" }),
       });
-      expect(vi.mocked(getSessionKey)).toHaveBeenCalledOnce();
+      expect(vi.mocked(getSession)).toHaveBeenCalledOnce();
+      expect(vi.mocked(findMeeting)).toHaveBeenCalledOnce();
       expect(response.status).toBe(403);
     });
   });
