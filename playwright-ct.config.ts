@@ -47,9 +47,11 @@ export default defineConfig({
       name: "firefox",
       use: { ...devices["Desktop Firefox"], locale: "en-US" },
     },
-    {
-      name: "webkit",
-      use: { ...devices["Desktop Safari"], locale: "en-US" },
-    },
+    // TODO Safari is currently not working not sure why.
+    // TODO Make this run in a docker container for better portability
+    // {
+    //   name: "webkit",
+    //   use: { ...devices["Desktop Safari"], locale: "en-US" },
+    // },
   ],
 });

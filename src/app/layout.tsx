@@ -16,6 +16,12 @@ export default async function RootLayout({
     <html lang="en">
       <head>
         <title>No Meeting Overtime</title>
+        <meta
+          name="description"
+          content="Avoid meetings that go overtime. This app allows you to set an
+                end time for your Google Meet meetings, ensuring they end on
+                time."
+        />
         <meta property="og:title" content="No Meeting Overtime" key="title" />
       </head>
       <body className="flex-row">
