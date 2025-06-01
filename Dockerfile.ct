@@ -1,0 +1,19 @@
+FROM mcr.microsoft.com/playwright:v1.52.0-jammy
+WORKDIR /app
+
+COPY package.json pnpm-lock.yaml ./
+RUN npm install -g pnpm
+RUN pnpm install --frozen-lockfile
+
+COPY playwright-ct.config.ts ./
+COPY tsconfig.json ./
+COPY next.config.js ./
+COPY tailwind.config.js ./
+COPY postcss.config.js ./
+COPY components.json ./
+COPY eslint.config.mjs ./
+COPY node_modules ./
+
+COPY src ./src
+COPY playwright ./playwright
+COPY public ./public
