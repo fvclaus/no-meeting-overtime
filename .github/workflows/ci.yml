@@ -1,6 +1,11 @@
 name: CI
-
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
 
@@ -39,10 +44,17 @@ jobs:
         run: npm install -g pnpm
 
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install --frozen-lockfile
 
-      - name: Install playwright
-        run: pnpm exec playwright install 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
-      - name: Run component tests
+      - name: Run component tests via pnpm script
         run: pnpm test:ct
+
+      - name: Upload Playwright CT report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-ct-report
+          path: playwright-report/ 

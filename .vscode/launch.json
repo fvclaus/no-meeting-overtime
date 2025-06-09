@@ -71,7 +71,7 @@
             "name": "Run component tests",
             "type": "node-terminal",
             "request": "launch",
-            "command": "npm run test-ct -- --debug",
+            "command": "npm run test:ct -- --debug",
           },
     ]
 }
