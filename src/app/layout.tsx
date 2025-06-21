@@ -4,6 +4,18 @@ import Link from "next/link";
 import { Calendar, Clock } from "lucide-react";
 import { Footer } from "./Footer";
 import UserMenu from "./UserMenu";
+import { GoogleAnalytics } from "@next/third-parties/google";
+import Script from "next/script";
+import { GOOGLE_ADS_ID } from "@/shared/constants";
+import dynamic from "next/dynamic";
+// import CookieConsentBanner from "@/components/CookieConsentBanner";
+
+const CodeSampleModal = dynamic(
+  () => import("@/components/CookieConsentBanner"),
+  {
+    ssr: false,
+  },
+);
 
 export default async function RootLayout({
   children,
@@ -23,8 +35,31 @@ export default async function RootLayout({
                 time."
         />
         <meta property="og:title" content="No Meeting Overtime" key="title" />
+        <Script
+          id="gtag-consent-default"
+          strategy="beforeInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('consent', 'default', {
+                'ad_storage': 'denied',
+                'ad_user_data': 'denied',
+                'ad_personalization': 'denied',
+                'analytics_storage': 'denied',
+                'functionality_storage': 'denied',
+                'personalization_storage': 'denied',
+                'security_storage': 'granted'
+              });
+            `,
+          }}
+        />
+        <GoogleAnalytics gaId={GOOGLE_ADS_ID} />
       </head>
       <body className="flex-row">
+        <button type="button" data-cc="show-preferencesModal">
+          Manage cookie preferences
+        </button>
         <div className="navbar bg-white border-b border-gray-100">
           <div className="flex-1">
             <Link className="btn btn-ghost text-xl" href="/">
@@ -39,6 +74,7 @@ export default async function RootLayout({
         </div>
         <main className="mt-10">{children}</main>
         <Footer></Footer>
+        <CodeSampleModal></CodeSampleModal>
       </body>
     </html>
   );

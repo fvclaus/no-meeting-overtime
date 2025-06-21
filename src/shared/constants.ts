@@ -21,3 +21,5 @@ export const LOGOUT_URL = "/api/logout";
 export const PRIVACY_POLICY_URL = "/privacy-policy";
 export const REPORT_ISSUE_URL = "/report-issue";
 export const SESSION_ID_NAME = "session-id";
+export const GOOGLE_ADS_ID = "AW-17136814715";
+export const GOOGLE_ADS_CONVERSION_LABEL = "ZHcWCIGe19AaEPuUvOs_";

@@ -50,6 +50,14 @@ export default function Page() {
                   with your account
                 </p>
               </li>
+              <li>
+                <p>
+                  Google Ads Data include pages viewed and interactions on these
+                  pages, you IP address (which can be used to infer your general
+                  geographic location), Information about your device and
+                  browser type.
+                </p>
+              </li>
             </ul>
           </section>
 
@@ -74,6 +82,11 @@ export default function Page() {
             <p>
               Your data is used create and manage meetings on your behalf. The
               log data is used to identify problems with the website.
+            </p>
+            <p>
+              Data collected via Google Ads is used to measure the performance
+              of advertising campaigns and understand how users engage with the
+              website.
             </p>
           </section>
 
@@ -101,8 +114,39 @@ export default function Page() {
           <section>
             <h2>Is my data transferred or disclosed to third parties?</h2>
             <p>
-              No, your data is not transferred or disclosed to third parties for
-              purposes other than the ones provided.
+              Your personal identification information (name, profile picture,
+              user ID) and specific meeting data (meeting code, scheduled end
+              time) that you provide directly to this service are not sold or
+              transferred to unrelated third parties for their own marketing
+              purposes.
+            </p>
+            <p>
+              However, for the purpose of website analytics and advertising
+              campaign tracking, Google Ads is utilized. When you use our
+              website, certain data (as described in "What data is collected?")
+              is shared with Google to enable these services. Google processes
+              this data in accordance with its own privacy policies. We
+              recommend you review{" "}
+              <Link target="_blank" href="https://policies.google.com/privacy">
+                Google's Privacy Policy
+              </Link>{" "}
+              to understand how Google handles your data and{" "}
+              <Link
+                target="_blank"
+                href="https://adssettings.google.com/authenticated"
+              >
+                Google Ad Settings
+              </Link>{" "}
+              to manage your ad preferences with Google.
+            </p>
+            <p>
+              Additionally, Google Ads, which we use for tracking advertising
+              performance, may place cookies on your browser if you have
+              consented via Google's services or your browser settings. These
+              cookies help measure ad effectiveness and may be used by Google
+              for ad personalization purposes on other websites. You can manage
+              your cookie preferences through your browser settings and through
+              Google's ad settings linked above.
             </p>
           </section>
           <section>
@@ -123,7 +167,7 @@ export default function Page() {
             <h2>Changes to the privacy policy</h2>
             <p>
               The privacy policy is kept under regular review. This privacy
-              policy was last updated on 14 January 2025.
+              policy was last updated on 21 June 2025.
             </p>
           </section>
         </article>

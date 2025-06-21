@@ -6,7 +6,5 @@ export function middleware(request: NextRequest) {
   if (url !== null && url.startsWith("www.")) {
     return NextResponse.redirect(`https://${url.replace("www.", "")}`);
   }
-  const response = NextResponse.next();
-  response.headers.set("Link", `<${request.url}>; rel="canonical"`);
-  return response;
+  return NextResponse.next();
 }
