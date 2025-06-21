@@ -125,12 +125,11 @@ export default function Page() {
               campaign tracking, Google Ads is utilized. When you use our
               website, certain data (as described in "What data is collected?")
               is shared with Google to enable these services. Google processes
-              this data in accordance with its own privacy policies. We
-              recommend you review{" "}
+              this data in accordance with its own privacy policies. You can review it at{" "}
               <Link target="_blank" href="https://policies.google.com/privacy">
                 Google's Privacy Policy
               </Link>{" "}
-              to understand how Google handles your data and{" "}
+              and use {" "}
               <Link
                 target="_blank"
                 href="https://adssettings.google.com/authenticated"

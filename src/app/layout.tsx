@@ -7,15 +7,7 @@ import UserMenu from "./UserMenu";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import Script from "next/script";
 import { GOOGLE_ADS_ID } from "@/shared/constants";
-import dynamic from "next/dynamic";
-// import CookieConsentBanner from "@/components/CookieConsentBanner";
-
-const CodeSampleModal = dynamic(
-  () => import("@/components/CookieConsentBanner"),
-  {
-    ssr: false,
-  },
-);
+import CookieConsentBanner from "@/components/CookieConsentBanner";
 
 export default async function RootLayout({
   children,
@@ -74,8 +66,8 @@ export default async function RootLayout({
         </div>
         <main className="mt-10">{children}</main>
         <Footer></Footer>
-        <CodeSampleModal></CodeSampleModal>
-      </body>
-    </html>
-  );
-}
+          <CookieConsentBanner/>
+       </body>
+     </html>
+   );
+ }
