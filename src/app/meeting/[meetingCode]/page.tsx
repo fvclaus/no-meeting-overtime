@@ -9,7 +9,7 @@ export default async function Page({
 }) {
   const { meetingCode } = await params,
     res = await fetch(`${SITE_BASE}/api/meeting/${meetingCode}`, {
-      headers: { Cookie: cookies().toString() },
+      headers: { Cookie: (await cookies()).toString() },
     });
 
   let meeting: MeetingData | undefined;

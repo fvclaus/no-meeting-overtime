@@ -16,7 +16,7 @@ export default async function Page() {
   }
 
   const meetingsRequest = await fetch(`${SITE_BASE}/api/meetings`, {
-    headers: { Cookie: cookies().toString() },
+    headers: { Cookie: (await cookies()).toString() },
   });
 
   // TODO Error Handling
