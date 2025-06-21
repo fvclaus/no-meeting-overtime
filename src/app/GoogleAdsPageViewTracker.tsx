@@ -1,18 +1,8 @@
 "use client";
 
-import { useEffect } from "react";
-import { usePathname } from "next/navigation";
-
-// Define gtag function type for TypeScript if not already globally defined
-declare global {
-  interface Window {
-    gtag?: (
-      command: string,
-      action: string,
-      params?: { [key: string]: unknown },
-    ) => void;
-  }
-}
+import { useEffect} from "react";
+import { CookieValue } from "vanilla-cookieconsent";
+import { CONSENT_CATEGORY_ADVERTISEMENT, CONSENT_SERVICE_AD_USER_DATA } from "@/shared/constants";
 
 interface GoogleAdsPageViewTrackerProps {
   googleAdsId: string;
@@ -23,17 +13,26 @@ const GoogleAdsPageViewTracker: React.FC<GoogleAdsPageViewTrackerProps> = ({
   googleAdsId,
   conversionLabel,
 }) => {
-  const pathname = usePathname();
-
   useEffect(() => {
-    if (typeof window.gtag === "function") {
-      window.gtag("event", "conversion", {
-        send_to: `${googleAdsId}/${conversionLabel}`,
-        value: 0.005,
-        currency: "EUR",
-      });
+    if (typeof window !== 'undefined') {
+
+      let recordedConversion = false;
+
+      const recordConversion = ({detail: {cookie}}: {detail: {cookie: CookieValue}}) => {
+          if (cookie.services[CONSENT_CATEGORY_ADVERTISEMENT].includes(CONSENT_SERVICE_AD_USER_DATA) && !recordedConversion) {
+            window.gtag("event", "conversion", {
+              send_to: `${googleAdsId}/${conversionLabel}`,
+              value: 0.005,
+              currency: "EUR",
+            });
+            recordedConversion = true;
+          }
+      }
+
+      (window.addEventListener as any)('cc:onConsent', recordConversion);
+      (window.addEventListener as any)('cc:onChange', recordConversion);
     }
-  }, [pathname, googleAdsId, conversionLabel]);
+  }, []);
 
   return null;
 };
