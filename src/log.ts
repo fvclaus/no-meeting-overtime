@@ -1,4 +1,4 @@
-import { headers } from "next/headers";
+import { headers, type UnsafeUnwrappedHeaders } from "next/headers";
 import { PROJECT_ID } from "./shared/server_constants";
 import { SessionData } from "./app/session-store";
 
@@ -30,7 +30,7 @@ export const log = USE_STRUCTURED_LOGGING
 
       // Add log correlation to nest all log messages beneath request log in Log Viewer.
       // (This only works for HTTP-based invocations where `req` is defined.)
-      const traceHeader = headers().get("X-Cloud-Trace-Context");
+      const traceHeader = (headers() as unknown as UnsafeUnwrappedHeaders).get("X-Cloud-Trace-Context");
       if (traceHeader) {
         const [trace] = traceHeader.split("/");
         globalLogFields["logging.googleapis.com/trace"] =

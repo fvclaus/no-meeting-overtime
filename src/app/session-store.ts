@@ -1,4 +1,4 @@
-import { cookies } from "next/headers";
+import { cookies, type UnsafeUnwrappedCookies } from "next/headers";
 import { SITE_BASE, createOauth2Client, db } from "../shared/server_constants";
 import { SESSION_ID_NAME } from "@/shared/constants";
 import { Logger } from "@/log";
@@ -7,13 +7,13 @@ const logger = new Logger("session");
 
 type SessionId = string;
 
-function getSessionId(): SessionId | undefined {
-  const cookieStore = cookies();
+async function getSessionId(): Promise<SessionId | undefined> {
+  const cookieStore = await cookies();
   return cookieStore.get(SESSION_ID_NAME)?.value;
 }
 
-function setSessionId(sessionId: SessionId): void {
-  const cookieStore = cookies();
+async function setSessionId(sessionId: SessionId): Promise<void> {
+  const cookieStore = await cookies();
   if (SITE_BASE.startsWith("https://")) {
     cookieStore.set(SESSION_ID_NAME, sessionId, {
       path: "/",
@@ -76,7 +76,7 @@ async function _set(sessionId: string, data: SessionData): Promise<void> {
 }
 
 async function getSessionIdAndCreateIfMissing(): Promise<string> {
-  const sessionId = getSessionId();
+  const sessionId = await getSessionId();
   if (!sessionId) {
     const newSessionId = crypto.randomUUID();
     setSessionId(newSessionId);
@@ -90,7 +90,7 @@ async function getSessionIdAndCreateIfMissing(): Promise<string> {
 }
 
 export async function getSession(): Promise<SessionData | undefined> {
-  const sessionId = getSessionId();
+  const sessionId = await getSessionId();
   if (!sessionId) {
     return undefined;
   }
@@ -108,7 +108,7 @@ export async function setSession(session: SessionData): Promise<void> {
 }
 
 export async function deleteSession(): Promise<void> {
-  const sessionId = getSessionId();
+  const sessionId = await getSessionId();
   if (sessionId) {
     try {
       await db.collection("session").doc(sessionId).delete();
@@ -116,7 +116,7 @@ export async function deleteSession(): Promise<void> {
       logger.error(e, { sessionId });
     }
     logger.debug(`Session ${sessionId} deleted`, { sessionId });
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     cookieStore.delete(SESSION_ID_NAME);
   }
 }

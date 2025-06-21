@@ -13,7 +13,7 @@ export async function loadUserInfo(): Promise<
   | UnauthenticatedUserInfo
 > {
   const userInfoRequest = await fetch(`${SITE_BASE}/api/userinfo`, {
-    headers: { Cookie: cookies().toString() },
+    headers: { Cookie: (await cookies()).toString() },
   });
   if (userInfoRequest.status !== 200) {
     return {
