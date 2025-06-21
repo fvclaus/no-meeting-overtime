@@ -16,7 +16,7 @@ export default function FAQSection() {
       <Accordion type="single" collapsible className="w-full">
         <AccordionItem value="item-1" className="border-blue-200">
           <AccordionTrigger className="text-gray-700 hover:text-blue-600">
-            How does it work?
+            How does it work on a technical level?
           </AccordionTrigger>
           <AccordionContent className="text-gray-600 text-left">
             This app integrates with the Google Meet API to create and end

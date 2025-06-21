@@ -1,11 +1,17 @@
 import { loadUserInfo } from "./loadUserInfo";
 import GoogleLoginButton from "./GoogleLoginButton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, LucideMessageCircleQuestion } from "lucide-react";
 import FAQSection from "./FAQSection";
 import { Title } from "@/components/ui/title";
 import Link from "./Link";
-import { START_MEETING_PATH } from "@/shared/constants";
+import {
+  GOOGLE_ADS_CONVERSION_LABEL,
+  GOOGLE_ADS_ID,
+  START_MEETING_PATH,
+} from "@/shared/constants";
+import { YouTubeEmbed } from "@next/third-parties/google";
+import GoogleAdsPageViewTracker from "./GoogleAdsPageViewTracker";
 
 export default async function Page() {
   const userInfo = await loadUserInfo();
@@ -99,10 +105,23 @@ export default async function Page() {
             </div>
           </div>
         </div>
+
+        <section className="container w-full max-w-4xl text-center my-8">
+          <h2 className="text-2xl font-semibold mb-4 text-center flex items-center justify-center text-gray-800">
+            <LucideMessageCircleQuestion className="w-6 h-6 mr-2 text-blue-600" />
+            See How It works
+          </h2>
+
+          <YouTubeEmbed videoid="If6fpgfMNls" style="margin: auto" />
+        </section>
         <div className="w-full max-w-4xl text-center">
           <FAQSection />
         </div>
       </div>
+      <GoogleAdsPageViewTracker
+        googleAdsId={GOOGLE_ADS_ID}
+        conversionLabel={GOOGLE_ADS_CONVERSION_LABEL}
+      />
     </>
   );
 }
