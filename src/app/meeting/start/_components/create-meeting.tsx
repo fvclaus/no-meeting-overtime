@@ -59,7 +59,8 @@ export default function CreateMeeting() {
         <div className="w-full bg-blue-50 py-16">
           <div className="px-4 flex flex-col items-center">
             <form
-              onSubmit={() => handleSubmit(createMeeting)}
+              // eslint-disable-next-line @typescript-eslint/no-misused-promises
+              onSubmit={handleSubmit(createMeeting)}
               className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md"
             >
               {error && (
