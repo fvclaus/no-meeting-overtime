@@ -95,17 +95,19 @@ describe("test", { timeout: 200_000 }, () => {
     await selectCorrectGmailAccount();
     await page.waitForURL("**");
 
-    const notVerified = page.getByText(/given access/);
+    const notVerified = page.getByText(/given access/u);
     const additionalAccess = page.getByRole("heading", {
-      name: /wants additional access/,
+      name: /wants additional access/u,
     });
-    const access = page.getByRole("heading", { name: /wants access/ });
+    const access = page.getByRole("heading", { name: /wants access/u });
     const signIn = page.getByRole("heading", {
       name: "Sign in to No Meeting Overtime",
     });
 
     try {
-      await expect(notVerified.or(additionalAccess).or(access).or(signIn)).toBeVisible();
+      await expect(
+        notVerified.or(additionalAccess).or(access).or(signIn),
+      ).toBeVisible();
     } catch (e) {
       if (page.url().includes("signin/challenge")) {
         throw new Error(
@@ -118,7 +120,6 @@ describe("test", { timeout: 200_000 }, () => {
     if (await notVerified.isVisible()) {
       await continueButton.click();
     }
-
 
     await expect(signIn.or(additionalAccess).or(access)).toBeVisible();
 
@@ -189,7 +190,7 @@ describe("test", { timeout: 200_000 }, () => {
     expect(response.status()).toEqual(200);
     const body = (await response.json()) as { meetingCode: string };
     await page.goto(`http://localhost:3000/meeting/${body.meetingCode}`);
-    const successText = page.getByText(/Meeting with code .* created/);
+    const successText = page.getByText(/Meeting with code .* created/u);
     await expect(successText).toBeVisible({ timeout: 45_000 });
     const pagePromise = page
       .context()
@@ -269,14 +270,14 @@ describe("test", { timeout: 200_000 }, () => {
       .fill(format(meetingEnd, "HH:mm"));
 
     await createMeetingButton.click();
-    const successText = page.getByText(/Meeting with code .* created/);
+    const successText = page.getByText(/Meeting with code .* created/u);
     await expect(successText).toBeVisible({ timeout: 45_000 });
     const url = page.url();
     const meetingCode = url.split("/").pop();
     await userMenuButton.click();
     await page.getByRole("menuitem", { name: "My Meetings" }).click();
     await expect(page.getByRole("cell", { name: meetingCode })).toBeVisible({
-      timeout: 15_000
+      timeout: 15_000,
     });
     await userMenuButton.click();
     let meetingDoc = await db.doc(`meeting/${meetingCode}`).get();

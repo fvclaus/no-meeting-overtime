@@ -30,7 +30,11 @@ export const log = USE_STRUCTURED_LOGGING
 
       // Add log correlation to nest all log messages beneath request log in Log Viewer.
       // (This only works for HTTP-based invocations where `req` is defined.)
-      const traceHeader = (headers() as unknown as UnsafeUnwrappedHeaders).get("X-Cloud-Trace-Context");
+      // TODO
+      // eslint-disable-next-line @typescript-eslint/no-deprecated
+      const traceHeader = (headers() as unknown as UnsafeUnwrappedHeaders).get(
+        "X-Cloud-Trace-Context",
+      );
       if (traceHeader) {
         const [trace] = traceHeader.split("/");
         globalLogFields["logging.googleapis.com/trace"] =
@@ -105,7 +109,6 @@ export function logError(
 }
 
 export class Logger {
-  // eslint-disable-next-line no-empty-function
   constructor(private name: string) {}
 
   public debug(

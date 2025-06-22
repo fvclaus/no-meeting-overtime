@@ -1,4 +1,4 @@
-import { cookies, type UnsafeUnwrappedCookies } from "next/headers";
+import { cookies } from "next/headers";
 import { SITE_BASE, createOauth2Client, db } from "../shared/server_constants";
 import { SESSION_ID_NAME } from "@/shared/constants";
 import { Logger } from "@/log";
@@ -79,7 +79,7 @@ async function getSessionIdAndCreateIfMissing(): Promise<string> {
   const sessionId = await getSessionId();
   if (!sessionId) {
     const newSessionId = crypto.randomUUID();
-    setSessionId(newSessionId);
+    await setSessionId(newSessionId);
     await createNewSession(newSessionId, {
       hasAcceptedPrivacyPolicy: false,
     });

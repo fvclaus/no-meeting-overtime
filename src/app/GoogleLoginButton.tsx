@@ -39,10 +39,12 @@ export default function GoogleLoginButton({
   return (
     <>
       <form
-        onSubmit={handleSubmit(() => {
-          localStorage.setItem(HAS_ACCEPTED_PRIVACY_POLICY, "true");
-          window.location.href = REDIRECT_TO_AUTHORIZATION_API_URL;
-        })}
+        onSubmit={() =>
+          handleSubmit(() => {
+            localStorage.setItem(HAS_ACCEPTED_PRIVACY_POLICY, "true");
+            window.location.href = REDIRECT_TO_AUTHORIZATION_API_URL;
+          })
+        }
       >
         <button type="submit" className="gsi-material-button">
           <div className="gsi-material-button-state"></div>

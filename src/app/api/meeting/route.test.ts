@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/unbound-method */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable new-cap */
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import * as handler from "./route";
@@ -142,7 +145,7 @@ describe("/api/meeting/[meetingCode]", () => {
         }),
         response = await handler.POST(req);
       expect(response.status).toBe(200);
-      const data = await response.json();
+      const data: unknown = await response.json();
       expect(data).toEqual({
         meetingCode: "meeting123",
       });

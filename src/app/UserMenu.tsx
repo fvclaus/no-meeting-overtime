@@ -2,10 +2,10 @@
 
 import Link from "next/link";
 import clsx from "clsx";
-import { AuthenticatedUserInfo, UserInfo } from "@/types";
+import { AuthenticatedUserInfo } from "@/types";
 import React, { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { LOGOUT_URL, MEETINGS_URL, SETTINGS_URL } from "@/shared/constants";
 
 type NextLinkArgs = Parameters<typeof Link>;

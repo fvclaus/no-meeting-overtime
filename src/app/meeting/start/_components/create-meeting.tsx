@@ -6,7 +6,6 @@ import { useState } from "react";
 import { TZDate } from "@date-fns/tz";
 import { useRouter } from "next/navigation";
 import { clsx } from "clsx";
-import { Calendar, Clock } from "lucide-react";
 import FAQSection from "@/app/FAQSection";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
@@ -60,7 +59,7 @@ export default function CreateMeeting() {
         <div className="w-full bg-blue-50 py-16">
           <div className="px-4 flex flex-col items-center">
             <form
-              onSubmit={handleSubmit(createMeeting)}
+              onSubmit={() => handleSubmit(createMeeting)}
               className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md"
             >
               {error && (
