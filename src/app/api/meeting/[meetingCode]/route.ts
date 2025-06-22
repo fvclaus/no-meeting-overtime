@@ -19,7 +19,6 @@ export type RouteParams = Promise<{
 }>;
 
 export async function GET(req: NextRequest, props: { params: RouteParams }) {
-  const params = await props.params;
   const sessionData = await getSession();
 
   if (!isAuthorizedSession(sessionData)) {
@@ -47,7 +46,7 @@ export async function GET(req: NextRequest, props: { params: RouteParams }) {
 
 export async function DELETE(req: NextRequest, props: { params: RouteParams }) {
   const params = await props.params;
-  const { meetingCode } = await params;
+  const { meetingCode } = params;
   const taskName = req.headers.get("X-CLOUDTASKS-TASKNAME");
   if (taskName === null) {
     logger.error("No X-CLOUDTASKS-TASKNAME header", { meetingCode });

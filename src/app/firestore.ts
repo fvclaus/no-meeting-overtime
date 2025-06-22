@@ -1,5 +1,5 @@
 import { db } from "@/shared/server_constants";
-import { AuthenticatedUserInfo, Meeting, UserInfo } from "@/types";
+import { Meeting } from "@/types";
 import { RouteParams } from "./api/meeting/[meetingCode]/route";
 import { compareDesc } from "date-fns";
 

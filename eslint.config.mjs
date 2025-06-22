@@ -4,53 +4,50 @@ import globals from "globals";
 import pluginJs from "@eslint/js";
 import tseslint from "typescript-eslint";
 import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended";
-import pluginNext from "@next/eslint-plugin-next";
-import parser from "@typescript-eslint/parser"; // optional
+import { flatConfig } from "@next/eslint-plugin-next";
+import path from "path";
+import { fileURLToPath } from "url";
 import json from "@eslint/json";
-// import css from "@eslint/css";
+import css from "@eslint/css";
 
 /** @type {import('eslint').Linter.Config[]} */
 export default tseslint.config(
-  // TODO
-  // {
-  // 	files: ["**/*.css"],
-  // 	language: "css/css",
-  // 	...css.configs.recommended,
-  // },
-  { files: ["**/*.{js,mjs,cjs,ts,jsx,tsx}"] },
-  { languageOptions: { globals: globals.browser } },
-  pluginJs.configs.all,
-  tseslint.configs.strictTypeChecked,
   {
+    ignores: [
+      "**/node_modules/**",
+      "**/.git/**",
+      "**/.next/**",
+      "**/dist/**",
+      "**/build/**",
+      "playwright/**",
+      "playwright-report/**",
+      "test-results/**",
+      "*.d.ts",
+      // Add any other patterns for generated files, logs, etc.
+    ],
+  },
+  {
+    files: [
+      "src/**/*.{js,mjs,cjs,ts,jsx,tsx}",
+      "tests/**/*.{js,mjs,cjs,ts,jsx,tsx}",
+    ],
+    ...pluginJs.configs.all,
+  },
+  tseslint.configs.strictTypeChecked.map((c) => ({
+    files: ["src/**/*.{ts,jsx,tsx}", "tests/**/*.{js,mjs,cjs,ts,jsx,tsx}"],
     languageOptions: {
       parserOptions: {
         projectService: true,
         tsconfigRootDir: import.meta.dirname,
       },
     },
-  },
+    ...c,
+  })),
+  // {
+  // },
   eslintPluginPrettierRecommended,
-  {
-    name: "ESLint Config - nextjs",
-    languageOptions: {
-      parser, // optional
-      parserOptions: {
-        ecmaVersion: "latest",
-        sourceType: "module",
-        ecmaFeatures: {
-          jsx: true,
-        },
-      },
-    },
-    plugins: {
-      "@next/next": pluginNext,
-    },
-    files: ["**/*.{js,mjs,cjs,ts,jsx,tsx}"],
-    rules: {
-      ...pluginNext.configs.recommended.rules,
-      ...pluginNext.configs["core-web-vitals"].rules,
-    },
-  },
+  flatConfig.recommended,
+  flatConfig.coreWebVitals,
   {
     rules: {
       "max-lines-per-function": "off",
@@ -70,28 +67,24 @@ export default tseslint.config(
       "no-ternary": "off",
       "no-underscore-dangle": "off",
       "no-nested-ternary": "off",
-      "camelcase": "off"
+      camelcase: "off",
     },
   },
-
   {
+    files: ["tsconfig.json", "package.json"],
+    ignores: ["package-lock.json"],
+    language: "json/json",
     plugins: {
       json,
     },
-  },
-
-  // lint JSON files
-  {
-    files: ["**/*.json"],
-    ignores: ["package-lock.json"],
-    language: "json/json",
     ...json.configs.recommended,
   },
-
-  // lint JSONC files
   {
-    files: ["**/*.jsonc"],
+    files: ["./vscode/*.json"],
     language: "json/jsonc",
+    plugins: {
+      json,
+    },
     ...json.configs.recommended,
   },
 );

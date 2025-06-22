@@ -1,10 +1,13 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/unbound-method */
 /* eslint-disable new-cap */
-import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import * as handler from "./route";
 import { findMeeting, findUser } from "../../../firestore";
 import { getSession } from "@/app/session-store";
 import { google } from "googleapis";
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import {
   authenticatedSession,
   mockAuthenticatedSession,
@@ -72,6 +75,7 @@ describe("/api/meeting/[meetingCode]", () => {
   });
 
   describe("DELETE", () => {
+    // eslint-disable-next-line init-declarations
     let validDeleteRequest: NextRequest;
 
     beforeEach(() => {
@@ -104,12 +108,13 @@ describe("/api/meeting/[meetingCode]", () => {
       });
 
       vi.mocked(google.auth.OAuth2.prototype.verifyIdToken).mockImplementation(
-        async ({ idToken }: { idToken: string }) => {
+        ({ idToken }: { idToken: string }) => {
           switch (idToken) {
             case "invalid_token": {
               throw new Error("Invalid token");
             }
             case "wrong_sa": {
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-return
               return {
                 getPayload: () => ({
                   email: "other@vitest.iam.gserviceaccount.com",
@@ -117,6 +122,7 @@ describe("/api/meeting/[meetingCode]", () => {
               } as any;
             }
             case "valid_token": {
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-return
               return {
                 getPayload: () => ({
                   email: "backend-app@vitest.iam.gserviceaccount.com",

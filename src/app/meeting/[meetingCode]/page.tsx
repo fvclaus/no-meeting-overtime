@@ -12,17 +12,20 @@ export default async function Page({
       headers: { Cookie: (await cookies()).toString() },
     });
 
-  let meeting: MeetingData | undefined;
+  let meeting: MeetingData | null = null;
 
   if (res.ok) {
-    const data = await res.json();
+    const data = (await res.json()) as {
+      scheduledEndTime: string;
+      uri: string;
+    };
     meeting = {
       ...data,
       code: meetingCode,
     };
   }
 
-  if (meeting == null) {
+  if (meeting === null) {
     return (
       <div className="flex flex-col w-full max-w-screen-sm">
         {/* TODO Replace with alert component */}

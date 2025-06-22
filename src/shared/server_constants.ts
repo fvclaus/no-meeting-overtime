@@ -3,21 +3,25 @@ import { google } from "googleapis";
 import { START_MEETING_PATH } from "./constants";
 import { Firestore } from "@google-cloud/firestore";
 export const CLIENT_ID = process.env.CLIENT_ID!;
-if (CLIENT_ID == null) {
+// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+if (CLIENT_ID === null) {
   throw new Error("Missing CLIENT_ID");
 }
 export const CLIENT_SECRET = process.env.CLIENT_SECRET!;
-if (CLIENT_SECRET == null) {
+// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+if (CLIENT_SECRET === null) {
   throw new Error("Missing CLIENT_SECRET");
 }
 
 export const PROJECT_ID = process.env.PROJECT_ID!;
-if (PROJECT_ID == null) {
+// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+if (PROJECT_ID === null) {
   throw new Error("Missing PROJECT_ID");
 }
 
 export const QUEUE_LOCATION = process.env.QUEUE_LOCATION!;
-if (QUEUE_LOCATION == null) {
+// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+if (QUEUE_LOCATION === null) {
   throw new Error("Missing QUEUE_LOCATION");
 }
 
@@ -28,14 +32,16 @@ export const { KEY_FILE } = process.env;
 
 export const SITE_BASE = process.env.SITE_BASE!;
 
-if (SITE_BASE == null) {
+// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+if (SITE_BASE === null) {
   throw new Error("Missing SITE_BASE");
 }
 
 export let SITE_BASE_CLOUD_TASKS = process.env.SITE_BASE_CLOUD_TASKS!;
 
 // Usage of ngrok https URL only is cumbersome, because it requires administration of OAuth redirect URLs.
-if (SITE_BASE_CLOUD_TASKS == undefined) {
+// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+if (SITE_BASE_CLOUD_TASKS === undefined) {
   if (SITE_BASE.includes("localhost")) {
     throw new Error(
       "SITE_BASE includes localhost you have to then defined a URL that can be reached by Google CloudTasks. Use ngrok for example",
@@ -47,7 +53,8 @@ if (SITE_BASE_CLOUD_TASKS == undefined) {
 export const CLOUD_TASKS_SERVICE_ACCOUNT =
   process.env.CLOUD_TASKS_SERVICE_ACCOUNT!;
 
-if (CLOUD_TASKS_SERVICE_ACCOUNT == undefined) {
+// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+if (CLOUD_TASKS_SERVICE_ACCOUNT === undefined) {
   throw new Error("Missing CLOUD_TASKS_SERVICE_ACCOUNT");
 }
 
