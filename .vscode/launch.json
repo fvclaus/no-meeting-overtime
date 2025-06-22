@@ -17,17 +17,6 @@
             "url": "http://localhost:3000"
           },
           {
-            "name": "Next.js: debug full stack",
-            "type": "node-terminal",
-            "request": "launch",
-            "command": "npm run dev",
-            "serverReadyAction": {
-              "pattern": "- Local:.+(https?://.+)",
-              "uriFormat": "%s",
-              "action": "debugWithChrome"
-            }
-          },
-          {
             "type": "node",
             "request": "launch",
             "name": "vitest",
@@ -44,7 +33,7 @@
             "envFile": "${workspaceFolder}/.env.local",
             "runtimeExecutable": "tsx",
             "runtimeArgs": ["--test-only", "--test-force-exit"],
-            "program": "${workspaceFolder}/tests/example.test.ts",
+            "program": "${workspaceFolder}/tests/e2e.test.ts",
             "console": "integratedTerminal",
             "internalConsoleOptions": "neverOpen",
             "skipFiles": [
@@ -59,7 +48,7 @@
             "name": "Run E2E",
             "runtimeExecutable": "tsx",
             "runtimeArgs": ["--test-force-exit"],
-            "program": "${workspaceFolder}/tests/example.test.ts",
+            "program": "${workspaceFolder}/tests/e2e.test.ts",
             "console": "integratedTerminal",
             "internalConsoleOptions": "neverOpen",
             "skipFiles": [
