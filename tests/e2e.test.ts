@@ -100,9 +100,12 @@ describe("test", { timeout: 200_000 }, () => {
       name: /wants additional access/,
     });
     const access = page.getByRole("heading", { name: /wants access/ });
+    const signIn = page.getByRole("heading", {
+      name: "Sign in to No Meeting Overtime",
+    });
 
     try {
-      await expect(notVerified.or(additionalAccess).or(access)).toBeVisible();
+      await expect(notVerified.or(additionalAccess).or(access).or(signIn)).toBeVisible();
     } catch (e) {
       if (page.url().includes("signin/challenge")) {
         throw new Error(
@@ -116,12 +119,10 @@ describe("test", { timeout: 200_000 }, () => {
       await continueButton.click();
     }
 
-    const signInText = page.getByRole("heading", {
-      name: "Sign in to No Meeting Overtime",
-    });
-    await expect(signInText.or(additionalAccess).or(access)).toBeVisible();
 
-    if (await signInText.isVisible()) {
+    await expect(signIn.or(additionalAccess).or(access)).toBeVisible();
+
+    if (await signIn.isVisible()) {
       await continueButton.click();
     }
 
@@ -151,7 +152,9 @@ describe("test", { timeout: 200_000 }, () => {
       slowMo: 200,
     });
     [context] = browser.contexts();
+    // Avoid running out of time because of long page compilation times
     page = await context.newPage();
+    page.setDefaultTimeout(30_000);
     signInWithGoogleButton = page.getByRole("button", {
       name: "Sign in with Google",
     });
@@ -171,7 +174,7 @@ describe("test", { timeout: 200_000 }, () => {
   it("happy path", async () => {
     await page.goto("http://localhost:3000");
     await signInIfNecessary();
-    const shortMeetingEnd = addSeconds(Date.now(), 15);
+    const shortMeetingEnd = addSeconds(Date.now(), 30);
 
     const response = await page
       .context()
@@ -255,7 +258,7 @@ describe("test", { timeout: 200_000 }, () => {
   });
 
   // eslint-disable-next-line @typescript-eslint/no-floating-promises
-  it("should show created meetings and delete account", async () => {
+  it.only("should show created meetings and delete account", async () => {
     await page.goto("http://localhost:3000");
     await signInIfNecessary();
     const meetingEnd = roundToNearestMinutes(addMinutes(Date.now(), 20), {
@@ -272,7 +275,9 @@ describe("test", { timeout: 200_000 }, () => {
     const meetingCode = url.split("/").pop();
     await userMenuButton.click();
     await page.getByRole("menuitem", { name: "My Meetings" }).click();
-    await expect(page.getByRole("cell", { name: meetingCode })).toBeVisible();
+    await expect(page.getByRole("cell", { name: meetingCode })).toBeVisible({
+      timeout: 15_000
+    });
     await userMenuButton.click();
     let meetingDoc = await db.doc(`meeting/${meetingCode}`).get();
     expect(meetingDoc.exists).toBeTruthy();

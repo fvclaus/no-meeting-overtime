@@ -18,7 +18,7 @@ export type RouteParams = Promise<{
   meetingCode: string;
 }>;
 
-export async function GET(req: NextRequest, props: { params: Promise<RouteParams> }) {
+export async function GET(req: NextRequest, props: { params: RouteParams }) {
   const params = await props.params;
   const sessionData = await getSession();
 
@@ -26,7 +26,7 @@ export async function GET(req: NextRequest, props: { params: Promise<RouteParams
     return new NextResponse("Unauthenticated", { status: 403 });
   }
 
-  const meeting = await findMeeting(params);
+  const meeting = await findMeeting(props.params);
   if (meeting === undefined) {
     return new NextResponse("Unauthenticated", { status: 403 });
   }
@@ -45,7 +45,7 @@ export async function GET(req: NextRequest, props: { params: Promise<RouteParams
   });
 }
 
-export async function DELETE(req: NextRequest, props: { params: Promise<RouteParams> }) {
+export async function DELETE(req: NextRequest, props: { params: RouteParams }) {
   const params = await props.params;
   const { meetingCode } = await params;
   const taskName = req.headers.get("X-CLOUDTASKS-TASKNAME");
@@ -106,7 +106,7 @@ export async function DELETE(req: NextRequest, props: { params: Promise<RoutePar
     refresh_token: user.refresh_token,
   } as Partial<Credentials>);
 
-  const meeting = await findMeeting(params);
+  const meeting = await findMeeting(props.params);
   if (meeting === undefined) {
     logger.error(`[${taskName}]: Did not find meeting`, {
       taskName,
