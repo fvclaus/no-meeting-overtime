@@ -3,7 +3,7 @@ declare global {
     gtag: (
       command: string,
       action: string,
-      params?: { [key: string]: unknown; }
+      params?: { [key: string]: unknown },
     ) => void;
   }
 }

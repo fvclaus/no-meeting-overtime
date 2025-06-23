@@ -7,6 +7,8 @@ import {
   SETTINGS_URL,
 } from "@/shared/constants";
 import { Shield } from "lucide-react";
+import React from "react";
+import { ShowCookiePreferencesLink } from "@/components/CookieConsentBanner";
 
 export default function Page() {
   return (
@@ -52,10 +54,14 @@ export default function Page() {
               </li>
               <li>
                 <p>
-                  Google Ads Data include pages viewed and interactions on these
-                  pages, you IP address (which can be used to infer your general
-                  geographic location), Information about your device and
-                  browser type.
+                  Only if you have{" "}
+                  <ShowCookiePreferencesLink>
+                    consented
+                  </ShowCookiePreferencesLink>{" "}
+                  to it: Google Ads Data include pages viewed and interactions
+                  on these pages, you IP address (which can be used to infer
+                  your general geographic location), Information about your
+                  device and browser type.
                 </p>
               </li>
             </ul>
@@ -108,28 +114,23 @@ export default function Page() {
               >
                 in transit and at rest
               </Link>
-              . The data is kept as long as you have an account with us.
+              . The data is kept until you{" "}
+              <Link href={SETTINGS_URL}>delete</Link> your account.
             </p>
           </section>
           <section>
             <h2>Is my data transferred or disclosed to third parties?</h2>
             <p>
-              Your personal identification information (name, profile picture,
-              user ID) and specific meeting data (meeting code, scheduled end
-              time) that you provide directly to this service are not sold or
-              transferred to unrelated third parties for their own marketing
-              purposes.
-            </p>
-            <p>
-              However, for the purpose of website analytics and advertising
-              campaign tracking, Google Ads is utilized. When you use our
-              website, certain data (as described in "What data is collected?")
-              is shared with Google to enable these services. Google processes
-              this data in accordance with its own privacy policies. You can review it at{" "}
+              If you have{" "}
+              <ShowCookiePreferencesLink>consented</ShowCookiePreferencesLink>{" "}
+              to it, for the purpose of website analytics and advertising
+              campaign tracking, Google Ads is utilized. Data is shared with
+              Google to enable these services. Google processes this data in
+              accordance with its own privacy policies. You can review it at{" "}
               <Link target="_blank" href="https://policies.google.com/privacy">
                 Google's Privacy Policy
               </Link>{" "}
-              and use {" "}
+              and use{" "}
               <Link
                 target="_blank"
                 href="https://adssettings.google.com/authenticated"
@@ -137,15 +138,6 @@ export default function Page() {
                 Google Ad Settings
               </Link>{" "}
               to manage your ad preferences with Google.
-            </p>
-            <p>
-              Additionally, Google Ads, which we use for tracking advertising
-              performance, may place cookies on your browser if you have
-              consented via Google's services or your browser settings. These
-              cookies help measure ad effectiveness and may be used by Google
-              for ad personalization purposes on other websites. You can manage
-              your cookie preferences through your browser settings and through
-              Google's ad settings linked above.
             </p>
           </section>
           <section>
@@ -157,10 +149,23 @@ export default function Page() {
           </section>
           <section>
             <h2>What cookies are used?</h2>
-            <p>
-              A session cookie called "{SESSION_ID_NAME}" is used to
-              authenticate you as a user.
-            </p>
+            <ul>
+              <li>
+                <p>
+                  A session cookie called "{SESSION_ID_NAME}" is used to
+                  authenticate you as a user.
+                </p>
+              </li>
+              <li>
+                <p>
+                  If you have{" "}
+                  <ShowCookiePreferencesLink>
+                    consented
+                  </ShowCookiePreferencesLink>{" "}
+                  to it, Google Ads may place cookies on your browser.
+                </p>
+              </li>
+            </ul>
           </section>
           <section>
             <h2>Changes to the privacy policy</h2>

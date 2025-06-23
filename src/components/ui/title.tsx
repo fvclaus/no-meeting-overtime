@@ -16,7 +16,7 @@ export function Title({
         <div className="flex justify-center space-x-6 mb-8">
           {icons.map((Icon, i) => (
             <div
-            key={`${typeof title === 'string'? title : Date.now()}-${i}`}
+              key={`${typeof title === "string" ? title : Date.now()}-${i}`}
               className="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center transition-colors hover:bg-blue-100"
             >
               <Icon className="h-6 w-6 text-blue-600" />

@@ -1,5 +1,9 @@
 # No Meeting Overtime
 
+https://no-meeting-overtime.click
+
+![Website screenshot](docs/website_screenshot.png)
+
 ## What This Project Does
 
 No Meeting Overtime is a web application designed to help you manage your Google Meet meetings more effectively. It allows you to set a predefined end time for your meetings, ensuring they conclude on schedule and helping you avoid meetings that run over. Users can sign in with their Google account to create and manage these timed meetings.

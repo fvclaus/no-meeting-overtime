@@ -24,6 +24,5 @@ export const SESSION_ID_NAME = "session-id";
 export const GOOGLE_ADS_ID = "AW-17136814715";
 export const GOOGLE_ADS_CONVERSION_LABEL = "ZHcWCIGe19AaEPuUvOs_";
 export const CONSENT_CATEGORY_ADVERTISEMENT = "advertisement";
-export const CONSENT_SERVICE_AD_STORAGE = 'ad_storage';
-export const CONSENT_SERVICE_AD_USER_DATA = 'ad_user_data';
-
+export const CONSENT_SERVICE_AD_STORAGE = "ad_storage";
+export const CONSENT_SERVICE_AD_USER_DATA = "ad_user_data";

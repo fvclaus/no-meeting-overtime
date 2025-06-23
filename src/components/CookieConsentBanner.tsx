@@ -8,6 +8,8 @@ import {
   CONSENT_SERVICE_AD_STORAGE,
   CONSENT_SERVICE_AD_USER_DATA,
 } from "@/shared/constants";
+import { linkVariants } from "@/app/Link";
+import { cn } from "@/lib/utils";
 
 function updateGtagConsent() {
   if (typeof window.gtag !== "function") {
@@ -107,20 +109,34 @@ const CookieConsentBanner: React.FC = () => {
           },
         },
       },
-
-      onFirstConsent: () => {
-        updateGtagConsent();
-      },
-      onConsent: () => {
-        updateGtagConsent();
-      },
-      onChange: () => {
-        updateGtagConsent();
-      },
+      onFirstConsent: updateGtagConsent,
+      onConsent: updateGtagConsent,
+      onChange: updateGtagConsent,
     });
   }, []);
-
   return null;
 };
+
+interface ShowCookieConsentLinkProps {
+  children: React.ReactNode;
+}
+
+const ShowCookiePreferencesLink: React.FC<ShowCookieConsentLinkProps> = ({
+  children,
+}) => {
+  return (
+    <button
+      className={cn(linkVariants({ variant: "default" }))}
+      type="button"
+      onClick={() => {
+        CookieConsent.showPreferences();
+      }}
+    >
+      {children}
+    </button>
+  );
+};
+
+export { ShowCookiePreferencesLink };
 
 export default CookieConsentBanner;

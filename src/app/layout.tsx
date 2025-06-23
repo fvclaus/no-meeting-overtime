@@ -7,7 +7,6 @@ import UserMenu from "./UserMenu";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import Script from "next/script";
 import { GOOGLE_ADS_ID } from "@/shared/constants";
-import CookieConsentBanner from "@/components/CookieConsentBanner";
 
 export default async function RootLayout({
   children,
