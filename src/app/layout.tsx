@@ -49,9 +49,6 @@ export default async function RootLayout({
         <GoogleAnalytics gaId={GOOGLE_ADS_ID} />
       </head>
       <body className="flex-row">
-        <button type="button" data-cc="show-preferencesModal">
-          Manage cookie preferences
-        </button>
         <div className="navbar bg-white border-b border-gray-100">
           <div className="flex-1">
             <Link className="btn btn-ghost text-xl" href="/">
@@ -66,8 +63,7 @@ export default async function RootLayout({
         </div>
         <main className="mt-10">{children}</main>
         <Footer></Footer>
-          <CookieConsentBanner/>
-       </body>
-     </html>
-   );
- }
+      </body>
+    </html>
+  );
+}

@@ -1,27 +1,43 @@
-'use client';
+"use client";
 
-import { useEffect } from 'react';
-import 'vanilla-cookieconsent/dist/cookieconsent.css';
-import * as CookieConsent from 'vanilla-cookieconsent';
-import { CONSENT_CATEGORY_ADVERTISEMENT, CONSENT_SERVICE_AD_STORAGE, CONSENT_SERVICE_AD_USER_DATA } from '@/shared/constants';
+import { useEffect } from "react";
+import "vanilla-cookieconsent/dist/cookieconsent.css";
+import * as CookieConsent from "vanilla-cookieconsent";
+import {
+  CONSENT_CATEGORY_ADVERTISEMENT,
+  CONSENT_SERVICE_AD_STORAGE,
+  CONSENT_SERVICE_AD_USER_DATA,
+} from "@/shared/constants";
 
 function updateGtagConsent() {
-  if (typeof window.gtag !== 'function') {
+  if (typeof window.gtag !== "function") {
     return;
   }
-  
+
   // https://cookieconsent.orestbida.com/advanced/google-consent-mode.html
   // https://developers.google.com/tag-platform/security/guides/consent?consentmode=advanced
   // https://support.google.com/tagmanager/answer/10718549
-  window.gtag('consent', 'update', {
-    [CONSENT_SERVICE_AD_STORAGE]: CookieConsent.acceptedService(CONSENT_SERVICE_AD_STORAGE, CONSENT_CATEGORY_ADVERTISEMENT) ? 'granted' : 'denied',
-    [CONSENT_SERVICE_AD_USER_DATA]: CookieConsent.acceptedService(CONSENT_SERVICE_AD_USER_DATA, CONSENT_CATEGORY_ADVERTISEMENT) ? 'granted' : 'denied',
+  window.gtag("consent", "update", {
+    [CONSENT_SERVICE_AD_STORAGE]: CookieConsent.acceptedService(
+      CONSENT_SERVICE_AD_STORAGE,
+      CONSENT_CATEGORY_ADVERTISEMENT,
+    )
+      ? "granted"
+      : "denied",
+    [CONSENT_SERVICE_AD_USER_DATA]: CookieConsent.acceptedService(
+      CONSENT_SERVICE_AD_USER_DATA,
+      CONSENT_CATEGORY_ADVERTISEMENT,
+    )
+      ? "granted"
+      : "denied",
   });
 }
 
+const DESCRIPTION =
+  "We use a session cookie for authentication and Google Ad cookies to measure the effectiveness of advertising campaigns. You can accept or reject the ad cookies. You can manage your preferences in the footer";
 const CookieConsentBanner: React.FC = () => {
   useEffect(() => {
-    if (typeof window === 'undefined') {
+    if (typeof window === "undefined") {
       return;
     }
 
@@ -34,52 +50,57 @@ const CookieConsentBanner: React.FC = () => {
           enabled: true,
           readOnly: true,
         },
-          [CONSENT_CATEGORY_ADVERTISEMENT]: {
-            services: {
-                [CONSENT_SERVICE_AD_STORAGE]: {
-                    label: 'Enables storage (such as cookies) related to advertising.',
-                },
-                [CONSENT_SERVICE_AD_USER_DATA]: {
-                    label: 'Sets consent for sending user data related to advertising to Google.',
-                }
-              }
-            }
+        [CONSENT_CATEGORY_ADVERTISEMENT]: {
+          services: {
+            [CONSENT_SERVICE_AD_STORAGE]: {
+              label:
+                "Enables storage (such as cookies) related to advertising.",
+            },
+            [CONSENT_SERVICE_AD_USER_DATA]: {
+              label:
+                "Sets consent for sending user data related to advertising to Google.",
+            },
+          },
+        },
       },
 
       language: {
-        default: 'en',
+        default: "en",
         translations: {
           en: {
             consentModal: {
-              title: 'We use cookies',
-              description: 'We use a session cookie for authentication and Google Ad cookies to measure the effectiveness of advertising campaigns. You can accept or reject the ad cookies.',
-              acceptAllBtn: 'Accept all',
-              acceptNecessaryBtn: 'Reject all',
-              showPreferencesBtn: 'Manage preferences',
+              title: "We use cookies",
+              description: DESCRIPTION,
+              acceptAllBtn: "Accept all",
+              acceptNecessaryBtn: "Reject all",
+              showPreferencesBtn: "Manage preferences",
             },
             preferencesModal: {
-              title: 'Manage Cookie Preferences',
-              acceptAllBtn: 'Accept all',
-              acceptNecessaryBtn: 'Reject all',
-              savePreferencesBtn: 'Save preferences',
+              title: "Manage Cookie Preferences",
+              acceptAllBtn: "Accept all",
+              acceptNecessaryBtn: "Reject all",
+              savePreferencesBtn: "Save preferences",
               sections: [
                 {
-                  title: 'Your Choices',
-                  description: 'We use cookies for essential functions and to measure ad performance.',
+                  title: "Your Choices",
+                  description: DESCRIPTION,
                 },
                 {
-                  title: 'Strictly Necessary Cookies',
-                  description: 'These cookies are essential for the website to function, such as keeping you logged in. They cannot be disabled.',
-                  linkedCategory: 'necessary',
+                  title: "Strictly Necessary Cookies",
+                  description:
+                    "These cookies are essential for the website to function, such as keeping you logged in. They cannot be disabled.",
+                  linkedCategory: "necessary",
                 },
                 {
-                  title: 'Advertising',
-                  description: 'Google uses cookies for advertising for measuring the effectiveness of ads.',
+                  title: "Advertising",
+                  description:
+                    "Google uses cookies for advertising for measuring the effectiveness of ads.",
                   linkedCategory: CONSENT_CATEGORY_ADVERTISEMENT,
                 },
                 {
-                  title: 'More Information',
-                  description: 'For more details, please see our <a class="cc-link" href="/privacy-policy">Privacy Policy</a>.',
+                  title: "More Information",
+                  description:
+                    'For more details, please see our <a class="cc-link" href="/privacy-policy">Privacy Policy</a>.',
                 },
               ],
             },
@@ -87,19 +108,19 @@ const CookieConsentBanner: React.FC = () => {
         },
       },
 
-    onFirstConsent: () => {
+      onFirstConsent: () => {
         updateGtagConsent();
-    },
-    onConsent: () => {
+      },
+      onConsent: () => {
         updateGtagConsent();
-    },
-    onChange: () => {
+      },
+      onChange: () => {
         updateGtagConsent();
-    },
+      },
     });
   }, []);
 
-  return null; 
+  return null;
 };
 
 export default CookieConsentBanner;
