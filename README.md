@@ -1,11 +1,56 @@
-# Pretty Colors: Next.js Add-on
+# No Meeting Overtime
 
-TODO Fix Readme
+https://no-meeting-overtime.click
 
-This is a [Meet Add-on](https://developers.google.com/meet/add-ons/guides/overview) built in [Next.js](https://nextjs.org/). This add-on displays an animation that is intended to create a simple "shimmer" effect based on the color that each call participant selects. This add-on only exists to show more features of Google Meet Add-ons than can be found at [googleworkspace/meet/addons-web-sdk/samples/hello-world-next-js](https://github.com/googleworkspace/meet/tree/main/addons-web-sdk/samples/hello-world-next-js). If you find anything about the configuration confusing, please see that more basic example.
+![Website screenshot](docs/website_screenshot.png)
 
-This add-on is deployed with GitHub pages, so that you can view the live versions of its [Side Panel](https://googleworkspace.github.io/meet/animation-next-js/sidepanel), [Main Stage](https://googleworkspace.github.io/meet/animation-next-js/mainstage), and all other routes. The screensharing promotion at the [index.html](https://googleworkspace.github.io/meet/animation-next-js/) will not fully work until this add-on is published.
+## What This Project Does
 
+No Meeting Overtime is a web application designed to help you manage your Google Meet meetings more effectively. It allows you to set a predefined end time for your meetings, ensuring they conclude on schedule and helping you avoid meetings that run over. Users can sign in with their Google account to create and manage these timed meetings.
+
+## Technologies Used
+
+*   **Frontend:**
+    *   [Next.js](https://nextjs.org/) (React Framework)
+    *   [React](https://reactjs.org/)
+    *   [TypeScript](https://www.typescriptlang.org/)
+    *   [Tailwind CSS](https://tailwindcss.com/)
+*   **Backend & Services:**
+    *   Google Meet APIs
+    *   Google Cloud Firestore
+*   **Development & Testing:**
+    *   [Playwright](https://playwright.dev/) (for component testing)
+    *   [Vitest](https://vitest.dev/) (for unit testing)
+*   **Package Manager:**
+    *   [pnpm](https://pnpm.io/) (deduced from `pnpm-lock.yaml`)
+
+## How to Start the Project
+
+To get the project running locally for development, follow these steps:
+
+1.  **Install dependencies:**
+    It's recommended to use `pnpm` as indicated by the `pnpm-lock.yaml` file.
+    ```bash
+    pnpm install
+    ```
+    *(If you prefer npm or yarn, you can try `npm install` or `yarn install`, but `pnpm` is preferred for consistency with the lock file.)*
+
+3.  **Set up environment variables:**
+    The google cloud libraries use ADC (application default credentials) for authentication: https://cloud.google.com/docs/authentication/application-default-credentials
+
+4.  **Run the development server:**
+    ```bash
+    pnpm run dev
+    ```
+    This will start the Next.js development server
+---
+
+## Build and deploy locally
+
+- Authenticate to the docker repository: https://cloud.google.com/artifact-registry/docs/docker/pushing-and-pulling#auth
+- Make sure that your current configuration has an account linked: `gcloud config configuration list`
+- Build: `docker build . -t europe-west1-docker.pkg.dev/no-meeting-overtime/repo/no-meeting-overtime:latest`
+- Push: `docker push europe-west1-docker.pkg.dev/no-meeting-overtime/repo/no-meeting-overtime:latest`
 
 ## Environment Configuration
 

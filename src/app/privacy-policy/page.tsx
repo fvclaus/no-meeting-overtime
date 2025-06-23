@@ -7,6 +7,8 @@ import {
   SETTINGS_URL,
 } from "@/shared/constants";
 import { Shield } from "lucide-react";
+import React from "react";
+import { ShowCookiePreferencesLink } from "@/components/CookieConsentBanner";
 
 export default function Page() {
   return (
@@ -50,6 +52,18 @@ export default function Page() {
                   with your account
                 </p>
               </li>
+              <li>
+                <p>
+                  Only if you have{" "}
+                  <ShowCookiePreferencesLink>
+                    consented
+                  </ShowCookiePreferencesLink>{" "}
+                  to it: Google Ads Data include pages viewed and interactions
+                  on these pages, you IP address (which can be used to infer
+                  your general geographic location), Information about your
+                  device and browser type.
+                </p>
+              </li>
             </ul>
           </section>
 
@@ -75,6 +89,11 @@ export default function Page() {
               Your data is used create and manage meetings on your behalf. The
               log data is used to identify problems with the website.
             </p>
+            <p>
+              Data collected via Google Ads is used to measure the performance
+              of advertising campaigns and understand how users engage with the
+              website.
+            </p>
           </section>
 
           <section>
@@ -95,14 +114,30 @@ export default function Page() {
               >
                 in transit and at rest
               </Link>
-              . The data is kept as long as you have an account with us.
+              . The data is kept until you{" "}
+              <Link href={SETTINGS_URL}>delete</Link> your account.
             </p>
           </section>
           <section>
             <h2>Is my data transferred or disclosed to third parties?</h2>
             <p>
-              No, your data is not transferred or disclosed to third parties for
-              purposes other than the ones provided.
+              If you have{" "}
+              <ShowCookiePreferencesLink>consented</ShowCookiePreferencesLink>{" "}
+              to it, for the purpose of website analytics and advertising
+              campaign tracking, Google Ads is utilized. Data is shared with
+              Google to enable these services. Google processes this data in
+              accordance with its own privacy policies. You can review it at{" "}
+              <Link target="_blank" href="https://policies.google.com/privacy">
+                Google's Privacy Policy
+              </Link>{" "}
+              and use{" "}
+              <Link
+                target="_blank"
+                href="https://adssettings.google.com/authenticated"
+              >
+                Google Ad Settings
+              </Link>{" "}
+              to manage your ad preferences with Google.
             </p>
           </section>
           <section>
@@ -114,16 +149,29 @@ export default function Page() {
           </section>
           <section>
             <h2>What cookies are used?</h2>
-            <p>
-              A session cookie called "{SESSION_ID_NAME}" is used to
-              authenticate you as a user.
-            </p>
+            <ul>
+              <li>
+                <p>
+                  A session cookie called "{SESSION_ID_NAME}" is used to
+                  authenticate you as a user.
+                </p>
+              </li>
+              <li>
+                <p>
+                  If you have{" "}
+                  <ShowCookiePreferencesLink>
+                    consented
+                  </ShowCookiePreferencesLink>{" "}
+                  to it, Google Ads may place cookies on your browser.
+                </p>
+              </li>
+            </ul>
           </section>
           <section>
             <h2>Changes to the privacy policy</h2>
             <p>
               The privacy policy is kept under regular review. This privacy
-              policy was last updated on 14 January 2025.
+              policy was last updated on 21 June 2025.
             </p>
           </section>
         </article>

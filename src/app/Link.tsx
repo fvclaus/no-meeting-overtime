@@ -3,7 +3,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 import React from "react";
 import { cn } from "@/lib/utils";
 
-const buttonVariants = cva("", {
+export const linkVariants = cva("", {
   variants: {
     variant: {
       default: "text-blue-600 hover:text-blue-800 underline",
@@ -21,14 +21,14 @@ type NextLinkArgs = Parameters<typeof NextLink>;
 
 const Link = React.forwardRef<
   HTMLAnchorElement,
-  NextLinkArgs[0] & VariantProps<typeof buttonVariants>
+  NextLinkArgs[0] & VariantProps<typeof linkVariants>
 >(({ className, variant, ...props }, ref) => {
   return (
     <NextLink
       prefetch={false}
       ref={ref}
       {...props}
-      className={cn(buttonVariants({ variant, className }))}
+      className={cn(linkVariants({ variant, className }))}
     />
   );
 });

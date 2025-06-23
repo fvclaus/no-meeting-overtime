@@ -1,6 +1,8 @@
 import React from "react";
-import Link from "./Link";
+import Link, { linkVariants } from "./Link";
 import { PRIVACY_POLICY_URL, REPORT_ISSUE_URL } from "@/shared/constants";
+import CookieConsentBanner from "@/components/CookieConsentBanner";
+import { cn } from "@/lib/utils";
 
 export function Footer() {
   return (
@@ -13,10 +15,15 @@ export function Footer() {
           <Link href={REPORT_ISSUE_URL} variant="footer">
             Report an Issue
           </Link>
-          {/* TODO */}
-          {/* <Link href="/about" variant="footer">
-            About
-          </Link> */}
+
+          <button
+            className={cn(linkVariants({ variant: "footer" }))}
+            type="button"
+            data-cc="show-preferencesModal"
+          >
+            Manage cookie preferences
+          </button>
+          <CookieConsentBanner />
         </div>
       </div>
     </footer>
