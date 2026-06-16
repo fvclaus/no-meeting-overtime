@@ -1,11 +1,8 @@
 import { loadUserInfo } from "../loadUserInfo";
 import { redirect } from "next/navigation";
-
-import { SITE_BASE } from "@/shared/server_constants";
-
-import { cookies } from "next/headers";
-import { Meeting } from "@/types";
 import ViewMeetings from "./components/view-meetings";
+import { getSession, isAuthorizedSession } from "@/app/session-store";
+import { findMeetings } from "@/app/firestore";
 
 // TODO Duplication
 export default async function Page() {
@@ -15,15 +12,12 @@ export default async function Page() {
     redirect("/");
   }
 
-  const meetingsRequest = await fetch(`${SITE_BASE}/api/meetings`, {
-    headers: { Cookie: (await cookies()).toString() },
-  });
+  const sessionData = await getSession();
+  if (!isAuthorizedSession(sessionData)) {
+    redirect("/");
+  }
 
-  // TODO Error Handling
-
-  const meetings = (await meetingsRequest.json()) as (Meeting & {
-    meetingCode: string;
-  })[];
+  const meetings = await findMeetings(sessionData.userId);
 
   return <ViewMeetings meetings={meetings} />;
 }

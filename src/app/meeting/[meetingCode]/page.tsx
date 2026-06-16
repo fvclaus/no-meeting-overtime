@@ -1,28 +1,30 @@
-import { cookies } from "next/headers";
 import { JoinMeeting, MeetingData } from "./_components/join-meeting";
-import { SITE_BASE } from "@/shared/server_constants";
+import { getSession, isAuthorizedSession } from "@/app/session-store";
+import { findMeeting } from "@/app/firestore";
 
 export default async function Page({
   params,
 }: {
   params: Promise<{ meetingCode: string }>;
 }) {
-  const { meetingCode } = await params,
-    res = await fetch(`${SITE_BASE}/api/meeting/${meetingCode}`, {
-      headers: { Cookie: (await cookies()).toString() },
-    });
+  const { meetingCode } = await params;
+
+  const sessionData = await getSession();
 
   let meeting: MeetingData | null = null;
 
-  if (res.ok) {
-    const data = (await res.json()) as {
-      scheduledEndTime: string;
-      uri: string;
-    };
-    meeting = {
-      ...data,
-      code: meetingCode,
-    };
+  if (isAuthorizedSession(sessionData)) {
+    const meetingData = await findMeeting(Promise.resolve({ meetingCode }));
+    if (
+      meetingData !== undefined &&
+      meetingData.userId === sessionData.userId
+    ) {
+      meeting = {
+        scheduledEndTime: meetingData.scheduledEndTime,
+        uri: meetingData.uri,
+        code: meetingCode,
+      };
+    }
   }
 
   if (meeting === null) {

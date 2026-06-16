@@ -1,0 +1,80 @@
+# no-meeting-overtime — Agent Reference
+
+## What this project does
+
+A Next.js 15 web app that lets users schedule an automatic end time for Google Meet meetings. Users sign in with Google OAuth2, create a meeting with an end time, and a Cloud Tasks job calls the Google Meet API to end the conference at the scheduled time.
+
+## Architecture
+
+- **Framework**: Next.js 15 (App Router, standalone output mode)
+- **Auth**: Google OAuth2 via `googleapis`. Session state stored in Firestore (`meetings` database, `session` collection).
+- **Database**: Firestore (`meetings` database) — stores sessions, meetings, and users.
+- **Scheduling**: Google Cloud Tasks queue (`end-meetings1`) sends an HTTP DELETE to `/api/meeting/[meetingCode]` with an OIDC token at the scheduled end time.
+- **Hosting**: Cloud Run (europe-west1), built and deployed via Cloud Build (`cloudbuild.yaml`).
+- **Container**: Multi-stage Docker build using `gcr.io/distroless/nodejs22` as the final image. Uses Next.js standalone output (`next.config.js` must include `output: 'standalone'`).
+
+## Key environment variables (set in Cloud Run)
+
+| Variable | Purpose |
+|---|---|
+| `CLIENT_ID` | Google OAuth2 client ID |
+| `CLIENT_SECRET` | Google OAuth2 client secret |
+| `PROJECT_ID` | GCP project ID (`no-meeting-overtime`) |
+| `QUEUE_LOCATION` | Cloud Tasks region (`europe-west1`) |
+| `SITE_BASE` | Public base URL (`https://no-meeting-overtime.click`) |
+| `CLOUD_TASKS_SERVICE_ACCOUNT` | SA email used to sign Cloud Tasks OIDC tokens |
+
+## Important: no server-side self-referential HTTP fetches
+
+Server components and server actions **must not** fetch the app's own API routes over HTTP using `SITE_BASE`. DNS for `no-meeting-overtime.click` may not resolve inside the Cloud Run network, causing 500 errors on cold starts.
+
+**Wrong pattern:**
+```typescript
+// BAD — DNS may not resolve from Cloud Run
+const res = await fetch(`${SITE_BASE}/api/userinfo`, { headers: { Cookie: ... } });
+```
+
+**Correct pattern:**
+```typescript
+// GOOD — call the underlying function directly
+import { getSession } from "@/app/session-store";
+const sessionData = await getSession();
+```
+
+The route handler logic is importable; prefer calling it directly from server components.
+
+## CI/CD
+
+- **GitHub Actions** (`.github/workflows/ci.yml`): runs lint, unit tests, and Playwright component tests on every PR/push to `main`. Does not deploy.
+- **Cloud Build** (`cloudbuild.yaml`): triggered manually or from a Cloud Build trigger; builds the Docker image, pushes to Artifact Registry, and deploys to Cloud Run.
+
+## Testing
+
+```bash
+pnpm test:unit   # vitest unit tests
+pnpm test:ct     # Playwright component tests (requires Docker)
+pnpm lint        # ESLint + Prettier via eslint
+```
+
+## Local development
+
+Set `SITE_BASE=http://localhost:3000` and other required env vars, then:
+```bash
+pnpm dev
+```
+For Cloud Tasks callbacks locally you need a public HTTPS URL (e.g. ngrok). Set `SITE_BASE_CLOUD_TASKS` to the ngrok URL.
+
+## Firestore collections
+
+| Collection | Key | Contents |
+|---|---|---|
+| `session` | session UUID | `SessionData` — auth state, credentials, user info |
+| `meeting` | meeting code | `Meeting` — `scheduledEndTime`, `name`, `userId`, `uri` |
+| `user` | userId | `{ refresh_token }` |
+
+## Cloud Tasks DELETE callback authentication
+
+`DELETE /api/meeting/[meetingCode]` is called by Cloud Tasks with an OIDC token. The handler:
+1. Verifies `X-CLOUDTASKS-TASKNAME` header is present.
+2. Verifies the OIDC `Authorization` bearer token email matches `CLOUD_TASKS_SERVICE_ACCOUNT`.
+3. Looks up the user's refresh token from Firestore and calls the Google Meet API.
