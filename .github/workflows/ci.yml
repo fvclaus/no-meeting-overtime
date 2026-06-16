@@ -77,4 +77,11 @@ jobs:
         if: always()
         with:
           name: playwright-ct-report
-          path: playwright-report/ 
+          path: playwright-report/
+
+      - name: Upload updated snapshots on failure
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-ct-snapshots
+          path: __snapshots__/

@@ -64,7 +64,7 @@ export function Settings() {
               </div>
               {isConfirmDialogVisible && (
                 <div
-                  className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4"
+                  className="fixed inset-0 bg-black/50 flex items-center justify-center p-4"
                   aria-labelledby="delete-user-dialog-button"
                   role="dialog"
                   id="delete-user-dialog"
