@@ -2,28 +2,13 @@
 import { google } from "googleapis";
 import { START_MEETING_PATH } from "./constants";
 import { Firestore } from "@google-cloud/firestore";
+
+const isBuilding = process.env.NEXT_PHASE === "phase-production-build";
+
 export const CLIENT_ID = process.env.CLIENT_ID!;
-// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-if (CLIENT_ID === null) {
-  throw new Error("Missing CLIENT_ID");
-}
 export const CLIENT_SECRET = process.env.CLIENT_SECRET!;
-// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-if (CLIENT_SECRET === null) {
-  throw new Error("Missing CLIENT_SECRET");
-}
-
 export const PROJECT_ID = process.env.PROJECT_ID!;
-// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-if (PROJECT_ID === null) {
-  throw new Error("Missing PROJECT_ID");
-}
-
 export const QUEUE_LOCATION = process.env.QUEUE_LOCATION!;
-// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-if (QUEUE_LOCATION === null) {
-  throw new Error("Missing QUEUE_LOCATION");
-}
 
 // Not required on Cloud Run
 // TODO Migration to GOOGLE_APPLICATION_CREDENTIALS
@@ -32,31 +17,32 @@ export const { KEY_FILE } = process.env;
 
 export const SITE_BASE = process.env.SITE_BASE!;
 
-// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-if (SITE_BASE === null) {
-  throw new Error("Missing SITE_BASE");
-}
+export let { SITE_BASE_CLOUD_TASKS } = process.env;
 
-export let SITE_BASE_CLOUD_TASKS = process.env.SITE_BASE_CLOUD_TASKS!;
+if (!isBuilding) {
+  if (!CLIENT_ID) throw new Error("Missing CLIENT_ID");
+  if (!CLIENT_SECRET) throw new Error("Missing CLIENT_SECRET");
+  if (!PROJECT_ID) throw new Error("Missing PROJECT_ID");
+  if (!QUEUE_LOCATION) throw new Error("Missing QUEUE_LOCATION");
+  if (!SITE_BASE) throw new Error("Missing SITE_BASE");
 
-// Usage of ngrok https URL only is cumbersome, because it requires administration of OAuth redirect URLs.
-// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-if (SITE_BASE_CLOUD_TASKS === undefined) {
-  if (SITE_BASE.includes("localhost")) {
-    throw new Error(
-      "SITE_BASE includes localhost you have to then defined a URL that can be reached by Google CloudTasks. Use ngrok for example",
-    );
+  // Usage of ngrok https URL only is cumbersome, because it requires administration of OAuth redirect URLs.
+  if (SITE_BASE_CLOUD_TASKS === undefined) {
+    if (SITE_BASE.includes("localhost")) {
+      throw new Error(
+        "SITE_BASE includes localhost you have to then defined a URL that can be reached by Google CloudTasks. Use ngrok for example",
+      );
+    }
+    SITE_BASE_CLOUD_TASKS = SITE_BASE;
   }
-  SITE_BASE_CLOUD_TASKS = SITE_BASE;
+
+  if (!process.env.CLOUD_TASKS_SERVICE_ACCOUNT) {
+    throw new Error("Missing CLOUD_TASKS_SERVICE_ACCOUNT");
+  }
 }
 
 export const CLOUD_TASKS_SERVICE_ACCOUNT =
   process.env.CLOUD_TASKS_SERVICE_ACCOUNT!;
-
-// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-if (CLOUD_TASKS_SERVICE_ACCOUNT === undefined) {
-  throw new Error("Missing CLOUD_TASKS_SERVICE_ACCOUNT");
-}
 
 export const START_MEETING_URL = SITE_BASE + START_MEETING_PATH;
 

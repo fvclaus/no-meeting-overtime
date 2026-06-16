@@ -1,3 +1,5 @@
+@reference "tailwindcss";
+
 #privacy-policy  {
     & section {
         @apply mb-8;

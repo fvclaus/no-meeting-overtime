@@ -112,6 +112,7 @@ describe("test", { timeout: 200_000 }, () => {
       if (page.url().includes("signin/challenge")) {
         throw new Error(
           "You must login in your Chrome browser (upper right) before starting the test, otherwise there could be an authentication prompt",
+          { cause: e },
         );
       }
       throw e;

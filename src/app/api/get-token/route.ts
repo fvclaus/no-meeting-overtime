@@ -67,7 +67,7 @@ export async function GET(req: NextRequest) {
     if (credentials.refresh_token) {
       logger.info(`Updating refresh_token for user ${userId} `, { userId });
       await userDoc.ref.set(
-        { refresh_token: credentials.refresh_token } as User,
+        { refresh_token: credentials.refresh_token },
         { merge: true },
       );
     } else {
@@ -97,6 +97,7 @@ export async function GET(req: NextRequest) {
     logger.error(error, { additional: credentials });
     throw new Error(
       "This shouldn't happen. Token should be valid at this point.",
+      { cause: error },
     );
   }
 

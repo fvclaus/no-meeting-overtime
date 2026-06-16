@@ -26,8 +26,7 @@ import { Logger } from "@/log";
 const logger = new Logger("meeting");
 
 const RequestBodySchema = z.object({
-    scheduledEndTime: z
-      .string()
+    scheduledEndTime: z.iso
       .datetime({ offset: true })
       .refine(
         (value) => {
@@ -45,7 +44,7 @@ export async function POST(req: NextRequest) {
   const body = (await req.json()) as unknown,
     result = RequestBodySchema.safeParse(body);
   if (result.error) {
-    return NextResponse.json(result.error.errors, { status: 400 });
+    return NextResponse.json(result.error.issues, { status: 400 });
   }
 
   const reqData = result.data;

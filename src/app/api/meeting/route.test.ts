@@ -9,7 +9,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { add, formatISO } from "date-fns";
 import { saveMeeting } from "@/app/firestore";
 import { CloudTasksClient } from "@google-cloud/tasks";
-import { ZodIssue } from "zod";
+import type { $ZodIssue } from "zod/v4/core";
 import {
   mockAuthenticatedSession,
   mockUnauthorizedSession,
@@ -38,7 +38,7 @@ describe("/api/meeting/[meetingCode]", () => {
 
   async function expectBadRequest(
     response: NextResponse,
-    error: Partial<ZodIssue>,
+    error: Partial<$ZodIssue>,
   ) {
     expect(response.status).toBe(400);
     const errors = (await response.json()) as string[];
@@ -54,7 +54,7 @@ describe("/api/meeting/[meetingCode]", () => {
         response = await handler.POST(req);
       await expectBadRequest(response, {
         path: ["scheduledEndTime"],
-        message: "Required",
+        message: "Invalid input: expected string, received undefined",
       });
     });
 
@@ -66,7 +66,7 @@ describe("/api/meeting/[meetingCode]", () => {
         response = await handler.POST(req);
       await expectBadRequest(response, {
         path: ["scheduledEndTime"],
-        message: "Invalid datetime",
+        message: "Invalid ISO datetime",
       });
     });
 

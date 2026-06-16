@@ -4,7 +4,7 @@ import globals from "globals";
 import pluginJs from "@eslint/js";
 import tseslint from "typescript-eslint";
 import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended";
-import { flatConfig } from "@next/eslint-plugin-next";
+import nextPlugin from "@next/eslint-plugin-next";
 import path from "path";
 import { fileURLToPath } from "url";
 import json from "@eslint/json";
@@ -46,8 +46,8 @@ export default tseslint.config(
   // {
   // },
   eslintPluginPrettierRecommended,
-  flatConfig.recommended,
-  flatConfig.coreWebVitals,
+  nextPlugin.configs.recommended,
+  nextPlugin.configs["core-web-vitals"],
   {
     rules: {
       "max-lines-per-function": "off",
@@ -68,6 +68,8 @@ export default tseslint.config(
       "no-underscore-dangle": "off",
       "no-nested-ternary": "off",
       camelcase: "off",
+      "no-void": ["error", { allowAsStatement: true }],
+      "@typescript-eslint/no-meaningless-void-operator": "off",
     },
   },
   {
