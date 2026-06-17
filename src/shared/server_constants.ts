@@ -91,6 +91,14 @@ export const db = new Firestore({
 
 export const cloudTasksClient = new CloudTasksClient(
   googleAuth
-    ? { auth: googleAuth as Parameters<typeof CloudTasksClient>[0]["auth"] }
+    ? {
+        // google-auth-library is resolved at two versions in the tree (the
+        // app's direct dep vs. the copy bundled with google-gax), so the
+        // GoogleAuth types are nominally distinct. They are the same object at
+        // runtime, hence the cast through `unknown`.
+        auth: googleAuth as unknown as NonNullable<
+          ConstructorParameters<typeof CloudTasksClient>[0]
+        >["auth"],
+      }
     : {},
 );
