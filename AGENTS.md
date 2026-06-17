@@ -2,16 +2,16 @@
 
 ## What this project does
 
-A Next.js 15 web app that lets users schedule an automatic end time for Google Meet meetings. Users sign in with Google OAuth2, create a meeting with an end time, and a Cloud Tasks job calls the Google Meet API to end the conference at the scheduled time.
+A Next.js web app that lets users schedule an automatic end time for Google Meet meetings. Users sign in with Google OAuth2, create a meeting with an end time, and a Cloud Tasks job calls the Google Meet API to end the conference at the scheduled time.
 
 ## Architecture
 
-- **Framework**: Next.js 15 (App Router, standalone output mode)
+- **Framework**: Next.js (App Router, standalone output mode)
 - **Auth**: Google OAuth2 via `googleapis`. Session state stored in Firestore (`meetings` database, `session` collection).
 - **Database**: Firestore (`meetings` database) — stores sessions, meetings, and users.
 - **Scheduling**: Google Cloud Tasks queue (`end-meetings1`) sends an HTTP DELETE to `/api/meeting/[meetingCode]` with an OIDC token at the scheduled end time.
 - **Hosting**: Cloud Run (europe-west1), built and deployed via Cloud Build (`cloudbuild.yaml`).
-- **Container**: Multi-stage Docker build using `gcr.io/distroless/nodejs22` as the final image. Uses Next.js standalone output (`next.config.js` must include `output: 'standalone'`).
+- **Container**: Multi-stage Docker build using a distroless Node.js image. Uses Next.js standalone output (`next.config.js` must include `output: 'standalone'`).
 
 ## Key environment variables (set in Cloud Run)
 
@@ -55,6 +55,42 @@ pnpm test:unit   # vitest unit tests
 pnpm test:ct     # Playwright component tests (requires Docker)
 pnpm lint        # ESLint + Prettier via eslint
 ```
+
+### Updating Playwright CT snapshots
+
+Snapshots must be updated locally (never via CI):
+
+```bash
+pnpm test:ct:update-snapshots
+```
+
+This rebuilds the Docker image and runs Playwright with `--update-snapshots`, writing new baseline images to `__snapshots__/`. Commit the updated snapshots.
+
+### E2E tests
+
+Full setup required before running:
+
+1. **Chrome** — start with remote debugging and log in to Google:
+   ```bash
+   google-chrome-stable --user-data-dir=/path/to/.chrome-debugging-user-dir --remote-debugging-port=9222
+   ```
+2. **ngrok** — required for Cloud Tasks to call the DELETE endpoint on your local server:
+   ```bash
+   ngrok http 3000
+   ```
+   Set the forwarding URL in `.env.local`: `SITE_BASE_CLOUD_TASKS=https://xxxx.ngrok-free.app`
+3. **Dev server** — load env vars and start Next.js:
+   ```bash
+   set -a && source .env.local && set +a && pnpm dev
+   ```
+4. **Run tests**:
+   ```bash
+   GMAIL_USER=you@gmail.com pnpm test:e2e
+   ```
+
+`GMAIL_USER` is required when multiple Google accounts are signed in.
+
+**VS Code Playwright extension**: Requires the same Chrome and ngrok setup as the CLI — the extension does not start Chrome or the dev server for you.
 
 ## Local development
 

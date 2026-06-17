@@ -2,6 +2,8 @@
 import { google } from "googleapis";
 import { START_MEETING_PATH } from "./constants";
 import { Firestore } from "@google-cloud/firestore";
+import { CloudTasksClient } from "@google-cloud/tasks";
+import { GoogleAuth, OAuth2Client } from "google-auth-library";
 
 const isBuilding = process.env.NEXT_PHASE === "phase-production-build";
 
@@ -70,8 +72,25 @@ export const createOauth2Client = () =>
     GET_TOKEN_API_URL,
   );
 
+function createGoogleAuth(): GoogleAuth | undefined {
+  const token = process.env.GOOGLE_OAUTH_ACCESS_TOKEN;
+  if (!token) return undefined;
+  const oauth2 = new OAuth2Client();
+  oauth2.setCredentials({ access_token: token });
+  return new GoogleAuth({ authClient: oauth2, projectId: PROJECT_ID });
+}
+
+const googleAuth = createGoogleAuth();
+
 export const db = new Firestore({
   projectId: PROJECT_ID,
   keyFilename: KEY_FILE,
   databaseId: "meetings",
+  auth: googleAuth,
 });
+
+export const cloudTasksClient = new CloudTasksClient(
+  googleAuth
+    ? { auth: googleAuth as Parameters<typeof CloudTasksClient>[0]["auth"] }
+    : {},
+);

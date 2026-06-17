@@ -1,5 +1,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap");
 @import "tailwindcss";
+/* Exclude root-level dotfiles created by the bwrap sandbox (e.g. .bash_profile) */
+@source not "./.*";
 
 @plugin "daisyui";
 

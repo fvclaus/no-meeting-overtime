@@ -4,7 +4,6 @@
 export const REQUIRED_SCOPES = [
   "https://www.googleapis.com/auth/meetings.space.created",
 ];
-import { db } from "@/shared/server_constants";
 import { SESSION_ID_NAME } from "@/shared/constants";
 import {
   BrowserContext,
@@ -12,6 +11,7 @@ import {
   expect,
   Locator,
   Page,
+  test,
 } from "@playwright/test";
 import {
   addMinutes,
@@ -21,14 +21,13 @@ import {
   formatISO,
   roundToNearestMinutes,
 } from "date-fns";
-import { afterEach, beforeEach, describe, it } from "node:test";
 
 // eslint-disable-next-line prefer-destructuring
 const GMAIL_USER = process.env.GMAIL_USER;
 
 // google-chrome-stable --remote-debugging-port=9222
-// eslint-disable-next-line @typescript-eslint/no-floating-promises
-describe("test", { timeout: 200_000 }, () => {
+test.describe("test", () => {
+  test.describe.configure({ timeout: 200_000 });
   // eslint-disable-next-line init-declarations
   let page: Page;
   // eslint-disable-next-line init-declarations
@@ -44,16 +43,30 @@ describe("test", { timeout: 200_000 }, () => {
 
   async function revokeGoogleSignIn() {
     await page.goto("https://myaccount.google.com/connections");
+    await page.waitForLoadState("domcontentloaded");
     const thirdPartyLink = page.getByRole("link", {
       name: "No Meeting Overtime",
     });
-    if (await thirdPartyLink.isVisible()) {
-      await thirdPartyLink.click();
-      await page
-        .getByRole("button", { name: "Delete all connections" })
-        .click();
-      await page.getByRole("button", { name: "Confirm" }).click();
+    if (!(await thirdPartyLink.isVisible({ timeout: 10_000 }).catch(() => false))) {
+      return;
     }
+    await thirdPartyLink.click();
+    // Google's connections page now links the app name to the app website.
+    // If we were navigated away, go back and look for an inline remove button.
+    await page.waitForTimeout(2_000);
+    if (!page.url().includes("myaccount.google.com")) {
+      await page.goBack();
+      await page.waitForLoadState("domcontentloaded");
+    }
+    const deleteButton = page
+      .getByRole("button", { name: "Delete all connections" })
+      .or(page.getByRole("button", { name: /remove access/iu }))
+      .or(page.getByRole("button", { name: /remove/iu }));
+    await deleteButton.click({ timeout: 15_000 });
+    const confirmButton = page
+      .getByRole("button", { name: "Confirm" })
+      .or(page.getByRole("button", { name: /ok|yes/iu }));
+    await confirmButton.click({ timeout: 10_000 });
   }
 
   async function selectCorrectGmailAccount() {
@@ -136,6 +149,12 @@ describe("test", { timeout: 200_000 }, () => {
       }
     }
     await continueButton.click();
+    // Chrome shows a "Make Chrome your own" sync dialog after OAuth — dismiss it if present.
+    await page
+      .getByRole("button", { name: "Use Chrome without an account" })
+      .click({ timeout: 5_000 })
+      // eslint-disable-next-line no-empty-function
+      .catch(() => {});
   }
 
   async function signInIfNecessary() {
@@ -149,7 +168,7 @@ describe("test", { timeout: 200_000 }, () => {
     }
   }
 
-  beforeEach(async () => {
+  test.beforeEach(async () => {
     const browser = await chromium.connectOverCDP("http://localhost:9222", {
       slowMo: 200,
     });
@@ -165,15 +184,14 @@ describe("test", { timeout: 200_000 }, () => {
     getStartedButton = page.getByRole("button", { name: "Get started" });
   });
 
-  afterEach(async () => {
+  test.afterEach(async () => {
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     if (page !== undefined) {
       await page.close();
     }
   });
 
-  // eslint-disable-next-line @typescript-eslint/no-floating-promises
-  it("happy path", async () => {
+  test("happy path", async () => {
     await page.goto("http://localhost:3000");
     await signInIfNecessary();
     const shortMeetingEnd = addSeconds(Date.now(), 30);
@@ -210,8 +228,7 @@ describe("test", { timeout: 200_000 }, () => {
     });
   });
 
-  // eslint-disable-next-line @typescript-eslint/no-floating-promises
-  it.only("test accept privacy policy", async () => {
+  test("test accept privacy policy", async () => {
     await context.clearCookies({ name: SESSION_ID_NAME });
     await page.goto("http://localhost:3000");
     await page.evaluate(() => {
@@ -236,8 +253,7 @@ describe("test", { timeout: 200_000 }, () => {
     await expect(acceptPrivacyPolicyCheckbox).toBeChecked();
   });
 
-  // eslint-disable-next-line @typescript-eslint/no-floating-promises
-  it("should display login button after removing connection to app", async () => {
+  test("should display login button after removing connection to app", async () => {
     await page.goto("http://localhost:3000");
     await signInIfNecessary();
     await revokeGoogleSignIn();
@@ -245,8 +261,7 @@ describe("test", { timeout: 200_000 }, () => {
     await expect(signInWithGoogleButton).toBeVisible();
   });
 
-  // eslint-disable-next-line @typescript-eslint/no-floating-promises
-  it("should display missing scopes", async () => {
+  test("should display missing scopes", async () => {
     await revokeGoogleSignIn();
     await page.goto("http://localhost:3000");
     await signInWithGoogleButton.click();
@@ -259,8 +274,7 @@ describe("test", { timeout: 200_000 }, () => {
     await expect(createMeetingButton).toBeVisible();
   });
 
-  // eslint-disable-next-line @typescript-eslint/no-floating-promises
-  it.only("should show created meetings and delete account", async () => {
+  test("should show created meetings and delete account", async () => {
     await page.goto("http://localhost:3000");
     await signInIfNecessary();
     const meetingEnd = roundToNearestMinutes(addMinutes(Date.now(), 20), {
@@ -281,14 +295,18 @@ describe("test", { timeout: 200_000 }, () => {
       timeout: 15_000,
     });
     await userMenuButton.click();
-    let meetingDoc = await db.doc(`meeting/${meetingCode}`).get();
-    expect(meetingDoc.exists).toBeTruthy();
+    const beforeRes = await page
+      .context()
+      .request.get(`http://localhost:3000/api/meeting/${meetingCode}`);
+    expect(beforeRes.ok()).toBeTruthy();
     await page.getByRole("menuitem", { name: "Settings" }).click();
     await page.getByRole("button", { name: "Delete Data" }).click();
     await page.getByRole("button", { name: "Delete Everything" }).click();
 
     await expect(signInWithGoogleButton).toBeVisible();
-    meetingDoc = await db.doc(`meeting/${meetingCode}`).get();
-    expect(meetingDoc.exists).toBeFalsy();
+    const afterRes = await page
+      .context()
+      .request.get(`http://localhost:3000/api/meeting/${meetingCode}`);
+    expect(afterRes.ok()).toBeFalsy();
   });
 });
