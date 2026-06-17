@@ -8,8 +8,11 @@ export async function findMeeting(
   params: RouteParams,
 ): Promise<(Meeting & { code: string }) | undefined> {
   const { meetingCode } = await params,
-    meetingDocs = await db.collection("meeting").doc(meetingCode).get(),
-    meeting = meetingDocs.data() as Meeting;
+    meetingDocs = await db.collection("meeting").doc(meetingCode).get();
+  if (!meetingDocs.exists) {
+    return undefined;
+  }
+  const meeting = meetingDocs.data() as Meeting;
   return {
     ...meeting,
     code: meetingCode,

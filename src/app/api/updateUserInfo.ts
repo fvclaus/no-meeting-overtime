@@ -3,10 +3,10 @@ import { createOauth2Client } from "@/shared/server_constants";
 import { google } from "googleapis";
 
 export async function updateUserInfo(
-  credentials: Credentials,
-): Promise<{ name: string; picture: string }> {
+  inputCredentials: Credentials,
+): Promise<{ name: string; picture: string; credentials: Credentials }> {
   const oauth2Client = createOauth2Client();
-  oauth2Client.setCredentials(credentials);
+  oauth2Client.setCredentials(inputCredentials);
 
   const response = await google.oauth2("v2").userinfo.get({
     auth: oauth2Client,
@@ -15,8 +15,14 @@ export async function updateUserInfo(
   const name = response.data.name || "Unknown name";
   const picture = response.data.picture || "Unknown picture";
 
+  const credentials = {
+    ...inputCredentials,
+    ...oauth2Client.credentials,
+  } as Credentials;
+
   return {
     name,
     picture,
+    credentials,
   };
 }

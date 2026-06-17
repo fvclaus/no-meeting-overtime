@@ -1,7 +1,7 @@
 "use client";
 
 import { useForm } from "react-hook-form";
-import { formatISO, set } from "date-fns";
+import { addDays, formatISO, set } from "date-fns";
 import { useState } from "react";
 import { TZDate } from "@date-fns/tz";
 import { useRouter } from "next/navigation";
@@ -90,14 +90,17 @@ export default function CreateMeeting() {
                         return value;
                       }
                       const [hours, minutes] = value
-                          .split(":")
-                          .map((s) => parseInt(s, 10)),
-                        endTime = set(new Date(), {
-                          hours,
-                          minutes,
-                          seconds: 0,
-                          milliseconds: 0,
-                        });
+                        .split(":")
+                        .map((s) => parseInt(s, 10));
+                      let endTime = set(new Date(), {
+                        hours,
+                        minutes,
+                        seconds: 0,
+                        milliseconds: 0,
+                      });
+                      if (!isMeetingEndAfterOffset(endTime)) {
+                        endTime = addDays(endTime, 1);
+                      }
                       return endTime;
                     },
                     validate: {

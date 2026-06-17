@@ -8,6 +8,7 @@ import {
   CLOUD_TASKS_SERVICE_ACCOUNT,
   PROJECT_ID,
   QUEUE_LOCATION,
+  SITE_BASE,
   SITE_BASE_CLOUD_TASKS,
   cloudTasksClient,
 } from "@/shared/server_constants";
@@ -93,6 +94,12 @@ export async function POST(req: NextRequest) {
             },
             oidcToken: {
               serviceAccountEmail: CLOUD_TASKS_SERVICE_ACCOUNT,
+              // Pin an explicit, host-independent audience so the DELETE
+              // handler can verify the OIDC `aud` claim reliably. Without
+              // this, the audience defaults to the (proxied) request URL,
+              // which differs between Cloud Tasks and the server seen behind
+              // ngrok/Cloud Run, breaking verification.
+              audience: SITE_BASE,
             },
           },
           scheduleTime: {

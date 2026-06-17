@@ -56,7 +56,10 @@ export async function GET(req: NextRequest) {
   oauth2Client.setCredentials(credentials);
 
   try {
-    const userInfo = await updateUserInfo(credentials);
+    // get-token manages `credentials` itself (it merges in the refresh_token
+    // fetched from Firestore for returning users below), so only take the
+    // profile fields from updateUserInfo and do NOT let it overwrite them.
+    const { name, picture } = await updateUserInfo(credentials);
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const userId = userInfoResponse.sub!;
     logger.info(`User ${userId} authenticated successfully`, { userId });
@@ -91,7 +94,8 @@ export async function GET(req: NextRequest) {
       userId,
       hasAcceptedPrivacyPolicy: true,
       credentials,
-      ...userInfo,
+      name,
+      picture,
     });
   } catch (error) {
     logger.error(error, { additional: credentials });
