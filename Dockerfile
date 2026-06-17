@@ -55,6 +55,13 @@ COPY --from=builder /app/public ./public
 # Automatically leverage output traces to reduce image size
 # https://nextjs.org/docs/advanced-features/output-file-tracing
 COPY --from=builder /app/.next/standalone ./
+# Next's standalone tracer misses @google-cloud/tasks' lazily-required JSON
+# config files (e.g. cloud_tasks_client_config.json), which are only loaded
+# when the CloudTasksClient is constructed at runtime -> MODULE_NOT_FOUND 500.
+# Copy the full package over the traced output. See vercel/next.js#63368.
+# NOTE: the version below must match @google-cloud/tasks in package.json; a
+# mismatch fails the build loudly (path not found) rather than 500ing at runtime.
+COPY --from=builder /app/node_modules/.pnpm/@google-cloud+tasks@6.2.3/node_modules/@google-cloud/tasks/ ./node_modules/.pnpm/@google-cloud+tasks@6.2.3/node_modules/@google-cloud/tasks/
 COPY --from=builder /app/.next/static ./.next/static
 
 #USER nextjs
