@@ -47,7 +47,9 @@ test.describe("test", () => {
     const thirdPartyLink = page.getByRole("link", {
       name: "No Meeting Overtime",
     });
-    if (!(await thirdPartyLink.isVisible({ timeout: 10_000 }).catch(() => false))) {
+    if (
+      !(await thirdPartyLink.isVisible({ timeout: 10_000 }).catch(() => false))
+    ) {
       return;
     }
     await thirdPartyLink.click();
