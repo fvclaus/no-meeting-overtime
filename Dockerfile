@@ -7,7 +7,9 @@ RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
 # Install dependencies based on the preferred package manager
-COPY package.json pnpm-lock.yaml ./
+# pnpm-workspace.yaml is required so pnpm picks up `allowBuilds` (esbuild,
+# protobufjs, sharp); without it `pnpm i` fails with ERR_PNPM_IGNORED_BUILDS.
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 RUN npm i -g pnpm
 RUN pnpm i
 
@@ -53,8 +55,6 @@ COPY --from=builder /app/public ./public
 # Automatically leverage output traces to reduce image size
 # https://nextjs.org/docs/advanced-features/output-file-tracing
 COPY --from=builder /app/.next/standalone ./
-# https://github.com/vercel/next.js/issues/63368
-COPY --from=builder /app/node_modules/.pnpm/@google-cloud+tasks@5.1.0/node_modules/@google-cloud/tasks/ ./node_modules/.pnpm/@google-cloud+tasks@5.1.0/node_modules/@google-cloud/tasks/
 COPY --from=builder /app/.next/static ./.next/static
 
 #USER nextjs
