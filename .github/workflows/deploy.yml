@@ -4,12 +4,6 @@ on:
   push:
     branches:
       - main
-  # TEMPORARY: also deploy on PRs so this pipeline can be tested before it is
-  # merged. Remove this `pull_request` trigger once the PR introducing this
-  # workflow is merged, so deploys only happen on merge to main.
-  pull_request:
-    branches:
-      - main
 
 # Never run two deploys against the same Cloud Run service concurrently.
 concurrency:
