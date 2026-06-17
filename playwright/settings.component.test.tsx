@@ -30,6 +30,10 @@ test.describe("Settings", () => {
       component.getByRole("status", { name: "loading" }),
     ).toBeVisible();
     await expect(deleteEverythingButton).toBeDisabled();
+    // Intercept logout navigation so the CT page isn't closed when window.location.href is set
+    await component.page().route("**/api/logout", async (route) => {
+      await route.fulfill({ status: 200, body: "" });
+    });
     sendResponse.resolve(true);
     await expect(deleteDialog).not.toBeVisible();
     await component.page().waitForURL("**/api/logout");

@@ -8,7 +8,7 @@ export default defineConfig({
   test: {
     environment: "jsdom",
     include: ["**/*.test.ts"],
-    exclude: ["**/*.component.test.ts", "**/e2e.test.ts"],
+    exclude: ["**/node_modules/**", "**/*.component.test.ts", "**/e2e.test.ts"],
     env: {
       CLIENT_ID: "VITEST_CLIENT_ID",
       CLIENT_SECRET: "VITEST_CLIENT_SECRET",

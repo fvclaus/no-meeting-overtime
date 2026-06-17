@@ -76,12 +76,67 @@ To get the project running locally for development, follow these steps:
 
 ## E2E Tests
 
-They are a bit special, because they require an active Google login. An automated login is usually not possible, because of 2FA. Open a browser with `google-chrome-stable --remote-debugging-port=9222`. Make sure it doesn't respond with `Opening in existing browser session.`, meaning that a browser instance is already open. Login to a Google Account and set the email as env variable `GMAIL_USER`.
-The tests cannot be started with the Playwright extension in vscode, because they always open a new browser window. Instead there are launch configurations.
-For the tests to properly work, it is necesary to remove the check for a minimum meeting time with
+E2E tests connect to a real Chrome browser via the Chrome DevTools Protocol (CDP) and require an active Google login, because automated login is blocked by 2FA.
+
+### 1. Start Chrome with remote debugging
+
+Make sure no Chrome instance is running first (the command will silently attach to an existing one otherwise):
+
+```bash
+google-chrome-stable --user-data-dir=<home folder "~" not supported>/.chrome-debugging-user-dir --remote-debugging-port=9222
 ```
-NEXT_PUBLIC_MEETING_END_MINUTES_OFFSET="0"
+
+If the terminal prints `Opening in existing browser session.`, close all Chrome windows and try again.
+
+### 2. Log in to Google
+
+Inside the browser that opened, log in to the Google account you want to use for testing.
+
+### 3. Start ngrok
+
+The "happy path" test creates a real meeting and waits for Google Cloud Tasks to call the local server's DELETE endpoint at the scheduled time. Cloud Tasks needs a public HTTPS URL to reach your local dev server:
+
+```bash
+ngrok http 3000
 ```
+
+Copy the forwarding URL (e.g. `https://xxxx.ngrok-free.app`) and set it in `.env.local`:
+
+```
+SITE_BASE_CLOUD_TASKS=https://xxxx.ngrok-free.app
+```
+
+### 4. Start the dev server
+
+Load env vars from `.env.local` and start Next.js:
+
+```bash
+set -a && source .env.local && set +a && pnpm dev
+```
+
+### 5. Set environment variables
+
+```bash
+# Required when multiple Google accounts are signed in:
+export GMAIL_USER=you@gmail.com
+
+# Disable the minimum meeting time check so short test meetings work:
+export NEXT_PUBLIC_MEETING_END_MINUTES_OFFSET="0"
+```
+
+The easiest approach is to put all required env vars (including the ones above) in `.env.local` and load them before running. The VS Code launch configurations ("Run E2E" and "Run E2E --test-only") do this automatically via `envFile`.
+
+### 6. Run the tests
+
+```bash
+# Run only tests marked with .only (recommended):
+pnpm test:e2e:only
+
+# Run all e2e tests:
+pnpm test:e2e
+```
+
+> **Note:** The VS Code Playwright extension requires the same Chrome and ngrok setup as the CLI — it does not start Chrome or the dev server for you.
 
 
 Don't install glcoud from snap. You won't let you install the terraform extension

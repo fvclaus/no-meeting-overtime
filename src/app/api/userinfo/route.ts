@@ -1,4 +1,4 @@
-import { AuthenticatedUserInfo, UnauthenticatedUserInfo } from "@/types";
+import { AuthenticatedUserInfo } from "@/types";
 import { getSession, setSession } from "@/app/session-store";
 import { NextResponse } from "next/server";
 import { updateUserInfo } from "../updateUserInfo";
@@ -18,7 +18,7 @@ export async function GET(): Promise<Response> {
     return NextResponse.json({
       authenticated: false,
       hasAcceptedPrivacyPolicy: false,
-    } as UnauthenticatedUserInfo);
+    });
   }
 
   // TODO Return from session, if 'expired' is not expired.

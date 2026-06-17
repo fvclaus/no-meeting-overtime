@@ -1,4 +1,4 @@
-import { headers, type UnsafeUnwrappedHeaders } from "next/headers";
+import { headers } from "next/headers";
 import { PROJECT_ID } from "./shared/server_constants";
 import { SessionData } from "./app/session-store";
 
@@ -24,36 +24,40 @@ export type LogEntry = {
   additional?: unknown;
 };
 
+const logStructured = async (
+  msg: unknown,
+  entry: Omit<LogEntry, "message">,
+) => {
+  const globalLogFields: Record<string, string> = {};
+
+  // Add log correlation to nest all log messages beneath request log in Log Viewer.
+  // (This only works for HTTP-based invocations where `req` is defined.)
+  const h = await headers();
+  const traceHeader = h.get("X-Cloud-Trace-Context");
+  if (traceHeader) {
+    const [trace] = traceHeader.split("/");
+    globalLogFields["logging.googleapis.com/trace"] =
+      `projects/${PROJECT_ID}/traces/${trace}`;
+  }
+
+  const completeLogEntry: LogEntry = {
+    message:
+      msg instanceof Error
+        ? msg.stack
+          ? msg.stack
+          : msg.message
+        : String(msg),
+    ...entry,
+  };
+
+  // Serialize to a JSON string and output.
+  // eslint-disable-next-line no-console
+  console.log(JSON.stringify({ ...completeLogEntry, ...globalLogFields }));
+};
+
 export const log = USE_STRUCTURED_LOGGING
   ? (msg: unknown, entry: Omit<LogEntry, "message">) => {
-      const globalLogFields: Record<string, string> = {};
-
-      // Add log correlation to nest all log messages beneath request log in Log Viewer.
-      // (This only works for HTTP-based invocations where `req` is defined.)
-      // TODO
-      // eslint-disable-next-line @typescript-eslint/no-deprecated
-      const traceHeader = (headers() as unknown as UnsafeUnwrappedHeaders).get(
-        "X-Cloud-Trace-Context",
-      );
-      if (traceHeader) {
-        const [trace] = traceHeader.split("/");
-        globalLogFields["logging.googleapis.com/trace"] =
-          `projects/${PROJECT_ID}/traces/${trace}`;
-      }
-
-      const completeLogEntry: LogEntry = {
-        message:
-          msg instanceof Error
-            ? msg.stack
-              ? msg.stack
-              : msg.message
-            : String(msg),
-        ...entry,
-      };
-
-      // Serialize to a JSON string and output.
-      // eslint-disable-next-line no-console
-      console.log(JSON.stringify({ ...completeLogEntry, ...globalLogFields }));
+      logStructured(msg, entry).catch(() => undefined);
     }
   : (msg: unknown, entry: Omit<LogEntry, "message">) => {
       switch (entry.severity) {

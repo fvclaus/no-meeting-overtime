@@ -5,11 +5,7 @@ import {
 import { google } from "googleapis";
 import { NextRequest, NextResponse } from "next/server";
 import { findMeeting, findUser } from "../../../firestore";
-import {
-  Credentials,
-  getSession,
-  isAuthorizedSession,
-} from "@/app/session-store";
+import { getSession, isAuthorizedSession } from "@/app/session-store";
 import { Logger } from "@/log";
 
 const logger = new Logger("meeting/[meetingCode]");
@@ -103,7 +99,7 @@ export async function DELETE(req: NextRequest, props: { params: RouteParams }) {
   oauth2Client.setCredentials({
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     refresh_token: user.refresh_token,
-  } as Partial<Credentials>);
+  });
 
   const meeting = await findMeeting(props.params);
   if (meeting === undefined) {

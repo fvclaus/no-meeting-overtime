@@ -9,9 +9,9 @@ import {
   PROJECT_ID,
   QUEUE_LOCATION,
   SITE_BASE_CLOUD_TASKS,
+  cloudTasksClient,
 } from "@/shared/server_constants";
 import { google } from "googleapis";
-import { CloudTasksClient } from "@google-cloud/tasks";
 
 import { differenceInSeconds, formatISO } from "date-fns";
 import { NextRequest, NextResponse } from "next/server";
@@ -26,26 +26,24 @@ import { Logger } from "@/log";
 const logger = new Logger("meeting");
 
 const RequestBodySchema = z.object({
-    scheduledEndTime: z
-      .string()
-      .datetime({ offset: true })
-      .refine(
-        (value) => {
-          return isMeetingEndAfterOffset(new Date(value));
-        },
-        {
-          message: `Datetime must be ${MEETING_END_MINUTES_OFFSET} minutes in future`,
-        },
-      )
-      .pipe(z.coerce.date()),
-  }),
-  client = new CloudTasksClient();
+  scheduledEndTime: z.iso
+    .datetime({ offset: true })
+    .refine(
+      (value) => {
+        return isMeetingEndAfterOffset(new Date(value));
+      },
+      {
+        message: `Datetime must be ${MEETING_END_MINUTES_OFFSET} minutes in future`,
+      },
+    )
+    .pipe(z.coerce.date()),
+});
 
 export async function POST(req: NextRequest) {
   const body = (await req.json()) as unknown,
     result = RequestBodySchema.safeParse(body);
   if (result.error) {
-    return NextResponse.json(result.error.errors, { status: 400 });
+    return NextResponse.json(result.error.issues, { status: 400 });
   }
 
   const reqData = result.data;
@@ -80,8 +78,12 @@ export async function POST(req: NextRequest) {
         differenceInSeconds(reqData.scheduledEndTime, Date.now()),
       ),
       // TODO eslint Rule Hanging Promise
-      [response] = await client.createTask({
-        parent: client.queuePath(PROJECT_ID, QUEUE_LOCATION, "end-meetings1"),
+      [response] = await cloudTasksClient.createTask({
+        parent: cloudTasksClient.queuePath(
+          PROJECT_ID,
+          QUEUE_LOCATION,
+          "end-meetings1",
+        ),
         task: {
           httpRequest: {
             httpMethod: "DELETE",
