@@ -1,5 +1,6 @@
-@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Hanken+Grotesk:wght@400;500;600;700&family=Fredoka:wght@400;500;600;700&family=Roboto:wght@500&display=swap");
 @import "tailwindcss";
+@import "./hangup-design-system.css";
 /* Exclude root-level dotfiles created by the bwrap sandbox (e.g. .bash_profile) */
 @source not "./.*";
 
@@ -70,8 +71,8 @@
   background-color: WHITE;
   background-image: none;
   border: 1px solid #747775;
-  -webkit-border-radius: 4px;
-  border-radius: 4px;
+  -webkit-border-radius: 999px;
+  border-radius: 999px;
   -webkit-box-sizing: border-box;
   box-sizing: border-box;
   color: #1f1f1f;
@@ -98,6 +99,17 @@
   width: auto;
   max-width: 400px;
   min-width: min-content;
+}
+
+/* Google's dark theme — for the dusk / night modes. */
+.gsi-material-button.gsi-material-button-dark {
+  background-color: #131314;
+  border-color: #8e918f;
+  color: #e3e3e3;
+}
+
+.gsi-material-button.gsi-material-button-dark .gsi-material-button-contents {
+  color: #e3e3e3;
 }
 
 .gsi-material-button .gsi-material-button-icon {
