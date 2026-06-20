@@ -17,8 +17,12 @@ type FormValues = {
 // https://developers.google.com/identity/branding-guidelines
 export default function GoogleLoginButton({
   hasAcceptedPrivacyPolicyInSession,
+  theme = "light",
 }: {
   hasAcceptedPrivacyPolicyInSession: true | false;
+  // Google's two compliant treatments — chosen by the surrounding mode
+  // (light for dawn/day, dark for dusk/night).
+  theme?: "light" | "dark";
 }) {
   const {
     register,
@@ -45,7 +49,12 @@ export default function GoogleLoginButton({
           window.location.href = REDIRECT_TO_AUTHORIZATION_API_URL;
         })}
       >
-        <button type="submit" className="gsi-material-button">
+        <button
+          type="submit"
+          className={clsx("gsi-material-button", {
+            "gsi-material-button-dark": theme === "dark",
+          })}
+        >
           <div className="gsi-material-button-state"></div>
           <div className="gsi-material-button-content-wrapper">
             <div className="gsi-material-button-icon">
@@ -87,7 +96,12 @@ export default function GoogleLoginButton({
             hasAcceptedPrivacyPolicyInSession ? "hidden" : "mt-4 flex flex-col",
           )}
         >
-          <label className="flex items-center space-x-2 text-sm text-gray-600">
+          <label
+            className={clsx(
+              "flex items-center space-x-2 text-sm",
+              theme === "dark" ? "text-gray-200" : "text-gray-600",
+            )}
+          >
             <input
               {...register("acceptedPrivacyPolicy", {
                 required: true,
