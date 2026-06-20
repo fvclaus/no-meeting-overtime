@@ -44,7 +44,7 @@ export default function ViewMeetings({
         ),
       })),
     );
-  }, []);
+  }, [meetings]);
 
   return (
     <div className="flex flex-col items-center justify-center">
@@ -75,14 +75,14 @@ export default function ViewMeetings({
               <TableBody>
                 {meetings.length === 0 && (
                   <TableRow>
-                    <TableCell colSpan={3} className="h-24 text-center">
+                    <TableCell colSpan={2} className="h-24 text-center">
                       No meetings created yet
                     </TableCell>
                   </TableRow>
                 )}
                 {meetings.length > 0 &&
                   meetingsView.map((meeting) => (
-                    <TableRow>
+                    <TableRow key={meeting.meetingCode}>
                       <TableCell className="font-medium">
                         {meeting.formattedScheduledEndTime ? (
                           <span className="text-base">

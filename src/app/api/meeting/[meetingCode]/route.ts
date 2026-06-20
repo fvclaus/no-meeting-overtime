@@ -1,5 +1,6 @@
 import {
   CLOUD_TASKS_SERVICE_ACCOUNT,
+  SITE_BASE,
   createOauth2Client,
 } from "@/shared/server_constants";
 import { google } from "googleapis";
@@ -59,9 +60,13 @@ export async function DELETE(req: NextRequest, props: { params: RouteParams }) {
     return new NextResponse("Missing Authorization Header", { status: 403 });
   }
   try {
-    // TODO Test
+    // The task is created with an explicit, host-independent audience
+    // (SITE_BASE) in src/app/api/meeting/route.ts, so verify the OIDC `aud`
+    // claim against that same constant. Deriving it from the request URL is
+    // unreliable behind ngrok/Cloud Run where the proxied host differs.
     const login = await oauth2Client.verifyIdToken({
       idToken,
+      audience: SITE_BASE,
     });
     if (CLOUD_TASKS_SERVICE_ACCOUNT !== login.getPayload()?.email) {
       logger.error(

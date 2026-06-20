@@ -8,7 +8,7 @@ import { NextResponse } from "next/server";
 export async function DELETE() {
   const sessionData = await getSession();
   if (!isAuthorizedSession(sessionData)) {
-    throw new Error("Unauthorized");
+    return new NextResponse("Unauthorized", { status: 403 });
   }
 
   const meetings = await findMeetings(sessionData.userId);

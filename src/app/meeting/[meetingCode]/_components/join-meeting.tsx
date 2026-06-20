@@ -24,7 +24,7 @@ export function JoinMeeting({ meeting }: { meeting: MeetingData }) {
       minute: "2-digit",
     });
     setEndTimeFormatted(formatter.format(new Date(meeting.scheduledEndTime)));
-  });
+  }, [meeting.scheduledEndTime]);
 
   // TODO Server side rendering causes issue, because the client state is different.
   const [timeRemaining, setTimeRemaining] = useState<number>(

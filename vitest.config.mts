@@ -8,7 +8,12 @@ export default defineConfig({
   test: {
     environment: "jsdom",
     include: ["**/*.test.ts"],
-    exclude: ["**/node_modules/**", "**/*.component.test.ts", "**/e2e.test.ts"],
+    exclude: [
+      "**/node_modules/**",
+      "**/.claude/**",
+      "**/*.component.test.ts",
+      "**/e2e.test.ts",
+    ],
     env: {
       CLIENT_ID: "VITEST_CLIENT_ID",
       CLIENT_SECRET: "VITEST_CLIENT_SECRET",
@@ -16,6 +21,9 @@ export default defineConfig({
       QUEUE_LOCATION: "VITEST_QUEUE_LOCATION",
       SITE_BASE: "VITEST_SITE_BASE",
       CLOUD_TASKS_SERVICE_ACCOUNT: "backend-app@vitest.iam.gserviceaccount.com",
+      // Pin the offset so unit tests are hermetic and don't inherit a local
+      // .env.local value (e2e sets this to 0 to allow very short meetings).
+      NEXT_PUBLIC_MEETING_END_MINUTES_OFFSET: "5",
     },
   },
 });
