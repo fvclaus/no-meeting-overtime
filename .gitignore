@@ -1,6 +1,7 @@
 # next.js
-/.next
+.next/
 out
+next-env.d.ts
 
 certificates
 .vercel
@@ -8,13 +9,16 @@ certificates
 node_modules
 .terraform/
 terraform.tfvars
-/test-results/
-/playwright-report/
-/blob-report/
-/playwright/.cache/
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/
+__snapshots__/.cache/
 .claude/settings.local.json
 .claude/worktrees
 
 # cloudflare / opennext
 .wrangler/
-/.open-next/
+.open-next/
+.dev.vars
+cloudflare-env.d.ts
