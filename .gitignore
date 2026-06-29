@@ -14,3 +14,7 @@ terraform.tfvars
 /playwright/.cache/
 .claude/settings.local.json
 .claude/worktrees
+
+# cloudflare / opennext
+.wrangler/
+/.open-next/
