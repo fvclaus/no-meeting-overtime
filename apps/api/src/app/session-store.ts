@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 import { SITE_BASE, createOauth2Client, db } from "../shared/server_constants";
-import { SESSION_ID_NAME } from "@nmo/shared";
+import { SESSION_ID_NAME } from "@hangup/shared";
 import { Logger } from "@/log";
 
 const logger = new Logger("session");

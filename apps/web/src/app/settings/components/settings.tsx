@@ -3,7 +3,7 @@
 import { Title } from "@/components/ui/title";
 import { Loader2, Trash2 } from "lucide-react";
 import { useState } from "react";
-import { LOGOUT_URL } from "@nmo/shared";
+import { LOGOUT_URL } from "@hangup/shared";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 export function Settings() {

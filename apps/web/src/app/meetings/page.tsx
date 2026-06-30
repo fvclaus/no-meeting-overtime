@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import type { MeetingAndCode } from "@nmo/shared";
+import type { MeetingAndCode } from "@hangup/shared";
 import ViewMeetings from "./components/view-meetings";
 import { useRequireAuth } from "@/app/_auth/useRequireAuth";
 import { PageLoading } from "@/app/_auth/PageLoading";

@@ -2,7 +2,7 @@ import {
   Meeting,
   isMeetingEndAfterOffset,
   MEETING_END_MINUTES_OFFSET,
-} from "@nmo/shared";
+} from "@hangup/shared";
 import {
   getCredentials,
   getSession,

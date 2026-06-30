@@ -1,5 +1,5 @@
 {
-  "name": "@nmo/api",
+  "name": "@hangup/api",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -14,7 +14,7 @@
     "@google-cloud/firestore": "^8.6.0",
     "@google-cloud/local-auth": "^3.0.1",
     "@google-cloud/tasks": "^6.2.3",
-    "@nmo/shared": "workspace:*",
+    "@hangup/shared": "workspace:*",
     "date-fns": "^4.4.0",
     "google-auth-library": "^10.7.0",
     "googleapis": "^173.0.0",

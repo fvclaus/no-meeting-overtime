@@ -16,7 +16,7 @@ import { YouTubeEmbed } from "@next/third-parties/google";
 import GoogleLoginButton from "../GoogleLoginButton";
 import UserMenu from "../UserMenu";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { START_MEETING_PATH } from "@nmo/shared";
+import { START_MEETING_PATH } from "@hangup/shared";
 import { useUserInfo } from "../_auth/AuthProvider";
 import { MODES, phaseFromMinutes } from "./theme";
 import Sky from "./Sky";

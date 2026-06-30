@@ -1,4 +1,4 @@
-import { AuthenticatedUserInfo } from "@nmo/shared";
+import { AuthenticatedUserInfo } from "@hangup/shared";
 import { getSession, setSession } from "@/app/session-store";
 import { NextResponse } from "next/server";
 import { updateUserInfo } from "../updateUserInfo";

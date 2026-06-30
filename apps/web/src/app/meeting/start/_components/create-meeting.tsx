@@ -11,7 +11,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
   isMeetingEndAfterOffset,
   MEETING_END_MINUTES_OFFSET,
-} from "@nmo/shared";
+} from "@hangup/shared";
 import { Title } from "@/components/ui/title";
 
 type FormValues = {

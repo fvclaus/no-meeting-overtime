@@ -1,6 +1,6 @@
 "use client";
 
-import { MeetingAndCode, START_MEETING_PATH } from "@nmo/shared";
+import { MeetingAndCode, START_MEETING_PATH } from "@hangup/shared";
 import { Title } from "@/components/ui/title";
 import {
   Table,

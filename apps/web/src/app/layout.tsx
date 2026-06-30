@@ -7,7 +7,7 @@ import AppChrome from "./AppChrome";
 import { AuthProvider } from "./_auth/AuthProvider";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import Script from "next/script";
-import { GOOGLE_ADS_ID } from "@nmo/shared";
+import { GOOGLE_ADS_ID } from "@hangup/shared";
 
 export default function RootLayout({
   children,

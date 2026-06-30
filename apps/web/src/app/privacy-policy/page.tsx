@@ -1,7 +1,7 @@
 import { Title } from "@/components/ui/title";
 import "./style.css";
 import Link from "../Link";
-import { SESSION_ID_NAME, MEETINGS_URL, SETTINGS_URL } from "@nmo/shared";
+import { SESSION_ID_NAME, MEETINGS_URL, SETTINGS_URL } from "@hangup/shared";
 import { Shield } from "lucide-react";
 import React from "react";
 import { ShowCookiePreferencesLink } from "@/components/CookieConsentBanner";

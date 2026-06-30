@@ -1,6 +1,6 @@
 import React from "react";
 import Link, { linkVariants } from "./Link";
-import { PRIVACY_POLICY_URL, REPORT_ISSUE_URL } from "@nmo/shared";
+import { PRIVACY_POLICY_URL, REPORT_ISSUE_URL } from "@hangup/shared";
 import CookieConsentBanner from "@/components/CookieConsentBanner";
 import { cn } from "@/lib/utils";
 

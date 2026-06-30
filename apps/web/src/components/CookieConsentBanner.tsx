@@ -7,7 +7,7 @@ import {
   CONSENT_CATEGORY_ADVERTISEMENT,
   CONSENT_SERVICE_AD_STORAGE,
   CONSENT_SERVICE_AD_USER_DATA,
-} from "@nmo/shared";
+} from "@hangup/shared";
 import { linkVariants } from "@/app/Link";
 import { cn } from "@/lib/utils";
 

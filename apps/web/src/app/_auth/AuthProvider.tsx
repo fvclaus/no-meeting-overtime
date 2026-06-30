@@ -17,7 +17,7 @@ import {
 import type {
   AuthenticatedUserInfo,
   UnauthenticatedUserInfo,
-} from "@nmo/shared";
+} from "@hangup/shared";
 
 export type LandingUserInfo =
   | (AuthenticatedUserInfo & { missingScopes: string[] })

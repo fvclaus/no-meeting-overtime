@@ -7,7 +7,7 @@ import {
 import { NextRequest, NextResponse } from "next/server";
 import { updateUserInfo } from "../updateUserInfo";
 import { Logger } from "@/log";
-import { User } from "@nmo/shared";
+import { User } from "@hangup/shared";
 
 const logger = new Logger("get-token");
 

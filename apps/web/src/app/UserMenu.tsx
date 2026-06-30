@@ -7,7 +7,7 @@ import {
   LOGOUT_URL,
   MEETINGS_URL,
   SETTINGS_URL,
-} from "@nmo/shared";
+} from "@hangup/shared";
 import React, { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { usePathname, useSearchParams } from "next/navigation";

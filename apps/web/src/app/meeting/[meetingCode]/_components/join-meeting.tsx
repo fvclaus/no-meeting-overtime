@@ -2,7 +2,7 @@
 
 import { differenceInSeconds } from "date-fns";
 import { useEffect, useState } from "react";
-import { Meeting, START_MEETING_PATH } from "@nmo/shared";
+import { Meeting, START_MEETING_PATH } from "@hangup/shared";
 import { Calendar, Clock } from "lucide-react";
 import FAQSection from "@/app/FAQSection";
 import Link from "@/app/Link";

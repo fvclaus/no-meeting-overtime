@@ -2,7 +2,7 @@ import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { TZDate } from "@date-fns/tz";
 import HangUpLanding from "./_landing/HangUpLanding";
 import GoogleAdsPageViewTracker from "./GoogleAdsPageViewTracker";
-import { GOOGLE_ADS_CONVERSION_LABEL, GOOGLE_ADS_ID } from "@nmo/shared";
+import { GOOGLE_ADS_CONVERSION_LABEL, GOOGLE_ADS_ID } from "@hangup/shared";
 
 // Read the visitor's timezone per request (Cloudflare edge), so the landing
 // renders the correct day/night mode on the first paint — no flicker.

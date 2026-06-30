@@ -4,7 +4,7 @@
 export const REQUIRED_SCOPES = [
   "https://www.googleapis.com/auth/meetings.space.created",
 ];
-import { SESSION_ID_NAME } from "@nmo/shared";
+import { SESSION_ID_NAME } from "@hangup/shared";
 import {
   BrowserContext,
   chromium,

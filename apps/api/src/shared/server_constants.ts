@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { google } from "googleapis";
-import { START_MEETING_PATH } from "@nmo/shared";
+import { START_MEETING_PATH } from "@hangup/shared";
 import { Firestore } from "@google-cloud/firestore";
 import { CloudTasksClient } from "@google-cloud/tasks";
 import { GoogleAuth, OAuth2Client } from "google-auth-library";

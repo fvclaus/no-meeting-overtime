@@ -1,7 +1,7 @@
 module.exports = {
   output: "standalone",
   crossOrigin: "anonymous",
-  transpilePackages: ["@nmo/shared"],
+  transpilePackages: ["@hangup/shared"],
   // Exclude .claude directory (contains sandbox null devices that crash the file watcher)
   webpack: (config, { dev }) => {
     if (dev) {

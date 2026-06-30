@@ -4,7 +4,7 @@ import {
   HAS_ACCEPTED_PRIVACY_POLICY,
   PRIVACY_POLICY_URL,
   REDIRECT_TO_AUTHORIZATION_API_URL,
-} from "@nmo/shared";
+} from "@hangup/shared";
 import Link from "./Link";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
