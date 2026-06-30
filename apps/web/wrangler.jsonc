@@ -1,6 +1,7 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "hangup",
+  "account_id": "7c5d9e540ef519ce34ea280741de3fc9",
   // Custom entry wraps the OpenNext worker to proxy /api/* with redirect:manual.
   "main": "worker.ts",
   "compatibility_date": "2025-04-01",
