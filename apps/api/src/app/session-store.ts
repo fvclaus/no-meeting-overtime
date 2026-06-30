@@ -19,7 +19,7 @@ async function setSessionId(sessionId: SessionId): Promise<void> {
       path: "/",
       httpOnly: true,
       secure: true,
-      sameSite: "none",
+      sameSite: "lax",
     });
   } else {
     cookieStore.set(SESSION_ID_NAME, sessionId, { path: "/", httpOnly: true });

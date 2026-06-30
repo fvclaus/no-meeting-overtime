@@ -4,16 +4,21 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { JoinMeeting, type MeetingData } from "./_components/join-meeting";
 import { PageLoading } from "@/app/_auth/PageLoading";
+import { useRequireAuth } from "@/app/_auth/useRequireAuth";
 
 export default function Page() {
   const params = useParams<{ meetingCode: string }>();
   const { meetingCode } = params;
+  const { loading, userInfo } = useRequireAuth();
   // undefined = loading, null = not found / unauthorized
   const [meeting, setMeeting] = useState<MeetingData | null | undefined>(
     undefined,
   );
 
   useEffect(() => {
+    if (!userInfo) {
+      return;
+    }
     let cancelled = false;
     void fetch(`/api/meeting/${meetingCode}`, { credentials: "same-origin" })
       .then((res) =>
@@ -32,9 +37,9 @@ export default function Page() {
     return () => {
       cancelled = true;
     };
-  }, [meetingCode]);
+  }, [meetingCode, userInfo]);
 
-  if (meeting === undefined) {
+  if (loading || meeting === undefined) {
     return <PageLoading />;
   }
 

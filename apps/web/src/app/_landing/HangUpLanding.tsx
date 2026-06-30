@@ -267,8 +267,7 @@ export default function HangUpLanding({
   }, []);
 
   const { userInfo } = useUserInfo();
-  const effectiveMinutes = minutes;
-  const mode = phaseFromMinutes(effectiveMinutes);
+  const mode = phaseFromMinutes(minutes);
   const cfg = MODES[mode];
 
   const missingScopes = userInfo.authenticated ? userInfo.missingScopes : [];
@@ -318,7 +317,7 @@ export default function HangUpLanding({
 
       {/* ---- hero + steps, over the animated sky ---- */}
       <div style={{ position: "relative", overflow: "hidden" }}>
-        <Sky mode={mode} minutes={effectiveMinutes} />
+        <Sky mode={mode} minutes={minutes} />
 
         <div
           style={{
