@@ -16,6 +16,7 @@ playwright/.cache/
 __snapshots__/.cache/
 .claude/settings.local.json
 .claude/worktrees
+tsconfig.tsbuildinfo
 
 # cloudflare / opennext
 .wrangler/
